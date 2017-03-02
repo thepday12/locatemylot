@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent_80">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vpPaper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ImageButton
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_arrow_back_white_24dp"
+        android:background="@null"
+        android:padding="12dp"
+        android:id="@+id/btBack"
+        android:scaleType="fitCenter"/>
+    <TextView
+        android:id="@+id/tvPosition"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:gravity="center"/>
+</RelativeLayout>

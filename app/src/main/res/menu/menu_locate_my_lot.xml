@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".LocateMyLotActivity">
+
+    <item
+        android:id="@+id/lml_button_menu"
+        android:title="DrawerHome"
+        android:icon="@drawable/lml_button_menu"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        />
+</menu>

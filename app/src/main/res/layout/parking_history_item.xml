@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parking_history_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:id="@+id/rlPhoto"
+            android:layout_width="80dp"
+            android:layout_marginRight="16dp"
+            android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/parking_photo"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/no_image"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="2dp"
+            />
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:layout_below="@+id/parking_photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="horizontal">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_parking_price"
+                android:layout_gravity="center_vertical"
+                android:tint="@color/colorPrimary"
+                android:scaleType="fitCenter"/>
+        <TextView
+            android:id="@+id/tvRates"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="48dp"
+            android:layout_toRightOf="@+id/rlPhoto"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/phi_car_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical">
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="2">
+
+                    <include
+                        layout="@layout/phi_checkin"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        />
+
+                    <include
+                        layout="@layout/phi_checkout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:orientation="vertical"
+            android:paddingRight="4dp">
+
+            <ImageView
+                android:id="@+id/lml_action_history_edit"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:focusableInTouchMode="false"
+                android:src="@drawable/lml_history_button_edit"
+                />
+
+            <ImageView
+                android:id="@+id/lml_action_history_delete"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:focusableInTouchMode="false"
+                android:src="@drawable/lml_history_button_delete"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:visibility="gone"
+        android:background="@android:color/darker_gray"/>
+</LinearLayout>

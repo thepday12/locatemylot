@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">LocateMyLot</string>
+    <string name="copyright">Rates are accurate as of July 2016 and subject to changes without prior notice\nCosts shown are only a guide and an estimate.\nNeublick Pte Ltd accepts no responsibility and/or liability for any cost or loss incurred.</string>
+    <string name="share_vehicle">Enter recipient\'s phone number to share your vehicle\'s location</string>
+    <string name="action_settings">Settings</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
+    <string name="facebook_app_id">1670087296642368</string>
+    <string name="no_carpark">No carpark detected</string>
+    <string name="not_found_location">Location not found. Please try again</string>
+    <string name="load_map_fail">Can\'t load map</string>
+    <string name="public_holiday">Public holiday</string>
+    <string name="text_version">Version 2.0</string>
+    <string name="text_empty_json">Connect server fail</string>
+    <string name="anonymous_user">Anonymous</string>
+    <string name="text_share_location">shared vehicle\'s location with you. Do you want to accept\?Accepting request will replace your own vehicle\'s location.</string>
+    <string name="edit_text_null_value">This field is required</string>
+    <string name="edit_text_email_invalid">This email address is invalid</string>
+    <string name="enter_IU">Your IU number will approve after 3 working day</string>
+    <string name="denied_read_contact_permission">Until you grant the permission, app cannot open your contacts</string>
+    <!--fun-->
+    <string name="text_fun_check_in">CHECK IN</string>
+    <string name="text_fun_check_out">CHECK OUT</string>
+    <string name="text_fun_locate">LOCATE</string>
+    <string name="text_fun_car_parks">CAR PARKS</string>
+
+    <string name="text_find_location">Finding location...</string>
+    <string name="text_loading">Loading...</string>
+    <string name="text_updating">Updating...</string>
+
+    <string name="edit_text_password_short">This password is too short</string>
+    <string name="edit_text_password_not_match">Passwords do not match</string>
+    <string name="edit_text_password_is_used">New password must be different than your old password</string>
+
+</resources>

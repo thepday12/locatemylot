@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlHandlerRates"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="-4dp"
+    android:background="@drawable/bg_handler"
+    android:orientation="vertical"
+    android:padding="4dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="24dp"
+        android:background="@color/handlerBG"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/header_detail_rates_bg"
+                android:gravity="center"
+                android:paddingBottom="4dp"
+                android:paddingTop="4dp"
+                android:text="DAY"
+                android:textColor="@color/black"
+                android:textSize="10dp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="-2dp"
+                android:layout_weight="3"
+                android:background="@drawable/header_detail_rates_bg"
+                android:gravity="center"
+                android:paddingBottom="4dp"
+                android:paddingTop="4dp"
+                android:text="RATES"
+                android:textColor="@color/black"
+                android:textSize="10dp"
+                android:textStyle="bold"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:background="@drawable/dialog_title_bg"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="-2dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/content_detail_rates_bg"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Mon - Fri Before 5/6pm"
+                        android:textColor="@color/black"
+                        android:textSize="10dp"
+                        android:textStyle="bold"
+                        />
+
+                    <ScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="-2dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/content_detail_rates_bg">
+
+                        <TextView
+                            android:id="@+id/tvBeforeTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="4dp"
+                            android:text=""
+                            android:textColor="@color/black"
+                            android:textSize="10dp"
+                            />
+                    </ScrollView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="-2dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="-2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/content_detail_rates_bg"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Mon - Fri After 5/6pm"
+                        android:textColor="@color/black"
+                        android:textSize="10dp"
+                        android:textStyle="bold"
+                        />
+
+                    <ScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="-2dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/content_detail_rates_bg">
+
+                        <TextView
+                            android:id="@+id/tvAfterTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="4dp"
+                            android:textColor="@color/black"
+                            android:textSize="10dp"
+                            />
+                    </ScrollView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="-2dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+
+                    >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/content_detail_rates_bg"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Sat"
+                        android:textColor="@color/black"
+                        android:textSize="10dp"
+                        android:textStyle="bold"
+                        />
+
+                    <ScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="-2dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/content_detail_rates_bg">
+
+                        <TextView
+                            android:id="@+id/tvSat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="4dp"
+                            android:text=""
+                            android:textColor="@color/black"
+                            android:textSize="10dp"
+                            />
+                    </ScrollView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="-2dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="-2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/content_detail_rates_bg"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Sun/ PH"
+                        android:textColor="@color/black"
+                        android:textSize="10dp"
+                        android:textStyle="bold"
+                        />
+
+                    <ScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="-2dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/content_detail_rates_bg">
+
+                        <TextView
+                            android:id="@+id/tvSunPH"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:padding="4dp"
+                            android:text=""
+                            android:textColor="@color/black"
+                            android:textSize="10dp"
+                            />
+                    </ScrollView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:background="@color/handlerBG"
+                android:gravity="left|center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="4dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingTop="4dp"
+                android:text="@string/copyright"
+                android:textColor="@color/black"
+                android:textSize="8dp"
+                />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/btHideHandler"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:rotation="180"
+        android:scaleType="fitEnd"
+        android:src="@drawable/ic_handler"
+        android:tint="@color/handler"/>
+    <RelativeLayout
+        android:id="@+id/rlDetailRatesTop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></RelativeLayout>
+</RelativeLayout>

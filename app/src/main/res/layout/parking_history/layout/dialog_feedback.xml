@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_size_large"
+        android:background="@drawable/dialog_title_bg"
+        android:gravity="center"
+        android:text="Feedback"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/title_text_size_large"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="8dp"
+                android:text="Message"
+                android:textColor="@color/black"
+                android:textSize="14dp"/>
+
+            <EditText
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"
+                android:lines="4"
+                android:maxLines="4"
+            
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="8dp"
+                android:text="Name"
+                android:textColor="@color/black"
+                android:textSize="14dp"/>
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/edit_text_"
+            
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="8dp"
+                android:text="Email"
+                android:textColor="@color/black"
+                android:textSize="14dp"/>
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/edit_text_"
+                android:hint="someone@domain.com"
+                android:inputType="textEmailAddress"
+            
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="8dp"
+                android:text="Phone number"
+                android:textColor="@color/black"
+                android:textSize="14dp"/>
+
+            <EditText
+                android:id="@+id/phone"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/edit_text_"
+                android:imeActionId="@+id/submit"
+                android:imeActionLabel="Send Feedback"
+                android:inputType="phone"
+            
+                android:singleLine="true"
+                />
+
+            <Button
+                android:id="@+id/send_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/button_blue_bg"
+                android:text="Send Feedback"
+                android:textColor="@android:color/white"
+                />
+
+            <Button
+                android:id="@+id/action_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/button_gray_bg"
+                android:text="Cancel"
+                android:textColor="@android:color/white"
+                />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

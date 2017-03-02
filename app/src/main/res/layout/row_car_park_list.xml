@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/tvCarparkName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="56dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="8dp"
+        android:textSize="16dp"
+        />
+
+    <TextView
+        android:id="@+id/tvSlot"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textAllCaps="true"
+        android:textSize="16dp"/>
+</RelativeLayout>

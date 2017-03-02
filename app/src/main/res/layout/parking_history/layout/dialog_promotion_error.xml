@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:layout_marginTop="40dp"
+        android:text="No internet connection or an error occurs while reading data from server."
+        />
+
+    <Button
+        android:id="@+id/action_close"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/button_gray_bg"
+        android:layout_marginTop="40dp"
+        android:text="OK"
+        />
+</LinearLayout>

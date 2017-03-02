@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_size"
+        android:textSize="@dimen/title_text_size"
+        android:background="@drawable/dialog_title_bg"
+        android:gravity="center"
+        android:text="Promotions"
+        android:textColor="@android:color/white"
+        />
+
+    <ImageView
+        android:id="@+id/promotion_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        />
+
+    <Button
+        android:id="@+id/action_delete"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_red_bg"
+        android:text="Delete Promotion"
+        android:textColor="@android:color/white"
+        />
+
+    <Button
+        android:id="@+id/action_close"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_gray_bg"
+        android:text="Close"
+        android:textColor="@android:color/white"
+        />
+</LinearLayout>

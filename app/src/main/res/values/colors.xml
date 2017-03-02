@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="second_time_color">#f79227</color>
+    <color name="first_time_color">#2dcc70</color>
+    <color name="zone_color">#f52a2a</color>
+    <color name="red_light">#ff4444</color>
+    <color name="red_dark">#cc0000</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="handler">#5b5b5b</color>
+    <color name="handlerBG">#ececec</color>
+    <color name="transparent_80">#80000000</color>
+    <color name="colorPrimary">#2dcc70</color>
+    <color name="colorPrimaryDark">#26b161</color>
+    <color name="colorAccent">#12CCE1</color>
+
+    <color name="itemIconTint">#000000</color>
+    <color name="itemTextColor">#000000</color>
+    <color name="mainSeparator">#A9A9A9</color>
+    <color name="gray">#A9A9A9</color>
+    <color name="itemBackground">#34495e</color>
+
+    <color name="colorWay">#3498db</color>
+
+    <color name="blue">#3498db</color>
+    <color name="green">#39b54a</color>
+</resources>

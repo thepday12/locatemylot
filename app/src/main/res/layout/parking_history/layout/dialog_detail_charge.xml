@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="468dp"
+    >
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_size"
+        android:textSize="@dimen/title_text_size"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/dialog_title_bg"
+        android:gravity="center"
+        android:text="Parking Rates Info"
+        android:textColor="@color/white"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tvTitle"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:id="@+id/llButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+
+            <Button
+                android:id="@+id/btOk"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/button_blue_bg"
+                android:text="OK"
+                android:textColor="@color/white"/>
+
+            <Button
+
+                android:id="@+id/btCancel"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/button_gray_bg"
+                android:text="Cancel"
+                android:textColor="@color/white"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCarparkName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:textSize="20dp"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/llButton"
+            android:layout_below="@+id/tvCarparkName"
+            android:layout_marginBottom="8dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/header_detail_rates_bg"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="DAY"
+                        android:textColor="@color/black"
+                        android:textSize="14dp"
+                        android:textStyle="bold"
+                        />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="-2dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/header_detail_rates_bg"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="RATES"
+                        android:textColor="@color/black"
+                        android:textSize="14dp"
+                        android:textStyle="bold"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:background="@drawable/dialog_title_bg"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="-2dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/content_detail_rates_bg"
+                                android:gravity="center"
+                                android:padding="4dp"
+                                android:text="Mon - Fri Before 5/6pm"
+                                android:textColor="@color/black"
+                                android:textSize="14dp"
+                                android:textStyle="bold"
+                                />
+
+                            <ScrollView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="-2dp"
+                                android:layout_weight="3"
+                                android:background="@drawable/content_detail_rates_bg">
+
+                                <TextView
+                                    android:id="@+id/tvBeforeTime"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:padding="4dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="14dp"
+                                    />
+                            </ScrollView>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="-2dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="-2dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/content_detail_rates_bg"
+                                android:gravity="center"
+                                android:padding="4dp"
+                                android:text="Mon - Fri After 5/6pm"
+                                android:textColor="@color/black"
+                                android:textSize="14dp"
+                                android:textStyle="bold"
+                                />
+
+                            <ScrollView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="-2dp"
+                                android:layout_weight="3"
+                                android:background="@drawable/content_detail_rates_bg">
+
+                                <TextView
+                                    android:id="@+id/tvAfterTime"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:padding="4dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="14dp"
+                                    />
+                            </ScrollView>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="-2dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+
+                            >
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/content_detail_rates_bg"
+                                android:gravity="center"
+                                android:padding="4dp"
+                                android:text="Sat"
+                                android:textColor="@color/black"
+                                android:textSize="14dp"
+                                android:textStyle="bold"
+                                />
+
+                            <ScrollView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="-2dp"
+                                android:layout_weight="3"
+                                android:background="@drawable/content_detail_rates_bg">
+
+                                <TextView
+                                    android:id="@+id/tvSat"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:padding="4dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="14dp"
+                                    />
+                            </ScrollView>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="-2dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="-2dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/content_detail_rates_bg"
+                                android:gravity="center"
+                                android:padding="4dp"
+                                android:text="Sun/ PH"
+                                android:textColor="@color/black"
+                                android:textSize="14dp"
+                                android:textStyle="bold"
+                                />
+
+                            <ScrollView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="-2dp"
+                                android:layout_weight="3"
+                                android:background="@drawable/content_detail_rates_bg">
+
+                                <TextView
+                                    android:id="@+id/tvSunPH"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:padding="4dp"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="14dp"
+                                    />
+                            </ScrollView>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="left|center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/copyright"
+                        android:textColor="@color/black"
+                        android:textSize="8dp"
+                        />
+
+                    <LinearLayout
+                        android:id="@+id/llDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#aa2FCA73"
+                            android:gravity="center"
+                            android:text="Details"
+                            android:textAllCaps="true"
+                            android:textSize="24dp"/>
+
+                        <TextView
+                            android:id="@+id/tvSumCharge"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginTop="8dp"
+                            android:textColor="#3299DC"
+                            android:textSize="16dp"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:layout_gravity="right"
+                            android:orientation="horizontal"
+                            android:paddingRight="8dp">
+
+                            <TextView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_gravity="center_vertical"
+                                android:background="@color/zone_color"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="4dp"
+                                android:gravity="center_vertical"
+                                android:text="Zone"
+                                android:textSize="8dp"/>
+
+                            <TextView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="8dp"
+                                android:background="@color/first_time_color"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="4dp"
+                                android:gravity="center_vertical"
+                                android:text="First time"
+                                android:textSize="8dp"/>
+
+                            <TextView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="8dp"
+                                android:background="@color/second_time_color"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="4dp"
+                                android:gravity="center_vertical"
+                                android:text="Second time"
+                                android:textSize="8dp"/>
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#3299DC"
+                            android:paddingBottom="4dp"
+                            android:paddingTop="4dp">
+
+                            <TextView
+                                android:id="@+id/tvType"
+                                android:layout_width="32dp"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:gravity="center_horizontal"
+                                android:textColor="@color/white"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toLeftOf="@+id/tvType"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="5"
+                                    android:gravity="center"
+                                    android:text="Time"
+                                    android:textColor="@color/white"/>
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="3"
+                                    android:gravity="center"
+                                    android:text="Rates"
+                                    android:textColor="@color/white"/>
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:gravity="center"
+                                    android:text="Mins"
+                                    android:textColor="@color/white"/>
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <ListView
+                            android:id="@+id/lvCharge"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:background="#663299DC"
+                            android:choiceMode="none"
+                            android:nestedScrollingEnabled="true"
+                            android:scrollbars="none"/>
+
+                        <TextView
+                            android:id="@+id/tvSumSurCharge"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
+                            android:textColor="#f79227"
+                            android:textSize="16dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#f79227"
+                            android:orientation="horizontal"
+                            android:paddingBottom="4dp"
+                            android:paddingTop="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="4"
+                                android:gravity="center"
+                                android:text="Date"
+                                android:textColor="@color/white"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="4"
+                                android:gravity="center"
+                                android:text="Begin-End"
+                                android:textColor="@color/white"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="2"
+                                android:gravity="left|center"
+                                android:text="Rates"
+                                android:textColor="@color/white"/>
+
+
+                        </LinearLayout>
+
+                        <ListView
+                            android:id="@+id/lvSurCharge"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:background="#66f79227"
+                            android:choiceMode="none"
+                            android:nestedScrollingEnabled="true"
+                            android:scrollbars="none"/>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "136322852451",
+    "firebase_url": "https://locate-my-lot.firebaseio.com",
+    "project_id": "locate-my-lot",
+    "storage_bucket": "locate-my-lot.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136322852451:android:7707ae2ff7378047",
+        "android_client_info": {
+          "package_name": "neublick.locatemylot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136322852451-ak489lps28cblmms94iuju41os58dgnk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "neublick.locatemylot",
+            "certificate_hash": "E941B2C3EF58F0C00A62677E526E9C83E22C14A5"
+          }
+        },
+        {
+          "client_id": "136322852451-qreke5emetnl0jt2r7cirms4sqc1madi.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "136322852451-mnmm5ootse89criid1u47pf4f175vm3j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5motfoj9ho6or4aaHfcKsfDgxujcxW64"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136322852451-qreke5emetnl0jt2r7cirms4sqc1madi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

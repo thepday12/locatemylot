@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Map direction"
+        />
+
+    <include layout="@layout/line_horizontal"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@android:color/holo_orange_dark">
+
+        <ImageView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="fitCenter"
+            android:padding="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/phonecalib"
+            android:layout_centerInParent="true"
+            />
+
+        <!--
+        ExtendedImageView la ImageView cho ta luu lai tham so alpha thu duoc tu setAlpha(float alpha)
+        -->
+        <neublick.locatemylot.ui.ExtendedImageView
+            android:id="@+id/calib_arrow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/compass_calib_arrow"
+            android:layout_centerInParent="true"
+            />
+
+        <Button
+            android:id="@+id/action_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:background="@drawable/button_green_bg"
+            android:layout_gravity="right|bottom"
+            />
+    </FrameLayout>
+</LinearLayout>

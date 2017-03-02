@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_size"
+        android:textSize="@dimen/title_text_size"
+        android:background="@drawable/dialog_title_bg"
+        android:gravity="center"
+        android:text="Select a Carpark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp"
+       />
+
+    <Button
+        android:id="@+id/btCancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="8dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_gray_bg"
+        android:text="Cancel"
+        android:textColor="@android:color/white" />
+
+    <ListView
+        android:id="@+id/lvCarpark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btCancel"
+        android:layout_below="@+id/tvTitle"
+        android:layout_margin="8dp"
+        android:scrollbars="none" />
+
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

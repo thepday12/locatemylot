@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:id="@+id/content_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/toolBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <include
+                layout="@layout/tool_bar"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="8dp"
+            android:id="@+id/quickControl"
+            android:layout_width="wrap_content"
+            android:layout_height="72dp"
+            android:layout_alignParentBottom="true">
+
+            <include
+                layout="@layout/quick_control"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/timer"
+            android:layout_width="wrap_content"
+            android:layout_height="72dp"
+            android:layout_above="@+id/quickControl">
+
+            <include
+                layout="@layout/timer2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvLineHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/timer"
+            android:background="@color/mainSeparator"
+            />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/tvLineHorizontal"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/toolBar">
+
+            <LinearLayout
+                android:id="@+id/llMapAndDetails"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <include
+                    layout="@layout/carpark_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"/>
+
+
+                <include
+                    layout="@layout/line_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="0"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="5">
+
+                    <RelativeLayout
+                        android:id="@+id/rlMap"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <neublick.locatemylot.ui.MapView
+                            android:id="@+id/map"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+
+                        <include layout="@layout/user_object2"/>
+
+                        <include layout="@layout/car_object"/>
+
+                        <include layout="@layout/lift_lobby_object"/>
+
+
+                        <ProgressBar
+                            android:id="@+id/pbLoadingMap"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:visibility="gone"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rlSlideHelp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <android.support.v4.view.ViewPager
+                            android:id="@+id/vpPaperSleep"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="2">
+
+                                <neublick.locatemylot.ui.RoundedImageView
+                                    android:id="@+id/view_attached2"
+                                    android:layout_width="55dp"
+                                    android:layout_height="55dp"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginBottom="10dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_marginTop="10dp"
+                                    android:visibility="invisible"
+                                    />
+
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="200dp"
+                                android:layout_height="1dp"
+                                android:layout_weight="0"
+                                />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="5"
+                                />
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <ImageButton
+                        android:id="@+id/btHandler"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:paddingTop="24dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@null"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_handler"
+                        android:tint="@color/handler"/>
+
+                    <include
+                        layout="@layout/detail_rates_handler"
+                        android:visibility="invisible"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolBar"
+            android:visibility="gone"
+            android:id="@+id/llCarParkType"
+            android:layout_marginBottom="72dp"
+            android:paddingTop="1dp"
+            android:background="@color/white"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/colorPrimary"
+                android:orientation="horizontal">
+
+                <neublick.locatemylot.ui.ToggleSquareImageButton
+                    android:id="@+id/btCarParkList"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_list"/>
+
+                <neublick.locatemylot.ui.ToggleSquareImageButton
+                    android:id="@+id/btCarParkNear"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_near"/>
+
+                <neublick.locatemylot.ui.ToggleSquareImageButton
+                    android:id="@+id/btCarParkMap"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_map"/>
+            </LinearLayout>
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vpCarParkType"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/navigation"/>
+</android.support.v4.widget.DrawerLayout>

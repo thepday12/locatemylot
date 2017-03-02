@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="196dp"
+    android:orientation="vertical"
+    android:animateLayoutChanges="true"
+    >
+
+    <TextView
+        android:id="@+id/tvBar"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvBar"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/ivAvatar"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/text_screen_splash"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="2dp"/>
+        />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp">
+
+            <EditText
+                android:id="@+id/etDisplayName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@drawable/edit_text_name"
+                android:capitalize="words"
+                android:enabled="false"
+                android:paddingBottom="4dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="4dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
+                android:text="Thep To Kim"
+                android:textColor="@color/itemTextColor"
+                android:textSize="16dp"/>
+
+            <ImageButton
+                android:id="@+id/btEdit"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@+id/etDisplayName"
+                android:background="@drawable/button_copy"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_edit"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlUpdate"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#88ffffff">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:id="@+id/pbLoad"/>
+        <TextView
+            android:layout_below="@+id/pbLoad"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="14dp"
+            android:text="@string/text_updating"/>
+    </RelativeLayout>
+</RelativeLayout>
