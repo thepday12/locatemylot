@@ -328,6 +328,16 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                     break;
                     case R.id.action_help: {
                         closeDrawer();
+//                        getFuncTime().modifyState();
+                        ToggleSquareImageButton funcTime = (ToggleSquareImageButton) findViewById(R.id.func_time);
+                        if(funcTime!=null){
+                            if(funcTime.statePressed) {
+                                funcTime.modifyState();
+                                vpCarParkType.setVisibility(View.GONE);
+                                llCarParkType.setVisibility(View.GONE);
+                            }
+                        }
+
                         startActivity(new Intent(BaseActivity.this, HelpActivity.class));
                     }
                     break;

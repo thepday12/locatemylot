@@ -798,7 +798,7 @@ public class BackgroundService extends AbstractService {
     private void showNotification(Context context, int data, int carpark, String title, String text) {
         Notification.Builder mBuilder =
                 new Notification.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(text)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

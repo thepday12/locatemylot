@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import static android.view.View.OnClickListener;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -139,8 +140,8 @@ phone.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 				args[2],
 				args[3]
 			);
-
-			URL url = null;
+//            Log.e("RESPONSE_SERVER",link);
+            URL url = null;
 			try {
 				url = new URL(link);
 			} catch(MalformedURLException e) {

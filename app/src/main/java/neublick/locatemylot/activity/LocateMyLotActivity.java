@@ -1770,9 +1770,11 @@ public class LocateMyLotActivity extends BaseActivity {
         if (secTickTimer != null) {
             secTickTimer.stop();
         }
+        try {
+            unregisterReceiver(bluetoothReceiver);
+        }catch (Exception e){
 
-        unregisterReceiver(bluetoothReceiver);
-
+        }
 
         // [van con nua]
         super.onPause();
@@ -2750,7 +2752,7 @@ public class LocateMyLotActivity extends BaseActivity {
         }
         Notification.Builder mBuilder =
                 new Notification.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(text)
 //                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_size_large"
+        android:background="@drawable/dialog_title_bg"
+        android:gravity="center"
+        android:text="@string/title_policy"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/title_text_size_large"
+        />
+
+    <RelativeLayout
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+        <Button
+            android:id="@+id/btClose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_gray_bg"
+            android:text="Close"
+            android:layout_alignParentBottom="true"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            />
+
+
+        <WebView
+            android:id="@+id/wvInfo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/btClose"/>
+
+
+    </RelativeLayout>
+</LinearLayout>

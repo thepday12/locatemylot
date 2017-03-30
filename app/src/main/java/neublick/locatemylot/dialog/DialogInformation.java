@@ -2,6 +2,7 @@ package neublick.locatemylot.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -108,13 +109,14 @@ public class DialogInformation extends Activity {
         btTerms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(DialogInformation.this,DialogTC.class));
             }
         });
 
         btPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(DialogInformation.this,DialogPolicy.class));
             }
         });
         dialog.show();

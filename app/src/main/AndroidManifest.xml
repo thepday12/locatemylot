@@ -36,7 +36,7 @@
         android:name=".app.LocateMyLotApp"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
@@ -113,8 +113,7 @@
             android:theme="@style/DialogNotCloseOnTouchOutSide"/>
 
         <!-- chuc nang information -->
-        <activity
-            android:name=".dialog.DialogInformation"/>
+        <activity android:name=".dialog.DialogInformation"/>
         <activity
             android:name=".dialog.DialogSelectCarPark"
             android:launchMode="singleTask"
@@ -134,9 +133,7 @@
             android:theme="@style/AppTheme.AppCompatDialogNotCloseOnTouchOutSide"/>
 
         <!-- chuc nang feedback -->
-        <activity
-            android:name=".dialog.DialogFeedback"
-            />
+        <activity android:name=".dialog.DialogFeedback"/>
 
         <!-- user location -->
 
@@ -178,6 +175,10 @@
         <activity
             android:name=".activity.HelpActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        </activity>
+        <activity android:name=".dialog.DialogTC">
+        </activity>
+        <activity android:name=".dialog.DialogPolicy">
         </activity>
     </application>
 

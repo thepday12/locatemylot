@@ -22,7 +22,7 @@ public class HelpActivity extends FragmentActivity {
     private PaperHelpAdapter adapter;
     private TextView tvPosition;
     private ImageButton btBack;
-    private final int HELP_PAGE_SIZE=9;
+    private final int HELP_PAGE_SIZE=8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,7 @@ public class HelpActivity extends FragmentActivity {
         vpPaper.setAdapter(adapter);
         vpPaper.setCurrentItem(0);
         tvPosition.setText("1/"+HELP_PAGE_SIZE);
+        final boolean isSelectCarPark = getIntent().getBooleanExtra("SELECT_CAR_PARK",false);
         vpPaper.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -48,6 +49,7 @@ public class HelpActivity extends FragmentActivity {
             @Override
             public void onPageSelected(int position) {
                 Intent intent = new Intent(Global.TAG_HELP_FRAGMENT + position);
+                intent.putExtra("SELECT_CAR_PARK",isSelectCarPark);
                 sendBroadcast(intent);
                 HelpFragment.showHelp(btBack);
                 tvPosition.setText((position+1)+"/"+HELP_PAGE_SIZE);

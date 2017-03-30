@@ -287,7 +287,7 @@ public class DialogShareLocation extends Activity {
         public void onPostExecute(String result) {
             mDialog.dismiss();
             if (result == null || result.isEmpty()) {
-                Utils.showMessage(dialogNotice, "Can not share location", "Notice", DialogShareLocation.this, false);
+                Utils.showMessage(dialogNotice, "Cannot share location", "Notice", DialogShareLocation.this, false);
                 return;
             } else {
                 try {

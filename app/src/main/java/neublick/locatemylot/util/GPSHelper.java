@@ -69,7 +69,7 @@ public class GPSHelper {
         String text = "There are "+size+" car park located your vicinity";
         Notification.Builder mBuilder =
                 new Notification.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(text)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
@@ -97,7 +97,7 @@ public class GPSHelper {
 
         Notification.Builder mBuilder =
                 new Notification.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(text)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -42,8 +43,47 @@
             android:scaleType="fitStart"
             android:src="@drawable/menu_help"
             />
+
+
+
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/rlHelpCamera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/tvCenter"
+        android:visibility="invisible">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/ivCamera"
+            android:layout_marginLeft="28dp"
+            android:layout_marginTop="4dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_greend_c"
+            android:padding="2dp"
+            android:src="@drawable/ic_photo_camera"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="2dp"
+            />
+
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ivCamera"
+            android:layout_marginLeft="-42dp"
+            android:layout_marginTop="-1dp"
+            android:layout_toRightOf="@+id/ivCamera"
+            android:scaleType="fitStart"
+            android:src="@drawable/camera_help"
+            />
+
+
+
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/ivEntry"
@@ -64,8 +104,8 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/timer"
         android:layout_below="@+id/tvCenter"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="-3dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginBottom="-40dp"
         android:scaleType="fitEnd"
         android:src="@drawable/duration_help"
         android:visibility="invisible"
@@ -78,7 +118,7 @@
         android:layout_above="@+id/timer"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/tvCenter"
-        android:layout_marginBottom="-3dp"
+        android:layout_marginBottom="-40dp"
         android:layout_marginRight="48dp"
         android:scaleType="fitEnd"
         android:src="@drawable/rates_help"
@@ -91,7 +131,7 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/quickControl"
         android:layout_below="@+id/tvCenter"
-        android:layout_marginBottom="-3dp"
+        android:layout_marginBottom="-12dp"
         android:scaleType="fitEnd"
         android:src="@drawable/find_car_help"
         android:visibility="invisible"
@@ -100,129 +140,49 @@
     <RelativeLayout
         android:id="@+id/quickControl"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true">
+        android:layout_marginTop="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_height="72dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <RelativeLayout
-                android:id="@+id/rlFuncWay"
+            <ImageView
+                android:id="@+id/func_check_in"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:visibility="invisible">
-
-                <ImageView
-                    android:id="@+id/func_way"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/bg_greend_c"
-                    />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/lml_button_car"
-                    />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlFuncCheck"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/icon_check_in"
+                android:visibility="invisible"
+                android:background="@color/colorPrimary"
+                />
+            <ImageView
+                android:id="@+id/func_way"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:visibility="invisible">
+                android:scaleType="fitCenter"
+                android:visibility="invisible"
+                android:src="@drawable/icon_locate"
+                android:background="@color/colorPrimary"
+                />
 
-                <ImageView
-                    android:id="@+id/func_check_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/bg_greend_c"
-                    />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/lml_button_checkin"
-                    />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlFuncCamera"
+            <ImageView
+                android:id="@+id/func_time"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:visibility="invisible">
-
-                <ImageView
-                    android:id="@+id/func_camera"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/bg_greend_c"
-                    />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_photo_camera"
-                    />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlFuncTime"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="invisible">
-
-                <ImageView
-                    android:id="@+id/func_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/bg_greend_c"
-                    />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/lml_button_timer"
-                    />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/rlFuncHistory"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="invisible">
-
-                <ImageView
-                    android:id="@+id/func_history"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/bg_greend_c"
-                    />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/lml_button_history"
-                    />
-            </RelativeLayout>
+                android:scaleType="fitCenter"
+                android:visibility="invisible"
+                android:src="@drawable/icon_carparks"
+                android:layout_gravity="center_vertical"
+                android:background="@color/colorPrimary"
+                />
         </LinearLayout>
 
     </RelativeLayout>
@@ -230,34 +190,29 @@
     <RelativeLayout
         android:id="@+id/timer"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_above="@+id/quickControl">
+        android:layout_above="@+id/quickControl"
+        android:layout_height="72dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-
-            <RelativeLayout
-                android:id="@+id/llEntryTime"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:visibility="invisible">
-
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="2dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/help_bg"/>
+                android:layout_weight="1.8"
+                android:orientation="vertical"
+                android:paddingLeft="8dp">
 
                 <LinearLayout
+                    android:id="@+id/llEntryTime"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:visibility="invisible"
+                    android:background="@drawable/help_bg"
+                    android:padding="4dp">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -273,57 +228,41 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="8dp"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp">
 
                         <TextView
                             android:id="@+id/text_entry_time"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"
-                            android:text="Entry time:"
-                            android:textSize="12dp"
+                            android:layout_gravity="center_vertical"
+                            android:text="Entry time"
+                            android:textSize="16dp"
                             />
 
                         <TextView
                             android:id="@+id/entry_time"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:layout_weight="1"
+                            android:layout_gravity="center_vertical"
                             android:text="-:-:-"
-                            android:textSize="12dp"
+                            android:layout_marginLeft="8dp"
+                            android:textSize="16dp"
                             />
                     </LinearLayout>
                 </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/llTotalDuration"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingLeft="4dp"
-                android:visibility="invisible"
-                >
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingBottom="2dp"
-                    android:paddingLeft="0dp"
-                    android:paddingRight="2dp"
-                    android:paddingTop="2dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/help_bg"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:orientation="horizontal">
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:id="@+id/llTotalDuration"
+                    android:visibility="invisible"
+                    android:background="@drawable/help_bg"
+                    android:paddingLeft="8dp">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -338,86 +277,82 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="8dp"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp">
 
                         <TextView
                             android:id="@+id/text_duration"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"
-                            android:text="Total duration:"
-                            android:textSize="12dp"
+                            android:text="Total time"
+                            android:textSize="16dp"
+                            android:layout_gravity="center_vertical"
                             />
 
                         <TextView
                             android:id="@+id/duration"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
+                            android:layout_gravity="center_vertical"
                             android:layout_weight="1"
+                            android:layout_marginLeft="8dp"
                             android:text="-:-:-"
-                            android:textSize="12dp"
+                            android:textSize="16dp"
                             />
                     </LinearLayout>
                 </LinearLayout>
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/llParkingRates"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.8"
-                android:paddingLeft="4dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
                 android:visibility="invisible"
                 >
-
-                <ImageView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingBottom="2dp"
-                    android:paddingRight="2dp"
-                    android:paddingTop="2dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/help_bg"/>
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:background="@drawable/help_bg"
+                    >
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_parking_price"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="8dp"
+                    android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_parking_price"
-                        />
-
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvParkingRates"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
                         android:layout_marginLeft="8dp"
-                        android:orientation="vertical">
+                        android:layout_gravity="center_vertical"
+                        android:text="--"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18dp"
+                        />
 
-                        <TextView
-                            android:id="@+id/tvParkingRates"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="--"
-                            android:textColor="@android:color/holo_green_dark"
-                            android:textSize="12dp"
-                            android:textStyle="bold"
-                            />
-                    </LinearLayout>
                 </LinearLayout>
-            </RelativeLayout>
+                    </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

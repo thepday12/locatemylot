@@ -106,7 +106,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Notification.Builder mBuilder =
                 new Notification.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(text)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

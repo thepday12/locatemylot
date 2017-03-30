@@ -32,4 +32,7 @@
     <string name="edit_text_password_not_match">Passwords do not match</string>
     <string name="edit_text_password_is_used">New password must be different than your old password</string>
 
+    <string name="title_tc">Terms of Use</string>
+    <string name="title_policy">Privacy Policy</string>
+
 </resources>
