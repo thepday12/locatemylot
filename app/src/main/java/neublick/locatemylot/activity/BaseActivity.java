@@ -1,6 +1,5 @@
 package neublick.locatemylot.activity;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -46,14 +45,12 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +70,6 @@ import neublick.locatemylot.model.CarParkType;
 import neublick.locatemylot.ui.SquareImageButton;
 import neublick.locatemylot.ui.ToggleSquareImageButton;
 import neublick.locatemylot.util.BitmapUtil;
-import neublick.locatemylot.util.ImagePicker;
 import neublick.locatemylot.util.ParkingSession;
 import neublick.locatemylot.util.UserUtil;
 import neublick.locatemylot.util.Utils;
@@ -87,7 +83,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
     ImageButton mDrawerButton;
     NavigationView mNavigation;
     RelativeLayout mContentMain, rlUpdate;
-    ImageButton btEdit;
+//    ImageButton btEdit;
     CircleImageView ivAvatar;
     EditText etDisplayName;
     private Dialog dialogNotice;
@@ -100,7 +96,6 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
     public List<CarParkType> carParkTypes;
     public LinearLayout llCarParkType;
     public ToggleSquareImageButton btCarParkList, btCarParkNear, btCarParkMap;
-    private final int RESULT_SELECT_IMAGE = 21;
     private Uri selectedImage;
     private Dialog dialogChangePassword;
     private EditText etOldPassword, etNewPassword, etConfirmNewPassword;
@@ -342,6 +337,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
                     break;
                     case R.id.action_history: {
+
                         Intent parkingHistoryIntent = new Intent(BaseActivity.this, ParkingHistoryActivity.class);
                         startActivity(parkingHistoryIntent);
                     }
@@ -360,77 +356,44 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
         rlUpdate = (RelativeLayout) mNavigation.getHeaderView(0).findViewById(R.id.rlUpdate);
         loadAvatar();
 
-        ivAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                startActivityForResult(i, RESULT_SELECT_IMAGE);
-                Intent chooseImageIntent = ImagePicker.getPickImageIntent(BaseActivity.this);
-                startActivityForResult(chooseImageIntent, RESULT_SELECT_IMAGE);
-            }
-        });
+//        ivAvatar.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+////                startActivityForResult(i, RESULT_SELECT_IMAGE);
+//                Intent chooseImageIntent = ImagePicker.getPickImageIntent(BaseActivity.this);
+//                startActivityForResult(chooseImageIntent, RESULT_SELECT_IMAGE);
+//            }
+//        });
         String fullName = UserUtil.getUserFullName(BaseActivity.this);
         if (fullName.isEmpty()) {
             fullName = getString(R.string.anonymous_user);
         }
         currentDisplayName = fullName;
 
-        btEdit = (ImageButton) mNavigation.getHeaderView(0).findViewById(R.id.btEdit);
-        if (btEdit != null)
-            btEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    editDisplayName();
-                }
-            });
+//        btEdit = (ImageButton) mNavigation.getHeaderView(0).findViewById(R.id.btEdit);
+//        if (btEdit != null)
+//            btEdit.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    editDisplayName();
+//                }
+//            });
 
     }
 
 
     public void loadAvatar() {
         String avatar = UserUtil.getAvatar(BaseActivity.this);
-        if (avatar.isEmpty()) {
-            Picasso.with(BaseActivity.this).load(R.drawable.default_avatar).into(ivAvatar);
-        } else {
-            Picasso.with(BaseActivity.this).load(avatar).error(R.drawable.default_avatar).into(ivAvatar);
-        }
+//        if (avatar.isEmpty()) {
+//            Picasso.with(BaseActivity.this).load(R.drawable.default_avatar).into(ivAvatar);
+//        } else {
+//            Picasso.with(BaseActivity.this).load(avatar).error(R.drawable.default_avatar).into(ivAvatar);
+//        }
+        Utils.loadAvatar(BaseActivity.this,ivAvatar,avatar);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case RESULT_SELECT_IMAGE:
-
-                if (resultCode == Activity.RESULT_OK) {
-                    try {
-//                        selectedImage = data.getData();
-//                        UserUtil.setAvatar(BaseActivity.this, selectedImage.toString());
-//                        Picasso.with(BaseActivity.this).load(selectedImage.toString()).error(R.drawable.default_avatar).into(ivAvatar);
-//                        Bitmap bitmap = ImagePicker.getImageFromResult(this, resultCode, data);
-                        File imageFile = ImagePicker.getTempFile(BaseActivity.this);
-                        boolean isCamera = (data == null ||
-                                data.getData() == null  ||
-                                data.getData().toString().contains(imageFile.toString()));
-                        if (isCamera) {     /** CAMERA **/
-                            selectedImage = Uri.fromFile(imageFile);
-                        } else {            /** ALBUM **/
-                            selectedImage = data.getData();
-                        }
-//                        Picasso.with(BaseActivity.this).invalidate(selectedImage.toString());
-                       Picasso.with(BaseActivity.this).load(selectedImage.toString()).error(R.drawable.default_avatar).memoryPolicy(MemoryPolicy.NO_CACHE).into(ivAvatar);
-                        UserUtil.setAvatar(BaseActivity.this,selectedImage.toString());
-                        if(Utils.isInternetConnected(BaseActivity.this))
-                            new UpdateAvatar().execute();
-
-                    } catch (Exception e) {
-
-                    }
-                }
-                break;
-        }
-    }
 
     public void updateStatusCarParkType(int position) {
 //        for (CarParkType carParkType : carParkTypes) {

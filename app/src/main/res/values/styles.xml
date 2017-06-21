@@ -36,4 +36,9 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowCloseOnTouchOutside">false</item>
     </style>
+    <style name="MyThemeWeb" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

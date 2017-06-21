@@ -16,6 +16,7 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -26,23 +27,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
-
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,6 +65,7 @@ import neublick.locatemylot.R;
 import neublick.locatemylot.activity.BaseActivity;
 import neublick.locatemylot.activity.LocateMyLotActivity;
 import neublick.locatemylot.app.Config;
+import neublick.locatemylot.app.Global;
 import neublick.locatemylot.database.CLCarpark;
 import neublick.locatemylot.database.CLHoliday;
 import neublick.locatemylot.database.CLParkingRates;
@@ -72,7 +79,7 @@ import neublick.locatemylot.receiver.AlarmAlertBroadcastReceiver;
 public class Utils {
     public static void showMessage(final Dialog dialogNotice, String message, String title, final Activity context, final boolean isClose) {
         if (context == null) return;
-        if (dialogNotice!=null&&!dialogNotice.isShowing()) {
+        if (dialogNotice != null && !dialogNotice.isShowing()) {
 
             dialogNotice.setContentView(R.layout.dialog_ok);
             dialogNotice.getWindow()
@@ -88,8 +95,8 @@ public class Utils {
                 @Override
                 public void onClick(View v) {
                     dialogNotice.dismiss();
-                    if(isClose)
-                    context.finish();
+                    if (isClose)
+                        context.finish();
                 }
             });
 
@@ -98,14 +105,26 @@ public class Utils {
         }
     }
 
-    public static   boolean isValidEmail(String email) {
+    public static void hiddenKeyboard(Context context) {
+//        View view = this.getCurrentFocus();
+//        if (view != null) {
+        View view = new View(context);
+//        }
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//        }
+    }
+
+    public static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
+
     public static int getScreenWidth(Activity activity) {
         Point size = new Point();
         activity.getWindowManager().getDefaultDisplay().getSize(size);
         return size.x;
     }
+
     public static void setStatusBarColor(LocateMyLotActivity context, int color) {
         // create our manager instance after the content view is set
         SystemBarTintManager tintManager = new SystemBarTintManager(context);
@@ -119,7 +138,7 @@ public class Utils {
 
     public static int getStatusBarHeight(Context context) {
         int result = 0;
-        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android" );
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             result = context.getResources().getDimensionPixelSize(resourceId);
         }
@@ -138,6 +157,81 @@ public class Utils {
         File parentDir = new File(Environment.getExternalStorageDirectory(), Config.PHOTO_SAVE_DIR);
         parentDir.mkdirs();
         return new File(parentDir, fileName);
+    }
+
+    public static String getFileName(String fileUrl) {
+        String name = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        return name;
+    }
+    public static String getFileExtend(String fileUrl) {
+        String name = fileUrl.substring(fileUrl.lastIndexOf(".") + 1);
+        return name;
+    }
+
+    public static void saveAvatar(final String imageUrl, final Context context) {
+        class DownloadAvatar extends AsyncTask<Void,Void,Boolean>{
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                super.onPostExecute(aBoolean);
+                if(aBoolean){
+                    Intent intent = new Intent(Global.UPDATE_INFO_BROADCAST_KEY);
+                    context.sendBroadcast(intent);
+                }
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return saveImage(imageUrl, "avatar.jpg");
+            }
+        }
+        new DownloadAvatar().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public static File getAvatar() {
+        String dir = Global.MY_DIR + "avatar.jpg";
+        File file = new File(dir);
+        return file;
+    }
+
+    public static void loadAvatar(Context context, ImageView ivAvatar, String avatarUrl){
+        File avatar = Utils.getAvatar();
+        if (!avatar.exists()) {
+            if(avatarUrl.isEmpty()) {
+                Picasso.with(context).load(R.drawable.default_avatar).into(ivAvatar);
+            }else{
+                Picasso.with(context).load(avatarUrl).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.default_avatar).into(ivAvatar);
+            }
+        } else {
+            Picasso.with(context).load(avatar).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.default_avatar).into(ivAvatar);
+        }
+    }
+
+
+    public static boolean saveImage(String imageUrl, String name) {
+        // Store image to default external storage directory
+//        String imageUrl = "http://neublick.com/demo/carlocation/cms/upload_files/map_" + name;
+        try {
+
+            URL url = new URL(imageUrl);
+            URLConnection conn = url.openConnection();
+            Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream());
+            File myDir = new File(Global.MY_DIR);//LocateMyLot
+            if (!myDir.exists()) {
+                myDir.mkdirs();
+            }
+            myDir = new File(myDir, name);
+//            if (!myDir.exists()) {
+
+                FileOutputStream out = new FileOutputStream(myDir);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+                out.close();
+//            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 
     // ===============================================================
@@ -222,12 +316,12 @@ public class Utils {
     }
 
     public static void loadFont(Context context, TextView textView, String fontName, int size) {
-        final Typeface typeFace = Typeface.createFromAsset(context.getAssets(), fontName + ".ttf" );
+        final Typeface typeFace = Typeface.createFromAsset(context.getAssets(), fontName + ".ttf");
         textView.setTypeface(typeFace, size);
     }
 
     public static void loadFont(AppCompatActivity context, TextView textView, String fontName) {
-        final Typeface typeFace = Typeface.createFromAsset(context.getAssets(), fontName + ".ttf" );
+        final Typeface typeFace = Typeface.createFromAsset(context.getAssets(), fontName + ".ttf");
         textView.setTypeface(typeFace);
     }
 
@@ -272,7 +366,7 @@ public class Utils {
     }
 
     //end
-    public static String getResponseFromUrl(String url,HashMap<String,String>data) {
+    public static String getResponseFromUrl(String url, HashMap<String, String> data) {
 //        String xml = "";
 //        try {
 //            DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -283,9 +377,10 @@ public class Utils {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        return performPostCall(url,data);
+        return performPostCall(url, data);
     }
-    public static String getResponseFromUrlNoEncode(String url,HashMap<String,String>data) {
+
+    public static String getResponseFromUrlNoEncode(String url, HashMap<String, String> data) {
 //        String xml = "";
 //        try {
 //            DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -296,14 +391,15 @@ public class Utils {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        return performPostCallNoEncode(url,data);
+        return performPostCallNoEncode(url, data);
     }
+
     public static String getResponseFromUrl(String url) {
-        return performPostCall(url,new HashMap<String, String>());
+        return performPostCall(url, new HashMap<String, String>());
     }
 
     private static String performPostCallNoEncode(String requestURL,
-                                          HashMap<String, String> postDataParams) {
+                                                  HashMap<String, String> postDataParams) {
 
         URL url;
         String response = "";
@@ -332,7 +428,7 @@ public class Utils {
                 String line;
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 while ((line = br.readLine()) != null) {
-                    response +="\n"+ line;
+                    response += "\n" + line;
                 }
             } else {
                 response = "";
@@ -345,7 +441,9 @@ public class Utils {
         }
         Log.e("RESPONSE_SERVER", response);
         return response.trim();
-    } private static String performPostCall(String requestURL,
+    }
+
+    private static String performPostCall(String requestURL,
                                           HashMap<String, String> postDataParams) {
 
         URL url;
@@ -375,7 +473,7 @@ public class Utils {
                 String line;
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 while ((line = br.readLine()) != null) {
-                    response +="\n"+ line;
+                    response += "\n" + line;
                 }
             } else {
                 response = "";
@@ -409,9 +507,10 @@ public class Utils {
             result.append("=");
             result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
         }
-        Log.e("RESPONSE_SERVER_DATA",result.toString());
+        Log.e("RESPONSE_SERVER_DATA", result.toString());
         return result.toString();
     }
+
     private static String getPostDataStringNotEncode(HashMap<String, String> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
@@ -425,7 +524,7 @@ public class Utils {
             result.append("=");
             result.append(entry.getValue());
         }
-        Log.e("RESPONSE_SERVER_DATA",result.toString());
+        Log.e("RESPONSE_SERVER_DATA", result.toString());
         return result.toString();
     }
 
@@ -455,7 +554,7 @@ public class Utils {
     public static Date convertStringToDate(String dateString) {
         Date date = new Date();
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd" ).parse(dateString);
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
         } catch (ParseException e) {
 
         }
@@ -465,7 +564,7 @@ public class Utils {
     public static Date convertStringToDateTime(String dateString) {
         Date date = new Date();
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss" ).parse(dateString);
+            date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateString);
         } catch (ParseException e) {
         }
         return date;
@@ -474,14 +573,14 @@ public class Utils {
     public static String convertDateTimeToString(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss" );
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdf.format(c.getTime());
         return time;
     }
 
     public static String getCurrentDateTime() {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss" );
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdf.format(c.getTime());
         return time;
     }
@@ -504,7 +603,7 @@ public class Utils {
 
     public static String getOfCurrentDateString() {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd" );
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String time = sdf.format(c.getTime());
         return time;
     }
@@ -515,8 +614,8 @@ public class Utils {
     }
 
     public static boolean inTime(String startTime, String endTime, Date currentTime) {
-        String start[] = startTime.split(":" );
-        String end[] = endTime.split(":" );
+        String start[] = startTime.split(":");
+        String end[] = endTime.split(":");
         int hourStart = Integer.valueOf(start[0]);
         int minuteStart = Integer.valueOf(start[1]);
         int hourEnd = Integer.valueOf(end[0]);
@@ -664,7 +763,7 @@ public class Utils {
 
     public static Date getEndTime(List<Holiday> holidays, List<ParkingRates> parkingRatesList, Date beginTime) {
         String result = convertDateTimeToString(beginTime);
-        String[] timeSplit = result.split(" " );
+        String[] timeSplit = result.split(" ");
         String endTime = timeSplit[1];
         boolean isHoliday = false;
         for (ParkingRates rates : parkingRatesList) {
@@ -684,8 +783,8 @@ public class Utils {
                 continue;
             if (inTime(rates.getBeginTime(), rates.getEndTime(), beginTime)) {
                 Date date = new Date();
-                int startHour = Integer.valueOf(rates.getBeginTime().split(":" )[0]);
-                int endHour = Integer.valueOf(rates.getEndTime().split(":" )[0]);
+                int startHour = Integer.valueOf(rates.getBeginTime().split(":")[0]);
+                int endHour = Integer.valueOf(rates.getEndTime().split(":")[0]);
                 date = convertStringToDateTime(timeSplit[0] + " " + rates.getEndTime());
                 if (startHour > endHour) {
                     int addTime = 24 - startHour + endHour;
@@ -726,10 +825,10 @@ public class Utils {
     }
 
     public static boolean betweenDate(Date beginTime, Date endTime, ParkingSurcharge parkingSurcharge) {
-        String[] time1 = convertDateTimeToString(beginTime).split(" " );
+        String[] time1 = convertDateTimeToString(beginTime).split(" ");
 
-        int startHour = Integer.valueOf(parkingSurcharge.getBeginTime().split(":" )[0]);
-        int endHour = Integer.valueOf(parkingSurcharge.getEndTime().split(":" )[0]);
+        int startHour = Integer.valueOf(parkingSurcharge.getBeginTime().split(":")[0]);
+        int endHour = Integer.valueOf(parkingSurcharge.getEndTime().split(":")[0]);
         Date bg = convertStringToDateTime(time1[0] + " " + parkingSurcharge.getBeginTime());
         ;
         Date end = convertStringToDateTime(time1[0] + " " + parkingSurcharge.getEndTime());
@@ -745,6 +844,7 @@ public class Utils {
         }
         return true;
     }
+
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
@@ -753,20 +853,20 @@ public class Utils {
 
         if (height > reqHeight || width > reqWidth) {
             if (width > height) {
-                inSampleSize = Math.round((float)height / (float)reqHeight);
+                inSampleSize = Math.round((float) height / (float) reqHeight);
             } else {
-                inSampleSize = Math.round((float)width / (float)reqWidth);
+                inSampleSize = Math.round((float) width / (float) reqWidth);
             }
         }
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromUri(Context context,Uri uri,
+    public static Bitmap decodeSampledBitmapFromUri(Context context, Uri uri,
                                                     int reqWidth, int reqHeight) {
 
         try {
             // First decode with inJustDecodeBounds=true to check dimensions
-            if(reqHeight>0&&reqWidth>0) {
+            if (reqHeight > 0 && reqWidth > 0) {
                 final BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
 
@@ -779,7 +879,7 @@ public class Utils {
                 // Decode bitmap with inSampleSize set
                 options.inJustDecodeBounds = false;
                 return BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri), null, options);
-            }else{
+            } else {
                 return BitmapFactory.decodeStream(context.getContentResolver().openInputStream(uri));
             }
         } catch (Exception e) {

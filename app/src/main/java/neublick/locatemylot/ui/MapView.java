@@ -34,7 +34,7 @@ import neublick.locatemylot.djikstra.Vertex;
 import neublick.locatemylot.util.BitmapUtil;
 import neublick.locatemylot.util.LightweightTimer;
 
-public class MapView extends ImageView {
+public class MapView extends android.support.v7.widget.AppCompatImageView {
 
     // real max_zoom = mInitialScale*MAX_ZOOM
     static float MIN_ZOOM = 0.25f;

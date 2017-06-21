@@ -37,11 +37,14 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -331,6 +334,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                             .show();
                 }
             }
+            break;
             case REQ_SIGN_IN_SIGN_UP:
                 if (resultCode == RESULT_OK) {
                     validData();
@@ -341,6 +345,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                         showSignInSignUp();
                     }
                 }
+                break;
         }
     }
 
@@ -379,7 +384,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                         etPhone.setError(getString(R.string.edit_text_null_value));
                     }
                 }else{
-                    Toast.makeText(LoadingScreenActivity.this, "Please turn on Internet connection!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoadingScreenActivity.this, R.string.error_no_connection, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -531,7 +536,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
 
             @Override
             protected void onPreExecute() {
-                mDialog = ProgressDialog.show(mContext, null,
+                mDialog = ProgressDialog.show(LoadingScreenActivity.this, null,
                         "Maps downloading..", true);
                 super.onPreExecute();
             }
@@ -540,7 +545,22 @@ public class LoadingScreenActivity extends AppCompatActivity {
             protected Boolean doInBackground(Void... params) {
                 boolean result = true;
                 if (mListImageName.size() > 0) {
+                    int i = 0;
+                    String[] links = {"https://www.amcharts.com/lib/3/maps/svg/afghanistanHigh.svg",
+                    "https://www.amcharts.com/lib/3/maps/svg/egyptHigh.svg",
+                    "https://www.amcharts.com/lib/3/maps/svg/estoniaHigh.svg",
+                    "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg"};
                     for (String imageName : mListImageName) {
+//                        saveImageSVG(links[i],imageName+".svg");
+//                        i++;
                         if (!saveImage(imageName))
                             result = false;
 //						break;
@@ -589,6 +609,44 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 return false;
             }
 
+        }
+
+        //Load image svg
+        private  boolean saveImageSVG(String linkImage,String name){
+            int count;
+            name = name.replace(".png","");
+            try {
+                URL url = new URL(linkImage);
+                URLConnection conection = url.openConnection();
+                conection.connect();
+
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(), 8192);
+
+                // Output stream to write file
+                OutputStream output = new FileOutputStream(Global.MY_DIR+name);
+
+                byte data[] = new byte[1024];
+
+
+                while ((count = input.read(data)) != -1) {
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+                return true;
+
+            } catch (Exception e) {
+                return false;
+            }
         }
 
 

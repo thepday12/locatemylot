@@ -14,7 +14,7 @@
             android:id="@+id/carpark_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="22dp"
+            android:textSize="18dp"
             android:gravity="center"
             android:textColor="#3498db"
             />
@@ -23,7 +23,7 @@
             android:id="@+id/car_floor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="22dp"
+            android:textSize="18dp"
             android:gravity="center"
             android:textColor="#363636"
             />
@@ -35,7 +35,7 @@
             android:gravity="center"
             android:textColor="#828282"
             android:text=""
-            android:textSize="12dp"
+            android:textSize="15dp"
             />
         <TextView
             android:id="@+id/lift_zone"
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#828282"
-            android:textSize="12dp"
+            android:textSize="15dp"
             android:text=""
             />
     </LinearLayout>

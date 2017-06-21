@@ -18,6 +18,8 @@
     <color name="itemTextColor">#000000</color>
     <color name="mainSeparator">#A9A9A9</color>
     <color name="gray">#A9A9A9</color>
+    <color name="darkGray">#5b5b5b</color>
+
     <color name="itemBackground">#34495e</color>
 
     <color name="colorWay">#3498db</color>

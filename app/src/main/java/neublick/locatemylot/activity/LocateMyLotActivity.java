@@ -20,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Typeface;
+import android.graphics.drawable.PictureDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -32,6 +33,7 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.Vibrator;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -40,7 +42,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -62,6 +63,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -76,7 +83,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -119,6 +125,7 @@ import neublick.locatemylot.util.ShareLocationUtil;
 import neublick.locatemylot.util.UserUtil;
 import neublick.locatemylot.util.Utils;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static neublick.locatemylot.util.ParkingSession.DEFAULT_CARPARK_NULL;
 
 public class LocateMyLotActivity extends BaseActivity {
@@ -138,7 +145,7 @@ public class LocateMyLotActivity extends BaseActivity {
     int mRootWidth;
     //Thep update 2016/08/12
     private TextView tvParkingRates;
-    private LinearLayout llParkingRates;
+    private LinearLayout llParkingRates, llInfo;
     private RelativeLayout rlSlideHelp, rlMap, rlHandlerRates, rlDetailRatesTop;
     private ImageButton btHandler, btHideHandler;
     private CircleImageView btCamera;
@@ -304,6 +311,15 @@ public class LocateMyLotActivity extends BaseActivity {
     private int currentIdLiftLobby = -1;
     private long lastTimeQuestion = -1;
     private long lastTimeCheckOut = -1;
+
+    private BroadcastReceiver broadCastReload = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateSignInMenu();
+            loadAvatar();
+        }
+    };
+
     private BroadcastReceiver myBroadcastReceiver1 = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -366,8 +382,10 @@ public class LocateMyLotActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+//
         registerReceiver(myBroadcastReceiver1, new IntentFilter(Global.DETECT_LIFT_LOBBY_BEACON));
+
+        registerReceiver(broadCastReload, new IntentFilter(Global.UPDATE_INFO_BROADCAST_KEY));
         mParkingSession = ParkingSession.getInstanceSharedPreferences(LocateMyLotActivity.this);
         Global.activityMain = this;
         if(dialogNotice==null){
@@ -1074,8 +1092,9 @@ public class LocateMyLotActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
-                    boolean isCheckIn = mParkingSession.isCheckIn();
+                    /*boolean isCheckIn = mParkingSession.isCheckIn();
                     boolean isNormalCheckIn = mParkingSession.isNormalCheckIn();
+
                     if (!isCheckIn) {
                         new AlertDialog.Builder(LocateMyLotActivity.this)
                                 .setTitle("Information")
@@ -1105,7 +1124,7 @@ public class LocateMyLotActivity extends BaseActivity {
 //                            mParkingSession.setWayMode(getMapView().wayMode);
 //                            getMapView().centerByCarObject();
                         }
-                    }
+                    }*/
                 }
             });
         }
@@ -1415,6 +1434,8 @@ public class LocateMyLotActivity extends BaseActivity {
 
         @Override
         public void onPostExecute(Bitmap result) {
+
+//
             pbLoadingMap.setVisibility(View.GONE);
             if (result != null) {
 
@@ -2172,9 +2193,19 @@ public class LocateMyLotActivity extends BaseActivity {
     public void updateSignInMenu(String user) {
         if (user.isEmpty())
             user = UserUtil.getUserId(LocateMyLotActivity.this);
-        btEdit = (ImageButton) ((NavigationView) findViewById(R.id.navigation)).getHeaderView(0).findViewById(R.id.btEdit);
+//        btEdit = (ImageButton) ((NavigationView) findViewById(R.id.navigation)).getHeaderView(0).findViewById(R.id.btEdit);
         etDisplayName = (EditText) ((NavigationView) findViewById(R.id.navigation)).getHeaderView(0).findViewById(R.id.etDisplayName);
         ivAvatar = (CircleImageView) ((NavigationView) findViewById(R.id.navigation)).getHeaderView(0).findViewById(R.id.ivAvatar);
+        llInfo = (LinearLayout) ((NavigationView) findViewById(R.id.navigation)).getHeaderView(0).findViewById(R.id.llInfo);
+        final String finalUser = user;
+        llInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!finalUser.isEmpty()) {
+                    startActivity(new Intent(LocateMyLotActivity.this, UpdateInfoActivity.class));
+                }
+            }
+        });
         etDisplayName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -2205,7 +2236,7 @@ public class LocateMyLotActivity extends BaseActivity {
             email = email.substring(0, 1).toUpperCase() + email.substring(1);
             etDisplayName.setVisibility(View.VISIBLE);
             ivAvatar.setVisibility(View.VISIBLE);
-            btEdit.setVisibility(View.VISIBLE);
+//            btEdit.setVisibility(View.VISIBLE);
 //            loadAvatar();
             etDisplayName.setText(fullName);
 //            ((NavigationView) findViewById(R.id.navigation)).getMenu().findItem(R.id.action_sign_out).setTitle(email);
@@ -2216,7 +2247,7 @@ public class LocateMyLotActivity extends BaseActivity {
             etDisplayName.setVisibility(View.GONE);
             Picasso.with(LocateMyLotActivity.this).load(R.drawable.default_avatar).into(ivAvatar);
             ivAvatar.setVisibility(View.GONE);
-            btEdit.setVisibility(View.GONE);
+//            btEdit.setVisibility(View.GONE);
             ((NavigationView) findViewById(R.id.navigation)).getMenu().findItem(R.id.action_sign_in).setVisible(true);
             ((NavigationView) findViewById(R.id.navigation)).getMenu().findItem(R.id.action_sign_out).setVisible(false);
         }
@@ -2897,23 +2928,26 @@ public class LocateMyLotActivity extends BaseActivity {
                     JSONArray jsonArray = new JSONArray(s);
                     if(jsonArray!=null){
                         int leng = jsonArray.length();
-                        for(int i=0;i<leng;i++){
+
                             try {
-                                JSONArray array = new JSONArray(jsonArray.getString(i));
-                                if (array.length() > 0) {
-                                    int id = array.getInt(0);
-                                    int lot = array.getInt(1);
                                     for(Carpark carpark:carParkAndLots){
-                                        if(carpark.id==id){
-                                            carpark.lot =lot;
+                                        for(int i=0;i<leng;i++) {
+                                            JSONArray array = new JSONArray(jsonArray.getString(i));
+                                            if (array.length() > 0) {
+                                                int id = array.getInt(0);
+                                                int lot = array.getInt(1);
+                                                if (carpark.id == id) {
+                                                    carpark.lot = lot;
+                                                }
+                                            }
                                         }
                                         tmp.add(carpark);
                                     }
-                                }
+
                             }catch (Exception e){
 
                             }
-                        }
+
                         carParkAndLots=tmp;
                         Intent intent = new Intent(BROADCAST_UPDATE_LOT);
                         sendBroadcast(intent);

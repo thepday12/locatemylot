@@ -54,6 +54,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import neublick.locatemylot.R;
+import neublick.locatemylot.activity.UpdateInfoActivity;
 import neublick.locatemylot.app.Config;
 import neublick.locatemylot.app.Global;
 import neublick.locatemylot.util.UserUtil;
@@ -363,10 +364,13 @@ public class DialogSignInSignUp extends FragmentActivity implements GoogleApiCli
                         String email = jsonObject.getString("email");
                         String fullName = jsonObject.getString("fullname");
                         String iuNumber = jsonObject.getString("iu");
-//                        String avatar = jsonObject.getString("avatar");
+                        String avatar = jsonObject.getString("avatar");
+                        if(avatar.isEmpty()){
+                            avatar = mAvatar;
+                        }
 //                        if(avatar!=null&&!avatar.isEmpty())
 //                            mAvatar = avatar;
-                            new RegisterToken(FirebaseInstanceId.getInstance().getToken(), userId, phone, username, iuNumber,email,fullName,mAvatar).execute();
+                            new RegisterToken(FirebaseInstanceId.getInstance().getToken(), userId, phone, username, iuNumber,email,fullName,avatar).execute();
 
 
                     } else {
@@ -431,6 +435,7 @@ public class DialogSignInSignUp extends FragmentActivity implements GoogleApiCli
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     if (jsonObject.getBoolean("state")) {
+                        Utils.saveAvatar(mAvatar,DialogSignInSignUp.this);
                         UserUtil.setDataLogin(DialogSignInSignUp.this, mUsername, "", mUserId, mPhone, mIUNumber, mEmail, mFullName,mAvatar);
                         if (Global.activityMain != null)
                             Global.activityMain.updateSignInMenu(mUsername);

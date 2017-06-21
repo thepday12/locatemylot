@@ -24,6 +24,7 @@ public class Global {
     public static final String WELCOME_CARPARK_ID_KEY ="WELCOME_CARPARK_ID";
     public static final String IS_WELCOME_BROADCAST_KEY="IS_WELCOME_BROADCAST";
     public static final String IS_CHECKOUT_BROADCAST_KEY="IS_CHECKOUT_BROADCAST";
+    public static final String UPDATE_INFO_BROADCAST_KEY="UPDATE_INFO_BROADCAST";
     public static final String VERSION_KEY="VERSION_LML";
     public static final String LAST_VERSION_KEY="LAST_VERSION_LML";
     public static final String LAST_DATA_VERSION_KEY="LAST_DATA_VERSION";

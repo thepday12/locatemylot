@@ -15,6 +15,7 @@
     <string name="anonymous_user">Anonymous</string>
     <string name="text_share_location">shared vehicle\'s location with you. Do you want to accept\?Accepting request will replace your own vehicle\'s location.</string>
     <string name="edit_text_null_value">This field is required</string>
+    <string name="error_no_connection">Please turn on Internet connection!</string>
     <string name="edit_text_email_invalid">This email address is invalid</string>
     <string name="enter_IU">Your IU number will approve after 3 working day</string>
     <string name="denied_read_contact_permission">Until you grant the permission, app cannot open your contacts</string>

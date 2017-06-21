@@ -391,6 +391,7 @@ public class DialogSignIn extends Activity {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     if (jsonObject.getBoolean("state")) {
+                        Utils.saveAvatar(mAvatar,DialogSignIn.this);
                         UserUtil.setDataLogin(DialogSignIn.this, mUsername, mPassword, mUserId, mPhone, mIUNumber, mEmail, mFullName, mAvatar);
                         if (Global.activityMain != null)
                             Global.activityMain.updateSignInMenu(mUsername);

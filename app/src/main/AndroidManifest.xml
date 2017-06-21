@@ -180,6 +180,8 @@
         </activity>
         <activity android:name=".dialog.DialogPolicy">
         </activity>
+        <activity android:name=".activity.UpdateInfoActivity"  >
+        </activity>
     </application>
 
 </manifest>
