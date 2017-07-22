@@ -17,14 +17,18 @@ public class Global {
     public static final String CHECK_IN_MY_BEACON="CHECK_IN_MY_BEACON";
     public static final String SHOW_DIALOG_START="SHOW_DIALOG_START";
     public static final String CARPARK_ID="CARPARK_ID";
+    public static final String SHOW_ADV_BROADCAST ="SHOW_ADV_BROADCAST";
     public static final String DETECT_LIFT_LOBBY_BEACON="DETECT_LIFT_LOBBY_BEACON";
     public static final String SIGN_IN_OR_SIGN_UP_SUCCESS="SIGN_IN_OR_SIGN_UP_SUCCESS";
     public static final String CHANGE_STATE_BLUETOOTH="CHANGE_STATE_BLUETOOTH";
     public static final String LIFT_LOBBY_BEACON_ID_KEY="LIFT_LOBBY_BEACON_ID";
     public static final String WELCOME_CARPARK_ID_KEY ="WELCOME_CARPARK_ID";
     public static final String IS_WELCOME_BROADCAST_KEY="IS_WELCOME_BROADCAST";
+    public static final String ADV_DATA="ADV_DATA";
+    public static final String IS_ADV_LOCAL="IS_ADV_LOCAL";
     public static final String IS_CHECKOUT_BROADCAST_KEY="IS_CHECKOUT_BROADCAST";
     public static final String UPDATE_INFO_BROADCAST_KEY="UPDATE_INFO_BROADCAST";
+    public static final String UPDATE_VIEW_ADV_KEY="UPDATE_VIEW_ADV_KEY";
     public static final String VERSION_KEY="VERSION_LML";
     public static final String LAST_VERSION_KEY="LAST_VERSION_LML";
     public static final String LAST_DATA_VERSION_KEY="LAST_DATA_VERSION";
@@ -62,6 +66,7 @@ public class Global {
     public static long entryTime=-1;
     public static int entryCarparkId=-1;
     public static final String MY_DIR= Environment.getExternalStorageDirectory() + "/locatemylot_data/";
+    public static final String MY_ADV_DIR= Environment.getExternalStorageDirectory() + "/locatemylot_data/adv/";
     public static float mRatioX=0;
     public static float mRatioY=0;
     public static long timeBeaconFound = 0;

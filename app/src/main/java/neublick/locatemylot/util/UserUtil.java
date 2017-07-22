@@ -160,7 +160,17 @@ public class UserUtil {
         user.edit().putString("iu_tmp", iuNumber).apply();
     }
 
-    public static void setDataLogin(Context context, String mUsername, String password, String mUserId, String mPhone, String mIUNumber, String email, String fullName,String avatar) {
+
+    public static boolean isPhoneVerification(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return user.getBoolean("otp_status", false);
+    }
+
+    public static void setPhoneVerification(Context context, Boolean status) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putBoolean("otp_status", status).apply();
+    }
+    public static void setDataLogin(Context context, String mUsername, String password, String mUserId, String mPhone, String mIUNumber, String email, String fullName,String avatar,boolean status) {
 
         final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         user.edit().putString("usr", mUsername)
@@ -172,6 +182,7 @@ public class UserUtil {
                 .putString("email", email)
                 .putString("full_name", fullName)
                 .putString("avt", avatar)
+                .putBoolean("otp_status", status)
                 .apply();
 
     }

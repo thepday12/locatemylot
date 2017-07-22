@@ -115,10 +115,10 @@ public class DialogSignIn extends Activity {
                     etEmail.requestFocus();
                 } else {
                     if (android.util.Patterns.EMAIL_ADDRESS.matcher(sEmail).matches()) {
-                        if(password.isEmpty()){
+                        if (password.isEmpty()) {
                             passwd.setError(getString(R.string.edit_text_null_value));
                             passwd.requestFocus();
-                        }else {
+                        } else {
                             new SignInTask().execute(sEmail, password);
                         }
                     } else {
@@ -267,14 +267,15 @@ public class DialogSignIn extends Activity {
                         String email = jsonObject.getString("email");
                         String fullName = jsonObject.getString("fullname");
                         String avatar = jsonObject.getString("avatar");
-                        new RegisterToken(FirebaseInstanceId.getInstance().getToken(), userId, phone, username, password, iuNumber, email, fullName, avatar).execute();
+                        boolean isVerification = jsonObject.getInt("otp_status") > 0;
+                        new RegisterToken(FirebaseInstanceId.getInstance().getToken(), userId, phone, username, password, iuNumber, email, fullName, avatar, isVerification).execute();
 
                     } else {
                         String errorCode = jsonObject.getString("error_code");
                         boolean isShowRecent = errorCode.equals("ACC_NOT_ACTIVATED");
-                        if(isShowRecent){
+                        if (isShowRecent) {
                             showDialogResend(jsonObject.getString("error_description"));
-                        }else {
+                        } else {
                             showDialogDetail(jsonObject.getString("error_description"));
                         }
 
@@ -352,6 +353,7 @@ public class DialogSignIn extends Activity {
         private String mEmail;
         private String mFullName;
         private String mAvatar;
+        private boolean mIsVerification;
 
         @Override
         protected void onPreExecute() {
@@ -360,7 +362,7 @@ public class DialogSignIn extends Activity {
             super.onPreExecute();
         }
 
-        public RegisterToken(String token, String userId, String phone, String username, String password, String iuNumber, String email, String fullName, String avatar) {
+        public RegisterToken(String token, String userId, String phone, String username, String password, String iuNumber, String email, String fullName, String avatar, boolean isVerification) {
             url = Config.CMS_URL + "/act.php";
             hashMap = new HashMap();
             hashMap.put("gid", token);
@@ -376,7 +378,7 @@ public class DialogSignIn extends Activity {
             mEmail = email;
             mFullName = fullName;
             mAvatar = avatar;
-
+            mIsVerification = isVerification;
         }
 
         @Override
@@ -391,8 +393,8 @@ public class DialogSignIn extends Activity {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     if (jsonObject.getBoolean("state")) {
-                        Utils.saveAvatar(mAvatar,DialogSignIn.this);
-                        UserUtil.setDataLogin(DialogSignIn.this, mUsername, mPassword, mUserId, mPhone, mIUNumber, mEmail, mFullName, mAvatar);
+                        Utils.saveAvatar(mAvatar, DialogSignIn.this);
+                        UserUtil.setDataLogin(DialogSignIn.this, mUsername, mPassword, mUserId, mPhone, mIUNumber, mEmail, mFullName, mAvatar, mIsVerification);
                         if (Global.activityMain != null)
                             Global.activityMain.updateSignInMenu(mUsername);
                         toastM("Sign in successfully");
@@ -450,7 +452,7 @@ public class DialogSignIn extends Activity {
                         Toast.makeText(DialogSignIn.this, "The system will send a temporary password to your email address", Toast.LENGTH_LONG).show();
                         dialogForgotPassword.dismiss();
                     } else {
-                            showDialogDetail(jsonObject.getString("error_description"));
+                        showDialogDetail(jsonObject.getString("error_description"));
 //                        Toast.makeText(DialogSignIn.this, jsonObject.getString("error_description"), Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
@@ -467,6 +469,7 @@ public class DialogSignIn extends Activity {
             Toast.makeText(DialogSignIn.this, getString(R.string.text_empty_json), Toast.LENGTH_SHORT).show();
         }
     }
+
     class ReSend extends AsyncTask<Void, Void, String> {
         private String mEmail;
 
@@ -517,9 +520,8 @@ public class DialogSignIn extends Activity {
     }
 
 
-
     private void showDialogDetail(String mErrorDescription) {
-        if(dialogNotice==null||(dialogNotice!=null&&!dialogNotice.isShowing())) {
+        if (dialogNotice == null || (dialogNotice != null && !dialogNotice.isShowing())) {
             dialogNotice = new Dialog(DialogSignIn.this);
             dialogNotice.setCanceledOnTouchOutside(true);
             dialogNotice.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -544,8 +546,9 @@ public class DialogSignIn extends Activity {
             dialogNotice.show();
         }
     }
+
     private void showDialogResend(String mErrorDescription) {
-        if(dialogResend==null||(dialogResend!=null&&!dialogResend.isShowing())) {
+        if (dialogResend == null || (dialogResend != null && !dialogResend.isShowing())) {
             dialogResend = new Dialog(DialogSignIn.this);
             dialogResend.setCanceledOnTouchOutside(true);
             dialogResend.requestWindowFeature(Window.FEATURE_NO_TITLE);

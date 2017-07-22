@@ -102,10 +102,10 @@ public class LoadingScreenActivity extends AppCompatActivity {
     };
 
     private String getUrlSyncData() {
-        if(parkingSession==null)
+        if (parkingSession == null)
             parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
-        float versionData =parkingSession.getFloat(Global.LAST_DATA_VERSION_KEY,0);
-        String url = Config.CMS_URL + "/getsynchdata.php?dataversion="+versionData;
+        float versionData = parkingSession.getFloat(Global.LAST_DATA_VERSION_KEY, 0);
+        String url = Config.CMS_URL + "/getsynchdata.php?dataversion=" + versionData;
         return url;
     }
 
@@ -122,7 +122,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
         dialogEnterPhone = new Dialog(LoadingScreenActivity.this);
 
         Global.activityLoading = this;
-        isEnableBluetooth=getIntent().getBooleanExtra(Global.IS_TURN_ON_BLUETOOTH,false);
+        isEnableBluetooth = getIntent().getBooleanExtra(Global.IS_TURN_ON_BLUETOOTH, false);
         parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
         parkingSession.edit().putFloat(Global.VERSION_KEY, 2.0f).putString(Global.TEXT_VERSION_KEY, getString(R.string.text_version)).apply();
 //        ImageView welcomeImage = (ImageView) findViewById(R.id.welcome_image);
@@ -137,9 +137,9 @@ public class LoadingScreenActivity extends AppCompatActivity {
 
     public void showSignInSignUp() {
         String id = UserUtil.getUserId(LoadingScreenActivity.this);
-        if(id.isEmpty()) {
+        if (id.isEmpty()) {
             Intent intent = new Intent(LoadingScreenActivity.this, DialogSignInSignUp.class);
-            startActivityForResult(intent,REQ_SIGN_IN_SIGN_UP);
+            startActivityForResult(intent, REQ_SIGN_IN_SIGN_UP);
         }
     }
 
@@ -152,7 +152,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 } catch (Exception e) {
                 }
             } else {
-               checkBluetooth();
+                checkBluetooth();
             }
         } else {
             if (oldData.isEmpty()) {
@@ -164,7 +164,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
     }
 
     private void checkBluetooth() {
-        if(isEnableBluetooth) {
+        if (isEnableBluetooth) {
             Handler $h = new Handler();
             $h.postDelayed(new Runnable() {
                 @Override
@@ -172,7 +172,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                     BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
                 }
             }, 1000);
-        }else {
+        } else {
             showDialogEnterIU();
         }
     }
@@ -180,7 +180,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
     public void showDialogNeedUpdate() {
         if (dialogNeedUpdate != null && dialogNeedUpdate.isShowing())
             return;
-        isWaitInternet=true;
+        isWaitInternet = true;
         dialogNeedUpdate = new Dialog(LoadingScreenActivity.this);
         dialogNeedUpdate.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogNeedUpdate.setContentView(R.layout.dialog_need_update);
@@ -211,11 +211,11 @@ public class LoadingScreenActivity extends AppCompatActivity {
         String uiNumber = UserUtil.getIUNumber(LoadingScreenActivity.this);
         String phone = UserUtil.getUserPhone(LoadingScreenActivity.this);
         String uiNumberTmp = UserUtil.getIUNumberTMP(LoadingScreenActivity.this);
-        if(!id.isEmpty()&&phone.isEmpty()){
+        if (!id.isEmpty() && phone.isEmpty()) {
             showDialogEnterPhone();
             return;
         }
-        if (!id.isEmpty()&&uiNumber.isEmpty() && uiNumberTmp.isEmpty()) {
+        if (!id.isEmpty() && uiNumber.isEmpty() && uiNumberTmp.isEmpty()) {
 //        if (uiNumber.isEmpty() && uiNumberTmp.isEmpty()) {
             if (dialog != null && dialog.isShowing())
                 return;
@@ -273,14 +273,13 @@ public class LoadingScreenActivity extends AppCompatActivity {
 //            });
             dialog.show();
         } else {
-            if(id.isEmpty()){
+            if (id.isEmpty()) {
                 showSignInSignUp();
-            }else {
+            } else {
                 startHomeActivity();
             }
         }
     }
-
 
 
     private void startHomeActivity() {
@@ -299,10 +298,10 @@ public class LoadingScreenActivity extends AppCompatActivity {
     protected void onDestroy() {
         try {
             View view = new View(LoadingScreenActivity.this);
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             unregisterReceiver(mBatInfoReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         super.onDestroy();
@@ -312,7 +311,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case  LocateMyLotActivity.REQUEST_BLUETOOTH: {
+            case LocateMyLotActivity.REQUEST_BLUETOOTH: {
                 if (resultCode == RESULT_OK) {
                     showDialogEnterIU();
                 } else if (resultCode == RESULT_CANCELED) {
@@ -338,10 +337,10 @@ public class LoadingScreenActivity extends AppCompatActivity {
             case REQ_SIGN_IN_SIGN_UP:
                 if (resultCode == RESULT_OK) {
                     validData();
-                }else{
-                    if(data.getBooleanExtra("IS_BACK",false)){
+                } else {
+                    if (data.getBooleanExtra("IS_BACK", false)) {
                         finish();
-                    }else {
+                    } else {
                         showSignInSignUp();
                     }
                 }
@@ -353,37 +352,37 @@ public class LoadingScreenActivity extends AppCompatActivity {
         String phone = UserUtil.getUserPhone(LoadingScreenActivity.this);
         if (phone.isEmpty() && !UserUtil.getUserId(LoadingScreenActivity.this).isEmpty()) {
             showDialogEnterPhone();
-        }else{
+        } else {
             startHomeActivity();
         }
     }
 
     public void showDialogEnterPhone() {
-        if(dialogEnterPhone.isShowing())
+        if (dialogEnterPhone.isShowing())
             return;
         dialogEnterPhone.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogEnterPhone.setContentView(R.layout.dialog_enter_phone);
         dialogEnterPhone.setCanceledOnTouchOutside(false);
-        TextView tvTitle= (TextView) dialogEnterPhone.findViewById(R.id.tvTitle);
-        TextView tvContent= (TextView) dialogEnterPhone.findViewById(R.id.tvContent);
+        TextView tvTitle = (TextView) dialogEnterPhone.findViewById(R.id.tvTitle);
+        TextView tvContent = (TextView) dialogEnterPhone.findViewById(R.id.tvContent);
         Button btOk = (Button) dialogEnterPhone.findViewById(R.id.btOk);
         Button btCancel = (Button) dialogEnterPhone.findViewById(R.id.btCancel);
 
-            btCancel.setVisibility(View.GONE);
+        btCancel.setVisibility(View.GONE);
 
         final EditText etPhone = (EditText) dialogEnterPhone.findViewById(R.id.etPhone);
         // if button is clicked, close the custom dialogEnterPhone
         btOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Utils.isInternetConnected(LoadingScreenActivity.this)) {
+                if (Utils.isInternetConnected(LoadingScreenActivity.this)) {
                     String phone = etPhone.getText().toString();
                     if (phone != null && !phone.isEmpty()) {
                         new UpdatePhone(phone, dialogEnterPhone).execute();
                     } else {
                         etPhone.setError(getString(R.string.edit_text_null_value));
                     }
-                }else{
+                } else {
                     Toast.makeText(LoadingScreenActivity.this, R.string.error_no_connection, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -404,7 +403,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
 //                    finish();
 //                    dialogEnterPhone.dismiss();
-                }else{
+                } else {
                     return false;
                 }
                 return true;
@@ -447,7 +446,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 le("CAN NOT UPDATE");
                 BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
                 return;
-            }else if(result.size()==1&&result.get(0).equals("[UPTODATE]")){
+            } else if (result.size() == 1 && result.get(0).equals("[UPTODATE]")) {
                 BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
                 return;
             }
@@ -470,8 +469,17 @@ public class LoadingScreenActivity extends AppCompatActivity {
 //                   CL_BEACONS (ID, NAME,MAJOR,MINOR X, Y, ZONE, FLOOR, CARPARK_ID, BEACON_TYPE)
 //                             values(1,3001,3001,1,169,236,'C3','B3','1',1)
 //                    near "X": syntax error (code 1): , while compiling: insert or replace into CL_BEACONS (ID, NAME,MAJOR,MINOR X, Y, ZONE, FLOOR, CARPARK_ID, BEACON_TYPE) values(1,3001,3001,,1,169,236,'C3','B3','1',1)
-                    Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_BEACON + "(ID, NAME,MAJOR,MINOR, X, Y, ZONE, FLOOR, CARPARK_ID, BEACON_TYPE) values" +
-                            "(" + ss[1] + ",'" + ss[2] + "'," + ss[9] + "," + ss[10] + "," + ss[3] + "," + ss[4] + ",'" + ss[5] + "','" + ss[6] + "'," + ss[7] + "," + ss[8] + ")");
+                    String isPromotion = "0";
+                    try {
+                        isPromotion = ss[11];
+                    } catch (Exception e) {
+
+                    }
+                    if (!isPromotion.equals("1")) {
+                        isPromotion = "0";
+                    }
+                    Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_BEACON + "(ID, NAME,MAJOR,MINOR, X, Y, ZONE, FLOOR, CARPARK_ID, BEACON_TYPE,IS_PROMOTION) values" +
+                            "(" + ss[1] + ",'" + ss[2] + "'," + ss[9] + "," + ss[10] + "," + ss[3] + "," + ss[4] + ",'" + ss[5] + "','" + ss[6] + "'," + ss[7] + "," + ss[8] + "," + isPromotion + ")");
                 } else if (ss[0].equals("C") && ss.length >= 7) {
                     if (ss.length >= 8)
                         Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_CARPARKS + "(ID, NAME,FLOORS,CP_TYPE,LAT,LON,RATES_INFO) values" +
@@ -511,10 +519,10 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 } else if (ss[0].equals("DATA-VER")) {
                     try {
                         parkingSession.edit().putFloat(Global.LAST_DATA_VERSION_KEY, Float.valueOf(ss[1])).apply();
-                    }catch (Exception e){
+                    } catch (Exception e) {
 
                     }
-                }else if (ss[0].equals("GPS-DST")) {
+                } else if (ss[0].equals("GPS-DST")) {
                     GPSHelper.setCarparkRange(LoadingScreenActivity.this, Integer.valueOf(ss[1]));
                 }
             }
@@ -547,9 +555,9 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 if (mListImageName.size() > 0) {
                     int i = 0;
                     String[] links = {"https://www.amcharts.com/lib/3/maps/svg/afghanistanHigh.svg",
-                    "https://www.amcharts.com/lib/3/maps/svg/egyptHigh.svg",
-                    "https://www.amcharts.com/lib/3/maps/svg/estoniaHigh.svg",
-                    "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/egyptHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/estoniaHigh.svg",
+                            "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
                             "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
                             "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
                             "https://www.amcharts.com/lib/3/maps/svg/moroccoHigh.svg",
@@ -612,9 +620,9 @@ public class LoadingScreenActivity extends AppCompatActivity {
         }
 
         //Load image svg
-        private  boolean saveImageSVG(String linkImage,String name){
+        private boolean saveImageSVG(String linkImage, String name) {
             int count;
-            name = name.replace(".png","");
+            name = name.replace(".png", "");
             try {
                 URL url = new URL(linkImage);
                 URLConnection conection = url.openConnection();
@@ -625,7 +633,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                 // Output stream to write file
-                OutputStream output = new FileOutputStream(Global.MY_DIR+name);
+                OutputStream output = new FileOutputStream(Global.MY_DIR + name);
 
                 byte data[] = new byte[1024];
 
@@ -822,22 +830,23 @@ public class LoadingScreenActivity extends AppCompatActivity {
         }
 
 
-
     }
+
     public class UpdatePhone extends AsyncTask<Void, Void, String> {
         private ProgressDialog mDialog;
         private Dialog mDialogEnterPhone;
         private HashMap hashMap;
         private String mPhone;
 
-        public  UpdatePhone(String phone,Dialog dialogEnterPhone){
-            mPhone=UserUtil.formatPhone(phone);
+        public UpdatePhone(String phone, Dialog dialogEnterPhone) {
+            mPhone = UserUtil.formatPhone(phone);
             hashMap = new HashMap();
             hashMap.put("act", "updateinfo");
             hashMap.put("p", mPhone);
             hashMap.put("i", UserUtil.getUserId(LoadingScreenActivity.this));
-            mDialogEnterPhone=dialogEnterPhone;
+            mDialogEnterPhone = dialogEnterPhone;
         }
+
         @Override
         protected void onPreExecute() {
             mDialog = ProgressDialog.show(LoadingScreenActivity.this, null,
@@ -854,21 +863,21 @@ public class LoadingScreenActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             mDialog.dismiss();
-            if(!s.isEmpty()){
+            if (!s.isEmpty()) {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
-                    if(jsonObject.getBoolean("state")){
-                        UserUtil.setUserPhone(LoadingScreenActivity.this,mPhone);
+                    if (jsonObject.getBoolean("state")) {
+                        UserUtil.setUserPhone(LoadingScreenActivity.this, mPhone);
                         mDialogEnterPhone.dismiss();
                         showDialogEnterIU();
-                    }else {
-                        Toast.makeText(LoadingScreenActivity.this,jsonObject.getString("error_description"), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(LoadingScreenActivity.this, jsonObject.getString("error_description"), Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
-                    Toast.makeText(LoadingScreenActivity.this,getString(R.string.text_empty_json), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoadingScreenActivity.this, getString(R.string.text_empty_json), Toast.LENGTH_SHORT).show();
                 }
-            }else{
-                Toast.makeText(LoadingScreenActivity.this,getString(R.string.text_empty_json), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(LoadingScreenActivity.this, getString(R.string.text_empty_json), Toast.LENGTH_SHORT).show();
             }
             super.onPostExecute(s);
         }

@@ -180,7 +180,19 @@
         </activity>
         <activity android:name=".dialog.DialogPolicy">
         </activity>
-        <activity android:name=".activity.UpdateInfoActivity"  >
+        <activity android:name=".activity.UpdateInfoActivity">
+        </activity>
+        <activity
+            android:name=".dialog.DialogPhoneCode"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.AppCompatDialogNotCloseOnTouchOutSide">
+        </activity>
+        <activity
+            android:name=".activity.ADVActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.AppCompatDialogNotCloseOnTouchOutSide">
+        </activity>
+        <activity android:name=".activity.ADVWebActivity" android:theme="@style/MyThemeWeb" >
         </activity>
     </application>
 

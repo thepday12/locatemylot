@@ -22,6 +22,7 @@ public class Database extends SQLiteOpenHelper {
     public static final String TABLE_CARPARKS = "CL_CARPARKS";
     public static final String TABLE_PROMOTION = "CL_PROMOTION";
     public static final String TABLE_HINT_SHARE_LOCATION = "CL_HINT_SHARE_LOCATION";
+    public static final String TABLE_ADV = "CL_ADV";
 
     public static void initialize(Context context) {
         if (null == INSTANCE) {
@@ -52,6 +53,7 @@ public class Database extends SQLiteOpenHelper {
                 "ZONE VARCHAR, " +
                 "FLOOR VARCHAR, " +
                 "CARPARK_ID INTEGER, " +
+                "IS_PROMOTION INTEGER DEFAULT 0, " +
                 //0: normal, 1: beacon welcome carpark, 2: thang máy (lift) 3: my beacon 4: check out
                 "BEACON_TYPE INTEGER DEFAULT 0)"
         );
@@ -139,6 +141,10 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS "+ TABLE_HINT_SHARE_LOCATION +"(" +
                 "ID TEXT PRIMARY KEY, " +
                 "COUNT INTEGER DEFAULT 1)"
+        );
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+ TABLE_ADV +"(" +
+                "ID TEXT PRIMARY KEY, " +
+                "IMAGE TEXT)"
         );
 
     }

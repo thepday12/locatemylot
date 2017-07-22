@@ -14,6 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.RingtoneManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,16 +22,20 @@ import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.LruCache;
-
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import neublick.locatemylot.R;
@@ -48,6 +53,13 @@ import neublick.locatemylot.model.ParkingHistory;
 import neublick.locatemylot.util.GPSHelper;
 import neublick.locatemylot.util.ParkingSession;
 
+import static neublick.locatemylot.activity.LocateMyLotActivity.ADV_VALUE;
+import static neublick.locatemylot.activity.LocateMyLotActivity.DATA_EXTRA_KEY;
+import static neublick.locatemylot.activity.LocateMyLotActivity.DATA_EXTRA_NOTIFICATION_KEY;
+import static neublick.locatemylot.activity.LocateMyLotActivity.NOTIFICATION_ADV_ID;
+import static neublick.locatemylot.activity.LocateMyLotActivity.NOTIFICATION_ID;
+import static neublick.locatemylot.activity.LocateMyLotActivity.PENDING_INTENT_ID;
+
 public class BackgroundService extends AbstractService {
 
     private static final Region ALL_ESTIMOTE_BEACONS_REGION = new Region("rid", null, null, null);
@@ -64,6 +76,10 @@ public class BackgroundService extends AbstractService {
     private static String lastCarParkListGPS = "";
     private static long lastTimeDetectGPS = 0;
     private static int lastCountDetectGPS = 0;
+    private boolean isGetAdv=false;
+    private Context mContext;
+    private static long lastTimeAdvShow = 0;
+
     // to cache Beacons data
     private LruCache<String, BeaconPoint> beaconCache = new LruCache<>(4 * 1024 * 1024);
 
@@ -92,13 +108,14 @@ public class BackgroundService extends AbstractService {
 			}
 		}
 		*/
-        mParkingSession = ParkingSession.getInstanceSharedPreferences(getApplicationContext());
+        mContext =getApplicationContext();
+        mParkingSession = ParkingSession.getInstanceSharedPreferences(mContext);
         handler = new Handler();
         registerReceiver(broadCastSuccessSignIn, new IntentFilter(Global.CHANGE_STATE_BLUETOOTH));
 
         addListenerLocation();
         if (beaconManager == null) {
-            beaconManager = new BeaconManager(getApplicationContext());
+            beaconManager = new BeaconManager(mContext);
             beaconManager.setBackgroundScanPeriod(300, 0);
             beaconManager.setForegroundScanPeriod(300, 0);
         }
@@ -115,11 +132,13 @@ public class BackgroundService extends AbstractService {
                 // luu lai thoi gian phat hien ra beacon co luc dung den
                 boolean isDetectMyBeacon = false;
                 ArrayList<BeaconPoint> beaconItems = new ArrayList<BeaconPoint>();
+                String beaconIdList = "";
                 for (int i = 0; i < found.size(); ++i) {
-//                    lw("found.get(i).getMajor" + found.get(i).getMajor());
+                     Log.e("MAJOR_DETECT", found.get(i).getMajor()+"_"+found.get(i).getMinor());
 
                     // lay ve beacon theo beacon_id cua no
-                    BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
+//                    BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
+                    BeaconPoint beaconItem = getBeaconById(1010, found.get(i).getMinor());
 
 //                    BeaconPoint beaconItem = getBeaconById(1012, 1);
 //                    BeaconPoint beaconItem = null;
@@ -137,6 +156,7 @@ public class BackgroundService extends AbstractService {
                             beaconItem.mRSSI = found.get(i).getRssi();
                             beaconItem.mDistance = distance;
                             beaconItems.add(beaconItem);
+                            beaconIdList+=beaconItem.mId+",";
 //                        if(beaconItem.mMajor==3001)
 //                            beaconItem.mBeaconType=4;
                             if (!isDetectMyBeacon && beaconItem.mBeaconType == 3) {
@@ -233,7 +253,7 @@ public class BackgroundService extends AbstractService {
                     }else{
                         String title = "Locate My Lot";
                         String text = "Would you like want to check out??";
-                        showNotification(getApplicationContext(), LocateMyLotActivity.CHECKOUT_VALUE, beaconCheckOut.mCarparkId, title, text);
+                        showNotification(mContext, LocateMyLotActivity.CHECKOUT_VALUE, beaconCheckOut.mCarparkId, title, text);
                     }
                 }
                 //end
@@ -287,7 +307,7 @@ public class BackgroundService extends AbstractService {
                         String cmp = beaconPoint.mX + ";" + beaconPoint.mY;
                         if (beaconPoint.mCarparkId== mParkingSession.getCarParkCheckIn()&&!currentLift.contains(cmp) || !currentLift.endsWith(";" + beaconPoint.mFloor)) {
                            long currentTime= System.currentTimeMillis();
-                            if((beaconPoint.mId==mParkingSession.getLastBeaconQuestionLift())&&currentTime-mParkingSession.getLastTimeQuestionLift()<3000000){
+                            if((beaconPoint.mId==mParkingSession.getLastBeaconQuestionLift())&&currentTime-mParkingSession.getLastTimeQuestionLift()<300000){
                                 //Neu cung  beacon id ma time question <3000000(5p)
                             }else {
                                 mParkingSession.setLastBeaconQuestionLift(beaconPoint.mId);
@@ -298,7 +318,7 @@ public class BackgroundService extends AbstractService {
                                     sendBroadcast(intent);
                                 } else {
                                     // chuyen locateMyLotActivity sang foreground
-                                    Intent resumeIntent = new Intent(getApplicationContext(), LocateMyLotActivity.class);
+                                    Intent resumeIntent = new Intent(mContext, LocateMyLotActivity.class);
                                     resumeIntent.putExtra(Global.IS_LIFT_LOBBY_EXTRA, true);
                                     resumeIntent.putExtra(Global.ID_LIFT_LOBBY_EXTRA, beaconItems.get(0).mId);
                                     resumeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -314,7 +334,7 @@ public class BackgroundService extends AbstractService {
                                         String dataSave = currentMapLiftLobby + ";" + beaconPoint.mX + ";" + beaconPoint.mY + ";" + zone + ";" + beaconPoint.mFloor ;
                                         mParkingSession.setLiftLobby(dataSave);
                                     }
-                                    showNotification(getApplicationContext(), LocateMyLotActivity.LIFT_LOBBY_VALUE, beaconItems.get(0).mId, title, text);
+                                    showNotification(mContext, LocateMyLotActivity.LIFT_LOBBY_VALUE, beaconItems.get(0).mId, title, text);
 
                                 }
                             }
@@ -340,6 +360,34 @@ public class BackgroundService extends AbstractService {
                 String fmtFloor = String.format("Floor %s", beaconItems.get(0).mFloor);
 
                 // (localX, localY) is the location based on local bitmap
+                if(!beaconIdList.isEmpty()) {
+                    beaconIdList = beaconIdList.substring(0,beaconIdList.length()-1);
+                }
+                //Hien promotion 21/07/2017
+                long currentTime = System.currentTimeMillis();
+
+                if(neublick.locatemylot.util.Utils.isInternetConnected(mContext) && !isGetAdv && currentTime-lastTimeAdvShow>300000 ){
+                    if (!beaconIdList.isEmpty()) {
+                        List<BeaconPoint> beaconPoints = CLBeacon.getBeaconsById(beaconIdList);
+                        beaconIdList = "";
+                        for (int i = 0; i < beaconPoints.size(); i++) {
+                            BeaconPoint beaconPoint = beaconPoints.get(i);
+                            if (beaconPoint.isPromotion) {
+                                beaconIdList += beaconPoint.mId + ",";
+                            }
+                        }
+                        beaconIdList = "1234";
+                        if (!beaconIdList.isEmpty()) {
+                            beaconIdList = beaconIdList.substring(0, beaconIdList.length() - 1);
+                            String beaconID =beaconIdList.split(",")[0];
+                            new GetADV(beaconID).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        }
+
+                    }
+                }
+                //ENd
+
+
                 bundle.putDouble("X", serverX);
                 bundle.putDouble("Y", serverY);
                 bundle.putString("ZONE", beaconItems.get(0).mZone);
@@ -371,10 +419,10 @@ public class BackgroundService extends AbstractService {
                     intent.putExtra(Global.CONFIRM_WELCOME, true);
                     sendBroadcast(intent);
                 } else {//hoac mo lai app va showDialog confirm (1 lan duy nhat)
-                    turnOnScreen(getBaseContext());
+                    turnOnScreen(mContext);
                     mParkingSession.setShowCheckInConfirm(true);
                     mParkingSession.setLastCarparkShowConfirm(beaconItems.get(0).mCarparkId);
-                    Intent resumeIntent = new Intent(getApplicationContext(), LocateMyLotActivity.class);
+                    Intent resumeIntent = new Intent(mContext, LocateMyLotActivity.class);
                     resumeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     resumeIntent.putExtra(Global.IS_WELCOME_EXTRA, true);
                     //Thep update 2016/08/16 - truyen Carpark_id check in
@@ -471,7 +519,7 @@ public class BackgroundService extends AbstractService {
                     List<Carpark> carparkValidList = new ArrayList<>();
                     for (Carpark carpark : carparks) {
 //                        Log.e("RESPONSE_SERVER_R", carpark.getRange(currentLat, currentLon) + "");
-                        if (carpark.getRange(currentLat, currentLon) <= GPSHelper.getIntCarparkRange(getBaseContext())) {
+                        if (carpark.getRange(currentLat, currentLon) <= GPSHelper.getIntCarparkRange(mContext)) {
                             carparkValidList.add(carpark);
                         }
                     }
@@ -529,7 +577,7 @@ public class BackgroundService extends AbstractService {
 //                                title = carparkValidList.get(0).name + " car park near you";
 //                            }
 
-                            GPSHelper.showNotificationDetectCarpark(getBaseContext(), data, title, carparkValidList.size());
+                            GPSHelper.showNotificationDetectCarpark(mContext, data, title, carparkValidList.size());
                             if (!LocateMyLotApp.locateMyLotActivityVisible) {
                                 if (isMapBluetooth) {
                                     title = "Turn on Bluetooth";
@@ -539,13 +587,13 @@ public class BackgroundService extends AbstractService {
                                     }
                                     text += " " + foundName.toUpperCase() + " work with Bluetooth";
 
-                                    GPSHelper.showNotificationTurnBluetooth(getBaseContext(), data, title, text);
+                                    GPSHelper.showNotificationTurnBluetooth(mContext, data, title, text);
                                 }
                             }
                         }
                     }
                 } else {
-                    GPSHelper.clearNotification(getBaseContext());
+                    GPSHelper.clearNotification(mContext);
                 }
             }
 
@@ -555,7 +603,7 @@ public class BackgroundService extends AbstractService {
 
             @Override
             public void onProviderEnabled(String provider) {
-                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -701,7 +749,7 @@ public class BackgroundService extends AbstractService {
             parkingSession.edit().putLong("FUTURE_FIRED", timeInMillis).apply();
 
             // it will fire on next THRESHOLD_SNOOZE_TIME minutes
-            neublick.locatemylot.util.Utils.schedule(getApplicationContext(), timeInMillis - Config.THRESHOLD_SNOOZE_TIME, true);
+            neublick.locatemylot.util.Utils.schedule(mContext, timeInMillis - Config.THRESHOLD_SNOOZE_TIME, true);
         } else if (msg.what == START_RETRIEVE_LOCATION_SHARED) {
 
         } else if (msg.what == LOCATE_MY_LOT_ACTIVITY_FOREGROUND) {
@@ -753,10 +801,10 @@ public class BackgroundService extends AbstractService {
         if (!LocateMyLotApp.locateMyLotActivityVisible) {
             String title = "Locate My Lot";
             String text = "Welcome to " + CLCarpark.getCarparkNameByCarparkId(welcomeBeacon.mCarparkId) + "! Remember turn on your Bluetooth and Check-in";
-            showNotification(getApplicationContext(), LocateMyLotActivity.WELLCOME_VALUE, welcomeBeacon.mCarparkId, title, text);
+            showNotification(mContext, LocateMyLotActivity.WELLCOME_VALUE, welcomeBeacon.mCarparkId, title, text);
             isWellCome = true;
             // chuyen locateMyLotActivity sang foreground
-            Intent resumeIntent = new Intent(getApplicationContext(), LocateMyLotActivity.class);
+            Intent resumeIntent = new Intent(mContext, LocateMyLotActivity.class);
             resumeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
             resumeIntent.putExtra(Global.IS_WELCOME_EXTRA, true);
             //Thep update 2016/08/16 - truyen Carpark_id check in
@@ -805,13 +853,13 @@ public class BackgroundService extends AbstractService {
                         .setAutoCancel(true);
 
         Intent resultIntent = new Intent(context, LocateMyLotActivity.class);
-        resultIntent.putExtra(LocateMyLotActivity.DATA_EXTRA_NOTIFICATION_KEY, data);
+        resultIntent.putExtra(DATA_EXTRA_NOTIFICATION_KEY, data);
         resultIntent.putExtra(LocateMyLotActivity.DATA_EXTRA_CARPARK_KEY, carpark);
         resultIntent.setAction(Intent.ACTION_MAIN);
         resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, LocateMyLotActivity.PENDING_INTENT_ID,
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, PENDING_INTENT_ID,
                 resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         mBuilder.setContentIntent(pendingIntent);
@@ -819,7 +867,7 @@ public class BackgroundService extends AbstractService {
                 (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
-        mNotificationManager.notify(LocateMyLotActivity.NOTIFICATION_ID, notification);
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
         //turn on screen
         turnOnScreen(context);
 //            PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MyCpuLock");
@@ -847,7 +895,7 @@ public class BackgroundService extends AbstractService {
 //            Log.e("MAJOR_DETECT", "EXIT");
             lostExitBeacon = true;
             // chuyen locateMyLotActivity sang foreground
-            Intent resumeIntent = new Intent(getApplicationContext(), LocateMyLotActivity.class);
+            Intent resumeIntent = new Intent(mContext, LocateMyLotActivity.class);
             resumeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
             resumeIntent.putExtra(Global.CHECK_IN_MY_BEACON, true);
 //            startActivity(resumeIntent);
@@ -879,5 +927,97 @@ public class BackgroundService extends AbstractService {
             return;
         }
         mLocationManager.removeUpdates(mLocationListener);
+    }
+
+    class GetADV extends AsyncTask<Void,Void,String>{
+        private String mBeaconId;
+
+        public GetADV(String beaconId){
+            mBeaconId = beaconId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            isGetAdv = true;
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+//  {"status":"true","error_description":"OK","adv_info":"You have new offer! Check it out!",
+// "adv_list":[{"adv_id":"1","adv_img":"adv1.jpg"},{"adv_id":"2","adv_img":"adv2.jpg"},{"adv_id":"3","adv_img":"adv3.jpg"}]}
+                if(jsonObject.getBoolean("status")){
+                    JSONArray jsonArray = jsonObject.getJSONArray("adv_list");
+                    if(jsonArray.length()>0){
+                        String advData =jsonArray.toString();
+                        lastTimeAdvShow = System.currentTimeMillis();
+                        sendBroadcastShowDialogADV(advData);
+                        showNotificationAdv(mContext,advData,jsonObject.getString("adv_info"));
+                    }
+                }
+            }catch (JSONException e){
+
+            }
+            isGetAdv = false;
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String link = Config.CMS_URL + "/act.php";
+            HashMap hashMap = new HashMap();
+            http://neublick.com/demo/carlocation/act.php?act=changepass&e=talentcat@gmail.com&o=123456&n=1212121
+            hashMap.put("act", "get_adv");
+            hashMap.put("beacon_id", mBeaconId);
+            return neublick.locatemylot.util.Utils.getResponseFromUrlNoEncode(link, hashMap);
+        }
+    }
+
+    private void showNotificationAdv(Context context, String data, String text) {
+//        if (!screenIsLocked())
+//            return;
+//        if (LocateMyLotApp.locateMyLotActivityVisible) {
+//            return;
+//        }
+        Notification.Builder mBuilder =
+                new Notification.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("LocateMyLot")
+                        .setContentText(text)
+                        .setAutoCancel(true);
+
+
+        Intent resultIntent = new Intent(context, LocateMyLotActivity.class);
+        resultIntent.putExtra(DATA_EXTRA_NOTIFICATION_KEY, ADV_VALUE);
+        resultIntent.putExtra(DATA_EXTRA_KEY, data);
+        resultIntent.setAction(Intent.ACTION_MAIN);
+        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, PENDING_INTENT_ID,
+                resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        mBuilder.setContentIntent(pendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        Notification notification = mBuilder.build();
+        notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
+        mNotificationManager.notify(NOTIFICATION_ADV_ID, notification);
+        //turn on screen
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyLock");
+        wl.acquire(10000);
+        neublick.locatemylot.util.Utils.effectNotificationDetectBeacon(context);
+//            PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MyCpuLock");
+//            wl_cpu.acquire(10000);
+
+    }
+
+    private void sendBroadcastShowDialogADV(String data) {
+        Intent intent = new Intent(Global.SHOW_ADV_BROADCAST);
+        intent.putExtra(Global.ADV_DATA, data);
+        sendBroadcast(intent);
     }
 }

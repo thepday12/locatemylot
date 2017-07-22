@@ -20,7 +20,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Typeface;
-import android.graphics.drawable.PictureDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -33,7 +32,6 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.Vibrator;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -63,12 +61,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -103,6 +95,7 @@ import neublick.locatemylot.database.CLParkingSurcharge;
 import neublick.locatemylot.dialog.DialogGetSharedLocation;
 import neublick.locatemylot.dialog.DialogSelectCarPark;
 import neublick.locatemylot.dialog.DialogUserLocation;
+import neublick.locatemylot.model.ADVObject;
 import neublick.locatemylot.model.BeaconPoint;
 import neublick.locatemylot.model.Carpark;
 import neublick.locatemylot.model.DetailCharge;
@@ -159,8 +152,8 @@ public class LocateMyLotActivity extends BaseActivity {
     private final int ANIMATION_DURATION = 280;
     private int currentPosition = 0;
     private long lastTimeSleep = 0;
-    private boolean isAnamationRun=false;
-    private boolean isUpdateLotRunning =false;
+    private boolean isAnamationRun = false;
+    private boolean isUpdateLotRunning = false;
     public static List<Carpark> carParkAndLots = new ArrayList<>();
     public static final String BROADCAST_UPDATE_LOT = "BROADCAST_UPDATE_LOT";
     private Dialog dialogNotice;
@@ -320,6 +313,16 @@ public class LocateMyLotActivity extends BaseActivity {
         }
     };
 
+    private BroadcastReceiver broadCastShowAdv = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+           showAdvDialog(intent.getStringExtra(Global.ADV_DATA));
+        }
+    };
+
+
+
     private BroadcastReceiver myBroadcastReceiver1 = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -386,13 +389,15 @@ public class LocateMyLotActivity extends BaseActivity {
         registerReceiver(myBroadcastReceiver1, new IntentFilter(Global.DETECT_LIFT_LOBBY_BEACON));
 
         registerReceiver(broadCastReload, new IntentFilter(Global.UPDATE_INFO_BROADCAST_KEY));
+        registerReceiver(broadCastShowAdv, new IntentFilter(Global.SHOW_ADV_BROADCAST));
         mParkingSession = ParkingSession.getInstanceSharedPreferences(LocateMyLotActivity.this);
         Global.activityMain = this;
-        if(dialogNotice==null){
+        if (dialogNotice == null) {
             dialogNotice = new Dialog(LocateMyLotActivity.this);
             dialogNotice.setCanceledOnTouchOutside(true);
             dialogNotice.requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
+
         //getAppHash();onCre
         GPSHelper.clearNotificationGPS(LocateMyLotActivity.this);
         bluetoothReceiver = new BluetoothBroadcastReceiver();
@@ -446,15 +451,15 @@ public class LocateMyLotActivity extends BaseActivity {
         btHandler.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction()==MotionEvent.ACTION_UP)
-                showDetailCarParkRates();
+                if (event.getAction() == MotionEvent.ACTION_UP)
+                    showDetailCarParkRates();
                 return true;
             }
         });
         rlDetailRatesTop.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction()==MotionEvent.ACTION_UP)
+                if (event.getAction() == MotionEvent.ACTION_UP)
                     hideDetailCarParkRates();
                 return true;
             }
@@ -511,6 +516,8 @@ public class LocateMyLotActivity extends BaseActivity {
                             //Thep update 2016/08/05
                             String floor = retrieveData.getString("FLOOR");
                             String zone = retrieveData.getString("ZONE");
+
+
                             int capark = retrieveData.getInt(DialogSelectCarPark.CARPARK_ID, DEFAULT_CARPARK_NULL);
                             currentCapark = capark;
                             currentFloor = floor;
@@ -599,15 +606,15 @@ public class LocateMyLotActivity extends BaseActivity {
         updateInfo();
 
         getExtra();
-        boolean isIUUpdate=getIntent().getBooleanExtra(Global.IS_UPDATE_IU_EXTRA,false);
-        if(isIUUpdate) {
+        boolean isIUUpdate = getIntent().getBooleanExtra(Global.IS_UPDATE_IU_EXTRA, false);
+        if (isIUUpdate) {
             String stringIUUpdate = getIntent().getStringExtra(Global.STRING_UPDATE_IU_EXTRA);
             if (stringIUUpdate == null || stringIUUpdate.isEmpty())
                 stringIUUpdate = getString(R.string.enter_IU);
 
 //            if(dialogNotice!=null&&!dialogNotice.isShowing())
 //                Utils.showMessage(dialogNotice, stringIUUpdate, "", LocateMyLotActivity.this, false);
-            if (dialogNotice!=null&&!dialogNotice.isShowing()) {
+            if (dialogNotice != null && !dialogNotice.isShowing()) {
 
                 dialogNotice.setContentView(R.layout.dialog_ok);
                 dialogNotice.getWindow()
@@ -633,13 +640,17 @@ public class LocateMyLotActivity extends BaseActivity {
                     }
                 });
                 dialogNotice.show();
-            }else{
+            } else {
                 showMySignInSignUp();
             }
-        }else{
+        } else {
             showMySignInSignUp();
         }
         carParkAndLots = CLCarpark.getAllEntries();
+
+        if (!UserUtil.getUserPhone(LocateMyLotActivity.this).isEmpty() && !UserUtil.isPhoneVerification(LocateMyLotActivity.this)) {
+            Utils.showDialogPhoneCodeValid(LocateMyLotActivity.this);
+        }
     }
 
     private void showMySignInSignUp() {
@@ -649,25 +660,25 @@ public class LocateMyLotActivity extends BaseActivity {
         String s = userId + email + fullName;
         if (s.isEmpty() && Utils.isInternetConnected(LocateMyLotActivity.this)) {
 //            showSignInSignUp();
-            startActivity(new Intent(LocateMyLotActivity.this,LoadingScreenActivity.class));
+            startActivity(new Intent(LocateMyLotActivity.this, LoadingScreenActivity.class));
 
         }
     }
 
     private void hideDetailCarParkRates() {
-        if(isAnamationRun)
+        if (isAnamationRun)
             return;
         TranslateAnimation animate = new TranslateAnimation(0, 0, 0, rlHandlerRates.getHeight());
         animate.setDuration(ANIMATION_DURATION);
         animate.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                isAnamationRun=true;
+                isAnamationRun = true;
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                isAnamationRun=false;
+                isAnamationRun = false;
                 btHandler.setVisibility(View.VISIBLE);
                 rlHandlerRates.setVisibility(View.INVISIBLE);
             }
@@ -681,7 +692,7 @@ public class LocateMyLotActivity extends BaseActivity {
     }
 
     private void showDetailCarParkRates() {
-        if(isAnamationRun)
+        if (isAnamationRun)
             return;
         int carpark = currentCapark;
         if (carpark == DEFAULT_CARPARK_NULL)
@@ -709,12 +720,12 @@ public class LocateMyLotActivity extends BaseActivity {
         animate.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                isAnamationRun=true;
+                isAnamationRun = true;
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                isAnamationRun=false;
+                isAnamationRun = false;
             }
 
             @Override
@@ -835,8 +846,8 @@ public class LocateMyLotActivity extends BaseActivity {
                     return;
                 }
 //                if (isStartNotification) {
-                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                    v.vibrate(1000);
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(1000);
 //                }
                 lastTimeCheckOut = System.currentTimeMillis();
                 alertDialogDetect = new AlertDialog.Builder(LocateMyLotActivity.this, R.style.AppTheme_AlertDialog)
@@ -876,7 +887,7 @@ public class LocateMyLotActivity extends BaseActivity {
         if (mWellComeDialog != null && mWellComeDialog.isShowing()) {
             return;
         }
-        if(!mParkingSession.isCheckIn())
+        if (!mParkingSession.isCheckIn())
             return;
         mWellComeDialog = new Dialog(LocateMyLotActivity.this);
         mWellComeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -909,9 +920,16 @@ public class LocateMyLotActivity extends BaseActivity {
         }
         try {
             mWellComeDialog.show();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
+    }
+
+    private void showAdvDialog(String data) {
+        Intent advIntent = new Intent(LocateMyLotActivity.this, ADVActivity.class);
+        advIntent.putExtra(Global.ADV_DATA, data);
+        advIntent.putExtra(Global.IS_ADV_LOCAL, false);
+        startActivity(advIntent);
     }
 
     private void showDialogCheckInWithBeaconExit() {
@@ -1204,7 +1222,7 @@ public class LocateMyLotActivity extends BaseActivity {
                         }
                     })
                     .show();
-        }catch (Exception e){
+        } catch (Exception e) {
 //            Toast.makeText(mContext, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -1325,7 +1343,7 @@ public class LocateMyLotActivity extends BaseActivity {
                         updateStatusCarParkType(0);
                         vpCarParkType.setVisibility(View.VISIBLE);
                         llCarParkType.setVisibility(View.VISIBLE);
-                        if(!isUpdateLotRunning){
+                        if (!isUpdateLotRunning) {
                             new UpdateLotOfCarPark().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         }
                     } else {
@@ -1441,7 +1459,6 @@ public class LocateMyLotActivity extends BaseActivity {
 
                 getMapView().setImageBitmap(result);
                 //Hien thi lai thiet lap
-
 
 
                 //hien thi ten map
@@ -1682,18 +1699,26 @@ public class LocateMyLotActivity extends BaseActivity {
         //GetExtra
         Intent intent = getIntent();
         int typeNotifyCation = intent.getIntExtra(DATA_EXTRA_NOTIFICATION_KEY, -1);
-        if (typeNotifyCation == WELLCOME_VALUE) {
-            showDialogIsWelcome(intent.getIntExtra(DATA_EXTRA_CARPARK_KEY, DEFAULT_CARPARK_NULL), false);
-        } else if (typeNotifyCation == LIFT_LOBBY_VALUE) {
-            BeaconPoint beaconPoint = CLBeacon.getBeaconById(intent.getIntExtra(DATA_EXTRA_CARPARK_KEY, DEFAULT_CARPARK_NULL));
-            setMap(beaconPoint.mCarparkId, beaconPoint.mFloor);
-            showDialogLiftLobby(beaconPoint, false);
-
-        } else if (typeNotifyCation == EXIT_CAR_VALUE) {
-            showDialogCheckInWithBeaconExit();
-        } else if (typeNotifyCation == CHECKOUT_VALUE) {
-            actionCheckOut(intent.getIntExtra(DATA_EXTRA_CARPARK_KEY, DEFAULT_CARPARK_NULL), false);
+        switch (typeNotifyCation){
+            case WELLCOME_VALUE:
+                showDialogIsWelcome(intent.getIntExtra(DATA_EXTRA_CARPARK_KEY, DEFAULT_CARPARK_NULL), false);
+                break;
+            case LIFT_LOBBY_VALUE:
+                BeaconPoint beaconPoint = CLBeacon.getBeaconById(intent.getIntExtra(DATA_EXTRA_CARPARK_KEY, DEFAULT_CARPARK_NULL));
+                setMap(beaconPoint.mCarparkId, beaconPoint.mFloor);
+                showDialogLiftLobby(beaconPoint, false);
+            break;
+            case EXIT_CAR_VALUE:
+                showDialogCheckInWithBeaconExit();
+            break;
+            case CHECKOUT_VALUE:
+                actionCheckOut(intent.getIntExtra(DATA_EXTRA_CARPARK_KEY, DEFAULT_CARPARK_NULL), false);
+            break;
+            case ADV_VALUE:
+                showAdvDialog(intent.getStringExtra(DATA_EXTRA_KEY));
+            break;
         }
+
         if (intent.getBooleanExtra(Global.IS_WELCOME_EXTRA, false)) {
             showDialogIsWelcome(intent.getIntExtra(Global.CAR_PARK_ID_WELCOME_EXTRA, DEFAULT_CARPARK_NULL), intent.getBooleanExtra(Global.CONFIRM_WELCOME, false));
         } else if (intent.getBooleanExtra(Global.IS_LIFT_LOBBY_EXTRA, false)) {
@@ -1701,7 +1726,7 @@ public class LocateMyLotActivity extends BaseActivity {
         } else if (intent.getBooleanExtra(Global.IS_CHECKOUT_EXTRA, false)) {
             actionCheckOut(intent.getIntExtra(Global.CAR_PARK_ID_CHECKOUT_EXTRA, DEFAULT_CARPARK_NULL), false);
         }
-        
+
         intent.removeExtra(Global.IS_WELCOME_EXTRA);
         intent.removeExtra(Global.CAR_PARK_ID_WELCOME_EXTRA);
         intent.removeExtra(DATA_EXTRA_CARPARK_KEY);
@@ -1793,7 +1818,7 @@ public class LocateMyLotActivity extends BaseActivity {
         }
         try {
             unregisterReceiver(bluetoothReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -1804,7 +1829,21 @@ public class LocateMyLotActivity extends BaseActivity {
     @Override
     public void onDestroy() {
 //        serviceManager.unbind();
-        unregisterReceiver(myBroadcastReceiver1);
+        try {
+            unregisterReceiver(myBroadcastReceiver1);
+        } catch (Exception e) {
+
+        }
+        try {
+            unregisterReceiver(broadCastReload);
+        } catch (Exception e) {
+
+        }
+        try {
+            unregisterReceiver(broadCastShowAdv);
+        } catch (Exception e) {
+
+        }
         super.onDestroy();
     }
 
@@ -1956,7 +1995,7 @@ public class LocateMyLotActivity extends BaseActivity {
         currentCapark = carparkId;
         checkInManual(-1, type);
         if (isNormalCheckIn) {
-            String name = carparkId+"_"+currentFloor+".png";
+            String name = carparkId + "_" + currentFloor + ".png";
             showMapHiddenSleepSlide(name);
 //            llTime.setVisibility(View.INVISIBLE);
             if (type != 0)
@@ -2201,7 +2240,7 @@ public class LocateMyLotActivity extends BaseActivity {
         llInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!finalUser.isEmpty()) {
+                if (!finalUser.isEmpty()) {
                     startActivity(new Intent(LocateMyLotActivity.this, UpdateInfoActivity.class));
                 }
             }
@@ -2219,9 +2258,9 @@ public class LocateMyLotActivity extends BaseActivity {
         String email = UserUtil.getUserEmail(LocateMyLotActivity.this);
         String fullName = UserUtil.getUserFullName(LocateMyLotActivity.this);
         String s = user + email + fullName;
-        if (UserUtil.isLoginSocial(LocateMyLotActivity.this)){
+        if (UserUtil.isLoginSocial(LocateMyLotActivity.this)) {
             ((NavigationView) findViewById(R.id.navigation)).getMenu().findItem(R.id.action_change_pass).setVisible(false);
-        }else{
+        } else {
             ((NavigationView) findViewById(R.id.navigation)).getMenu().findItem(R.id.action_change_pass).setVisible(true);
         }
         if (!s.isEmpty()) {
@@ -2761,12 +2800,15 @@ public class LocateMyLotActivity extends BaseActivity {
 
     public static final String DATA_EXTRA_NOTIFICATION_KEY = "DATA_EXTRA_NOTIFICATION";
     public static final String DATA_EXTRA_CARPARK_KEY = "DATA_EXTRA_CARPARK";
+    public static final String DATA_EXTRA_KEY = "DATA_EXTRA";
     public static final int PENDING_INTENT_ID = 20;
     public static final int NOTIFICATION_ID = 20;
+    public static final int NOTIFICATION_ADV_ID = 21;
     public static final int WELLCOME_VALUE = 1;
     public static final int LIFT_LOBBY_VALUE = 2;
     public static final int EXIT_CAR_VALUE = 3;
     public static final int CHECKOUT_VALUE = 4;
+    public static final int ADV_VALUE = 5;
 
     /***
      * @param context
@@ -2814,6 +2856,7 @@ public class LocateMyLotActivity extends BaseActivity {
 //            wl_cpu.acquire(10000);
 
     }
+
 
     private void clearNotification(Context context) {
         try {
@@ -2903,13 +2946,13 @@ public class LocateMyLotActivity extends BaseActivity {
         vpPaperSleep.setCurrentItem(currentPosition);
     }
 
-    class UpdateLotOfCarPark extends AsyncTask<Void,Void,String>{
+    class UpdateLotOfCarPark extends AsyncTask<Void, Void, String> {
         @Override
         protected void onPreExecute() {
-            if(carParkAndLots.size()<=0){
+            if (carParkAndLots.size() <= 0) {
                 carParkAndLots = CLCarpark.getAllEntries();
             }
-            isUpdateLotRunning=true;
+            isUpdateLotRunning = true;
             super.onPreExecute();
         }
 
@@ -2921,34 +2964,34 @@ public class LocateMyLotActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            isUpdateLotRunning=false;
-            if(carParkAndLots.size()>0&&s!=null&&!s.isEmpty()){
+            isUpdateLotRunning = false;
+            if (carParkAndLots.size() > 0 && s != null && !s.isEmpty()) {
                 List<Carpark> tmp = new ArrayList<>();
                 try {
                     JSONArray jsonArray = new JSONArray(s);
-                    if(jsonArray!=null){
+                    if (jsonArray != null) {
                         int leng = jsonArray.length();
 
-                            try {
-                                    for(Carpark carpark:carParkAndLots){
-                                        for(int i=0;i<leng;i++) {
-                                            JSONArray array = new JSONArray(jsonArray.getString(i));
-                                            if (array.length() > 0) {
-                                                int id = array.getInt(0);
-                                                int lot = array.getInt(1);
-                                                if (carpark.id == id) {
-                                                    carpark.lot = lot;
-                                                }
-                                            }
+                        try {
+                            for (Carpark carpark : carParkAndLots) {
+                                for (int i = 0; i < leng; i++) {
+                                    JSONArray array = new JSONArray(jsonArray.getString(i));
+                                    if (array.length() > 0) {
+                                        int id = array.getInt(0);
+                                        int lot = array.getInt(1);
+                                        if (carpark.id == id) {
+                                            carpark.lot = lot;
                                         }
-                                        tmp.add(carpark);
                                     }
-
-                            }catch (Exception e){
-
+                                }
+                                tmp.add(carpark);
                             }
 
-                        carParkAndLots=tmp;
+                        } catch (Exception e) {
+
+                        }
+
+                        carParkAndLots = tmp;
                         Intent intent = new Intent(BROADCAST_UPDATE_LOT);
                         sendBroadcast(intent);
                     }
@@ -2959,4 +3002,6 @@ public class LocateMyLotActivity extends BaseActivity {
             super.onPostExecute(s);
         }
     }
+
+
 }

@@ -365,12 +365,13 @@ public class DialogSignInSignUp extends FragmentActivity implements GoogleApiCli
                         String fullName = jsonObject.getString("fullname");
                         String iuNumber = jsonObject.getString("iu");
                         String avatar = jsonObject.getString("avatar");
+                        boolean isVerification = jsonObject.getInt("otp_status") >0;
                         if(avatar.isEmpty()){
                             avatar = mAvatar;
                         }
 //                        if(avatar!=null&&!avatar.isEmpty())
 //                            mAvatar = avatar;
-                            new RegisterToken(FirebaseInstanceId.getInstance().getToken(), userId, phone, username, iuNumber,email,fullName,avatar).execute();
+                            new RegisterToken(FirebaseInstanceId.getInstance().getToken(), userId, phone, username, iuNumber,email,fullName,avatar,isVerification).execute();
 
 
                     } else {
@@ -396,7 +397,7 @@ public class DialogSignInSignUp extends FragmentActivity implements GoogleApiCli
         private String mEmail;
         private String mFullName;
         private String mAvatar;
-
+        private boolean mIsVerification;
         @Override
         protected void onPreExecute() {
             mDialog = ProgressDialog.show(DialogSignInSignUp.this, null,
@@ -404,7 +405,7 @@ public class DialogSignInSignUp extends FragmentActivity implements GoogleApiCli
             super.onPreExecute();
         }
 
-        public RegisterToken(String token, String userId, String phone, String username, String iuNumber, String email, String fullName,String avatar) {
+        public RegisterToken(String token, String userId, String phone, String username, String iuNumber, String email, String fullName,String avatar, boolean isVerification) {
             url = Config.CMS_URL + "/act.php";
             hashMap = new HashMap();
             hashMap.put("gid", token);
@@ -419,7 +420,7 @@ public class DialogSignInSignUp extends FragmentActivity implements GoogleApiCli
             mFullName = fullName;
             mIUNumber = iuNumber;
             mAvatar = avatar;
-
+mIsVerification = isVerification;
 
         }
 
@@ -436,7 +437,7 @@ public class DialogSignInSignUp extends FragmentActivity implements GoogleApiCli
                     JSONObject jsonObject = new JSONObject(s);
                     if (jsonObject.getBoolean("state")) {
                         Utils.saveAvatar(mAvatar,DialogSignInSignUp.this);
-                        UserUtil.setDataLogin(DialogSignInSignUp.this, mUsername, "", mUserId, mPhone, mIUNumber, mEmail, mFullName,mAvatar);
+                        UserUtil.setDataLogin(DialogSignInSignUp.this, mUsername, "", mUserId, mPhone, mIUNumber, mEmail, mFullName,mAvatar,mIsVerification);
                         if (Global.activityMain != null)
                             Global.activityMain.updateSignInMenu(mUsername);
                         Toast.makeText(DialogSignInSignUp.this, "Sign in successfully", Toast.LENGTH_SHORT).show();

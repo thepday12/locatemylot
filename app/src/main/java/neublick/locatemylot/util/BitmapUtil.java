@@ -3,14 +3,18 @@ package neublick.locatemylot.util;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+
+import neublick.locatemylot.app.Global;
 
 // http://stackoverflow.com/questions/4349075/bitmapfactory-decoderesource-returns-a-mutable-bitmap-in-android-2-2-and-an-immu
 // make sure you have added uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -101,4 +105,63 @@ public class BitmapUtil {
 		}
 		return imgIn;
 	}
+
+	private static String getFileName(String url){
+        try {
+            String fileName = url.substring(url.lastIndexOf('/') + 1);
+            return fileName;
+        }catch (Exception e){
+            return  "";
+        }
+    }
+
+    public static boolean imageAdvExist(String fileName){
+        File myDir = new File(Global.MY_ADV_DIR);//LocateMyLot
+        myDir = new File(myDir, fileName);
+        if(myDir.exists()){
+            return true;
+        }
+        return false;
+    }
+    public static File imageAdvFile(String fileName){
+        File myDir = new File(Global.MY_ADV_DIR);//LocateMyLot
+        myDir = new File(myDir, fileName);
+        return myDir;
+    }
+
+    public static boolean imageAdvDelete(String fileName){
+        File myDir = new File(Global.MY_ADV_DIR);//LocateMyLot
+        myDir = new File(myDir, fileName);
+        return myDir.delete();
+    }
+    public static boolean saveImage(String imageUrl) {
+        String fileName = getFileName(imageUrl);
+        // Store image to default external storage directory
+        try {
+
+            URL url = new URL(imageUrl);
+            URLConnection conn = url.openConnection();
+            Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream());
+            File myDir = new File(Global.MY_ADV_DIR);//LocateMyLot
+            if (!myDir.exists()) {
+                myDir.mkdirs();
+            }
+            myDir = new File(myDir, fileName);
+            if (!myDir.exists()) {
+
+                FileOutputStream out = new FileOutputStream(myDir);
+                if(fileName.toLowerCase().endsWith(".png")) {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                }else{
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                }
+                out.flush();
+                out.close();
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
 }

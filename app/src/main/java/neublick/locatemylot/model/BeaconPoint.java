@@ -17,6 +17,7 @@ public class BeaconPoint {
 	public double mDistance;
 	public double mRSSI;
 	public int mBeaconType=0;
+	public boolean isPromotion=false;
 
 	/*
 	db.execSQL("CREATE TABLE IF NOT EXISTS CL_BEACONS(" +
@@ -32,7 +33,7 @@ public class BeaconPoint {
 
 
 
-	public BeaconPoint(int pId, String pName,int major, int minor, float pX, float pY, String pZone, String pFloor, int pCarparkId, int beaconType) {
+	public BeaconPoint(int pId, String pName,int major, int minor, float pX, float pY, String pZone, String pFloor, int pCarparkId, int beaconType,int isPromotion) {
         mId = pId;
         mName = pName;
         mMajor=major;
@@ -43,6 +44,7 @@ public class BeaconPoint {
         mFloor = pFloor;
         mCarparkId = pCarparkId;
 		mBeaconType=beaconType;
+        this.isPromotion = (isPromotion>0);
 	}
 
 	public BeaconPoint() {

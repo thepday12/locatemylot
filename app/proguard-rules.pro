@@ -89,3 +89,5 @@
 -keepclassmembers class **.R$* {
   public static <fields>;
 }
+-keep class com.wang.avi.** { *; }
+-keep class com.wang.avi.indicators.** { *; }

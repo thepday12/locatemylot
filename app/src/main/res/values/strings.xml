@@ -35,5 +35,8 @@
 
     <string name="title_tc">Terms of Use</string>
     <string name="title_policy">Privacy Policy</string>
+    <string name="verification_phone">Enter a verification code</string>
+    <string name="verification_phone_description">A text message with a verification code was just send to</string>
+    <string name="verification_phone_hint">Enter the 6-digit code</string>
 
 </resources>

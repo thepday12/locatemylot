@@ -30,7 +30,8 @@ public class CLBeacon {
             "ZONE",
             "FLOOR",
             "CARPARK_ID",
-            "BEACON_TYPE"
+            "BEACON_TYPE",
+            "IS_PROMOTION"
     };
 
     // delete all beacons
@@ -74,7 +75,8 @@ public class CLBeacon {
                         c.getString(6),
                         c.getString(7),
                         c.getInt(8),
-                        c.getInt(9)
+                        c.getInt(9),
+                        c.getInt(10)
                 );
                 android.util.Log.d(TAG, "getBeaconById: " + rs.toString() + "rs!=null");
                 return rs;
@@ -102,7 +104,8 @@ public class CLBeacon {
                         c.getString(6),
                         c.getString(7),
                         c.getInt(8),
-                        c.getInt(9)
+                        c.getInt(9),
+                        c.getInt(10)
                 );
                 android.util.Log.d(TAG, "getBeaconById: " + rs.toString() + "rs!=null");
                 return rs;
@@ -132,7 +135,35 @@ public class CLBeacon {
                         c.getString(6),
                         c.getString(7),
                         c.getInt(8),
-                        c.getInt(9)
+                        c.getInt(9),
+                        c.getInt(10)
+                );
+                listOfBeacons.add(beaconPoint);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return listOfBeacons;
+    }
+    public static List<BeaconPoint> getBeaconsById(String idList) {
+
+        String whereClause = "ID IN(?)";
+        String[] whereArgs = {String.valueOf(idList)};
+        Cursor c = Database.getDatabase().query(Database.TABLE_BEACON, columns, whereClause, whereArgs, null, null, null);
+        List<BeaconPoint> listOfBeacons = new ArrayList<BeaconPoint>();
+        if (c.moveToFirst()) {
+            do {
+                BeaconPoint beaconPoint = new BeaconPoint(
+                        c.getInt(0),
+                        c.getString(1),
+                        c.getInt(2),
+                        c.getInt(3),
+                        c.getFloat(4),
+                        c.getFloat(5),
+                        c.getString(6),
+                        c.getString(7),
+                        c.getInt(8),
+                        c.getInt(9),
+                        c.getInt(10)
                 );
                 listOfBeacons.add(beaconPoint);
             } while (c.moveToNext());
@@ -161,7 +192,8 @@ public class CLBeacon {
                         c.getString(6),
                         c.getString(7),
                         c.getInt(8),
-                        c.getInt(9)
+                        c.getInt(9),
+                        c.getInt(10)
                 );
                 android.util.Log.d(TAG, "BCZ:" + beaconPoint.toString());
             } while (c.moveToNext());
@@ -187,7 +219,8 @@ public class CLBeacon {
                         c.getString(6),
                         c.getString(7),
                         c.getInt(8),
-                        c.getInt(9)
+                        c.getInt(9),
+                        c.getInt(10)
                 );
                 result.add(beaconItem);
             } while (c.moveToNext());
@@ -218,7 +251,8 @@ public class CLBeacon {
                         c.getString(6),
                         c.getString(7),
                         c.getInt(8),
-                        c.getInt(9)
+                        c.getInt(9),
+                        c.getInt(10)
                 );
             } while (c.moveToNext());
         }
@@ -247,7 +281,8 @@ public class CLBeacon {
                         c.getString(6),
                         c.getString(7),
                         c.getInt(8),
-                        c.getInt(9)
+                        c.getInt(9),
+                        c.getInt(10)
                 );
                 welcomeBeaconsList.add(bpItem);
             } while (c.moveToNext());

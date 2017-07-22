@@ -9,15 +9,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -70,6 +74,7 @@ import neublick.locatemylot.database.CLCarpark;
 import neublick.locatemylot.database.CLHoliday;
 import neublick.locatemylot.database.CLParkingRates;
 import neublick.locatemylot.database.CLParkingSurcharge;
+import neublick.locatemylot.dialog.DialogPhoneCode;
 import neublick.locatemylot.model.Holiday;
 import neublick.locatemylot.model.ParkingRates;
 import neublick.locatemylot.model.ParkingSurcharge;
@@ -888,10 +893,42 @@ public class Utils {
 
     }
 
-
+    public static void showDialogPhoneCodeValid(Context context){
+        Intent i = new Intent(context, DialogPhoneCode.class);
+        context.startActivity(i);
+    }
     public static String formatRates(float sumRates) {
         String result = String.format("%.2f", sumRates);
         result = result.replace(",", ".");
         return result;
     }
+
+    public static float convertDpToPixel(float dp, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return px;
+    }
+
+    public static void effectNotificationDetectBeacon(Context context) {
+        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(500);
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(context, soundUri);
+        r.play();
+    }
+
+//    Animation fadeIn = new AlphaAnimation(0, 1);
+//fadeIn.setInterpolator(new DecelerateInterpolator()); //add this
+//fadeIn.setDuration(1000);
+//
+//    Animation fadeOut = new AlphaAnimation(1, 0);
+//fadeOut.setInterpolator(new AccelerateInterpolator()); //and this
+//fadeOut.setStartOffset(1000);
+//fadeOut.setDuration(1000);
+//
+//    AnimationSet animation = new AnimationSet(false); //change to false
+//animation.addAnimation(fadeIn);
+//animation.addAnimation(fadeOut);
+//this.setAnimation(animation);
 }

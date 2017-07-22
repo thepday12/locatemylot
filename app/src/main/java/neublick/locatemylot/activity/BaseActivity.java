@@ -168,6 +168,8 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
         mParkingSession = ParkingSession.getInstanceSharedPreferences(BaseActivity.this);
         mContentMain = (RelativeLayout) findViewById(R.id.content_main);
         dialogEnterPhone = new Dialog(BaseActivity.this);
+        dialogEnterPhone.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         dialogNotice = new Dialog(BaseActivity.this);
         dialogNotice.setCanceledOnTouchOutside(true);
         dialogNotice.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -299,8 +301,12 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                     break;
                     case R.id.action_promotion: {
                         closeDrawer();
-                        Intent intent = new Intent(BaseActivity.this, DialogPromotionList.class);
-                        startActivity(intent);
+//                        version cu
+//                        Intent intent = new Intent(BaseActivity.this, DialogPromotionList.class);
+//                        startActivity(intent);
+                        Intent advIntent = new Intent(BaseActivity.this, ADVActivity.class);
+                        advIntent.putExtra(Global.IS_ADV_LOCAL, true);
+                        startActivity(advIntent);
                     }
                     break;
                     case R.id.action_setting: {
@@ -469,7 +475,6 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
     public void showDialogEnterPhone(final Boolean isFirstTime) {
         if (dialogEnterPhone.isShowing())
             return;
-        dialogEnterPhone.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogEnterPhone.setContentView(R.layout.dialog_enter_phone);
         dialogEnterPhone.setCanceledOnTouchOutside(false);
         TextView tvTitle = (TextView) dialogEnterPhone.findViewById(R.id.tvTitle);
