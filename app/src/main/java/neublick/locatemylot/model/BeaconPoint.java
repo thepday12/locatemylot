@@ -16,6 +16,9 @@ public class BeaconPoint {
 
 	public double mDistance;
 	public double mRSSI;
+    /***
+     * //0: normal, 1: beacon welcome carpark, 2: thang máy (lift) 3: my beacon 4: check out 5:Thang bo
+     */
 	public int mBeaconType=0;
 	public boolean isPromotion=false;
 

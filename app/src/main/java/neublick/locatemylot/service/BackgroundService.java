@@ -22,6 +22,7 @@ import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.LruCache;
+
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
@@ -43,13 +44,16 @@ import neublick.locatemylot.activity.LocateMyLotActivity;
 import neublick.locatemylot.app.Config;
 import neublick.locatemylot.app.Global;
 import neublick.locatemylot.app.LocateMyLotApp;
+import neublick.locatemylot.database.CLADV;
 import neublick.locatemylot.database.CLBeacon;
 import neublick.locatemylot.database.CLCarpark;
 import neublick.locatemylot.database.CLParkingHistory;
 import neublick.locatemylot.dialog.DialogSelectCarPark;
+import neublick.locatemylot.model.ADVObject;
 import neublick.locatemylot.model.BeaconPoint;
 import neublick.locatemylot.model.Carpark;
 import neublick.locatemylot.model.ParkingHistory;
+import neublick.locatemylot.util.BitmapUtil;
 import neublick.locatemylot.util.GPSHelper;
 import neublick.locatemylot.util.ParkingSession;
 
@@ -134,11 +138,12 @@ public class BackgroundService extends AbstractService {
                 ArrayList<BeaconPoint> beaconItems = new ArrayList<BeaconPoint>();
                 String beaconIdList = "";
                 for (int i = 0; i < found.size(); ++i) {
-                     Log.e("MAJOR_DETECT", found.get(i).getMajor()+"_"+found.get(i).getMinor());
+//                     Log.e("MAJOR_DETECT", found.get(i).getMajor()+"_"+found.get(i).getMinor());
 
                     // lay ve beacon theo beacon_id cua no
-//                    BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
-                    BeaconPoint beaconItem = getBeaconById(1010, found.get(i).getMinor());
+                    BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
+//                    BeaconPoint beaconItem = getBeaconById(4010, 3);
+//                    BeaconPoint beaconItem = getBeaconById(5004, 3);
 
 //                    BeaconPoint beaconItem = getBeaconById(1012, 1);
 //                    BeaconPoint beaconItem = null;
@@ -150,7 +155,7 @@ public class BackgroundService extends AbstractService {
 //                    }
 
                     if (beaconItem != null) {
-//                        Log.e("MAJOR_DETECT", beaconItem.mMajor + "-" + beaconItem.mMajor+"-"+beaconItem.mBeaconType);
+//                        Log.e("MAJOR_DETECT", beaconItem.mMajor + "-" + beaconItem.mMajor+"-"+beaconItem.mZone);
                         double distance = Utils.computeAccuracy(found.get(i));
 //                        if(distance>=0) {//<0 la exception
                             beaconItem.mRSSI = found.get(i).getRssi();
@@ -297,7 +302,7 @@ public class BackgroundService extends AbstractService {
                 double serverY = ty / totalD;
 
                 //Thep - 2016/11/11 - Sau khi sort khoang cach tien hanh kiem tra
-                boolean isCheckIn = mParkingSession.isCheckIn();//lay sau khi qua wellcome
+                boolean isCheckIn = mParkingSession.isCheckIn();//lay sau khi qua welcome
                 if (beaconItems.get(0).mBeaconType == 2) {
                     int carparkId = beaconItems.get(0).mCarparkId;
                     if (isCheckIn) {
@@ -376,7 +381,7 @@ public class BackgroundService extends AbstractService {
                                 beaconIdList += beaconPoint.mId + ",";
                             }
                         }
-                        beaconIdList = "1234";
+//                        beaconIdList = "1234";
                         if (!beaconIdList.isEmpty()) {
                             beaconIdList = beaconIdList.substring(0, beaconIdList.length() - 1);
                             String beaconID =beaconIdList.split(",")[0];
@@ -509,6 +514,7 @@ public class BackgroundService extends AbstractService {
             public void onLocationChanged(Location location) {
                 currentLat = location.getLatitude();
                 currentLon = location.getLongitude();
+
 //                Log.e("RESPONSE_LOCATION",currentLat+"-"+currentLon);
 //                Toast.makeText(BackgroundService.this, currentLat+"-"+currentLon, Toast.LENGTH_SHORT).show();
                 boolean isCheckIn = parkingSession.getBoolean("CHECK_IN", false);
@@ -542,7 +548,7 @@ public class BackgroundService extends AbstractService {
                     Boolean aBoolean = false;
                     //Neu khac carpark thi thong bao
                     //Nguoc lai chi toi da 2 lan cho cung 1 vi tri gian cach la 20p/lan
-                    if (!lastCarParkListGPS.equals(currentCarParkListGPS)) {
+                    if (!lastCarParkListGPS.contains(currentCarParkListGPS)&&!lastCarParkListGPS.equals(currentCarParkListGPS)) {
                         aBoolean = true;
                         lastCountDetectGPS = 0;
                     } else if ((lastTimeDetectGPS > 0 && System.currentTimeMillis() - lastTimeDetectGPS > 1200000 && lastCountDetectGPS < 2)) {
@@ -578,7 +584,7 @@ public class BackgroundService extends AbstractService {
 //                            }
 
                             GPSHelper.showNotificationDetectCarpark(mContext, data, title, carparkValidList.size());
-                            if (!LocateMyLotApp.locateMyLotActivityVisible) {
+//                            if (!LocateMyLotApp.locateMyLotActivityVisible) {
                                 if (isMapBluetooth) {
                                     title = "Turn on Bluetooth";
                                     String text = "Map of carpark";
@@ -589,7 +595,7 @@ public class BackgroundService extends AbstractService {
 
                                     GPSHelper.showNotificationTurnBluetooth(mContext, data, title, text);
                                 }
-                            }
+//                            }
                         }
                     }
                 } else {
@@ -627,7 +633,14 @@ public class BackgroundService extends AbstractService {
         };
         mLocationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER, 500, 10, mLocationListener);
+        /* Test GPS
+        Location location = new Location("");
+        location.setLatitude(1.305748);
+        location.setLongitude(103.831635);
+        mLocationListener.onLocationChanged(location);*/
+
     }
+
 
     private void lostMyBeacon() {
         if (lastTimeDetectMyBeacon > 0) {
@@ -779,7 +792,7 @@ public class BackgroundService extends AbstractService {
 
     //	public static Dialog requestCheckInDialog;
     public static boolean lostExitBeacon = false;
-    public static boolean isWellCome = false;
+    public static boolean isWelcome = false;
     public static int carparkId = -100;
 
     // khoi phuc locateMyLotActivity ko quan tam den no da check in hay chua?
@@ -801,8 +814,8 @@ public class BackgroundService extends AbstractService {
         if (!LocateMyLotApp.locateMyLotActivityVisible) {
             String title = "Locate My Lot";
             String text = "Welcome to " + CLCarpark.getCarparkNameByCarparkId(welcomeBeacon.mCarparkId) + "! Remember turn on your Bluetooth and Check-in";
-            showNotification(mContext, LocateMyLotActivity.WELLCOME_VALUE, welcomeBeacon.mCarparkId, title, text);
-            isWellCome = true;
+            showNotification(mContext, LocateMyLotActivity.WELCOME_VALUE, welcomeBeacon.mCarparkId, title, text);
+            isWelcome = true;
             // chuyen locateMyLotActivity sang foreground
             Intent resumeIntent = new Intent(mContext, LocateMyLotActivity.class);
             resumeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -814,7 +827,7 @@ public class BackgroundService extends AbstractService {
             // khoi dong mainActivity voi dialog ask user co muon check-in kg?
 //            startActivity(resumeIntent);
         }
-        //setup wellcome
+        //setup welcome
         updateStateCheckIn(welcomeBeacon);
 
         //Ban broadcast thong bao
@@ -949,18 +962,12 @@ public class BackgroundService extends AbstractService {
 //  {"status":"true","error_description":"OK","adv_info":"You have new offer! Check it out!",
 // "adv_list":[{"adv_id":"1","adv_img":"adv1.jpg"},{"adv_id":"2","adv_img":"adv2.jpg"},{"adv_id":"3","adv_img":"adv3.jpg"}]}
                 if(jsonObject.getBoolean("status")){
-                    JSONArray jsonArray = jsonObject.getJSONArray("adv_list");
-                    if(jsonArray.length()>0){
-                        String advData =jsonArray.toString();
-                        lastTimeAdvShow = System.currentTimeMillis();
-                        sendBroadcastShowDialogADV(advData);
-                        showNotificationAdv(mContext,advData,jsonObject.getString("adv_info"));
-                    }
+                        new DownloadImageAdv(jsonObject).execute();
                 }
             }catch (JSONException e){
 
             }
-            isGetAdv = false;
+
             super.onPostExecute(s);
         }
 
@@ -1017,7 +1024,73 @@ public class BackgroundService extends AbstractService {
 
     private void sendBroadcastShowDialogADV(String data) {
         Intent intent = new Intent(Global.SHOW_ADV_BROADCAST);
-        intent.putExtra(Global.ADV_DATA, data);
+        intent.putExtra(Global.EXTRA_ADV_DATA, data);
         sendBroadcast(intent);
+    }
+
+
+
+    class DownloadImageAdv extends AsyncTask<Void, Void, Boolean> {
+
+        private  JSONObject jsonObject;
+        private  JSONArray jsonArray;
+        private  List<ADVObject> advDeletes;
+        public DownloadImageAdv(JSONObject jsonObject){
+            advDeletes = CLADV.getAllADVDelete();
+            this.jsonObject = jsonObject;
+            try {
+                this.jsonArray = jsonObject.getJSONArray("adv_list");
+            } catch (JSONException e) {
+                this.jsonArray = new JSONArray();
+            }
+
+        }
+        @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if(result) {
+                try {
+                    String advData = jsonArray.toString();
+                    lastTimeAdvShow = System.currentTimeMillis();
+                    sendBroadcastShowDialogADV(advData);
+                    showNotificationAdv(mContext, advData, jsonObject.getString("adv_info"));
+                } catch (JSONException e) {
+                }
+            }
+            isGetAdv = false;
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            if(jsonArray.length()>0) {
+                for (int i = 0; i < jsonArray.length(); i++) {
+                     try {
+                         ADVObject advObject = new ADVObject(jsonArray.getJSONObject(i));
+                         boolean isExist = false;
+                         for(ADVObject advDelete:advDeletes){
+                             if(advDelete.getId().equals(advObject.getId())){
+                                 isExist = true;
+                                 break;
+                             }
+                         }
+                         if(!isExist) {
+                             if (BitmapUtil.saveImage(advObject.getImageFullLink())) {
+                                 CLADV.addItem(advObject);
+                             }
+                         }
+                    } catch (JSONException e) {
+                    }
+                }
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 }

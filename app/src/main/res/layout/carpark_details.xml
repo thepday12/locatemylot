@@ -11,6 +11,16 @@
         android:gravity="center">
 
         <TextView
+            android:id="@+id/tvWebAtCarPark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:text="Web at carpark"
+            android:gravity="center"
+            android:textColor="#AA00FF"
+            />
+
+        <TextView
             android:id="@+id/carpark_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

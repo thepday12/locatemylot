@@ -11,7 +11,7 @@
         android:layout_height="@dimen/title_size"
         android:background="@drawable/dialog_title_bg"
         android:gravity="center"
-        android:text="Wellcome to"
+        android:text="Welcome to"
         android:textColor="@android:color/white"
         android:textSize="@dimen/title_text_size"
         />

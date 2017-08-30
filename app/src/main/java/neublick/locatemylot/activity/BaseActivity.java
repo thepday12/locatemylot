@@ -60,6 +60,7 @@ import neublick.locatemylot.R;
 import neublick.locatemylot.adapter.PaperCarParkTypeAdapter;
 import neublick.locatemylot.app.Config;
 import neublick.locatemylot.app.Global;
+import neublick.locatemylot.database.CLADV;
 import neublick.locatemylot.dialog.DialogFeedback;
 import neublick.locatemylot.dialog.DialogInformation;
 import neublick.locatemylot.dialog.DialogPromotionList;
@@ -251,6 +252,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         UserUtil.signOut(BaseActivity.this);
+//                                        CLADV.deleteAllADV();
                                         if (Global.activityMain != null)
                                             Global.activityMain.updateSignInMenu();
                                         //signOut social
@@ -306,6 +308,17 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
 //                        startActivity(intent);
                         Intent advIntent = new Intent(BaseActivity.this, ADVActivity.class);
                         advIntent.putExtra(Global.IS_ADV_LOCAL, true);
+                        advIntent.putExtra(Global.IS_PROMOTION, true);
+                        startActivity(advIntent);
+                    }
+                    case R.id.action_adv: {
+                        closeDrawer();
+//                        version cu
+//                        Intent intent = new Intent(BaseActivity.this, DialogPromotionList.class);
+//                        startActivity(intent);
+                        Intent advIntent = new Intent(BaseActivity.this, ADVActivity.class);
+                        advIntent.putExtra(Global.IS_ADV_LOCAL, true);
+                        advIntent.putExtra(Global.IS_PROMOTION, false);
                         startActivity(advIntent);
                     }
                     break;

@@ -39,7 +39,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
 
 	}
 
-	public Dialog getRequestBluetoothEnabledDialog(final Context context) {
+	public Dialog getRequestBluetoothEnabledDialog(final Context context, final boolean isShowing) {
 		if (requestBluetoothEnabledDialog == null) {
 //            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 //            int screenWidth = (int) (metrics.widthPixels * 0.85);
@@ -50,7 +50,7 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
 						.setPositiveButton("Enable bluetooth", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								requestBluetoothEnabled(context);
+								requestBluetoothEnabled(context,isShowing);
 							}
 						})
 						.setNegativeButton("Exit application", new DialogInterface.OnClickListener() {
@@ -65,7 +65,9 @@ public class BluetoothBroadcastReceiver extends BroadcastReceiver {
 		return requestBluetoothEnabledDialog;
 	}
 
-	public static void requestBluetoothEnabled(Context context) {
+	public static void requestBluetoothEnabled(Context context,boolean isShowing) {
+        if(isShowing)
+            return;
 		BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (bluetoothAdapter != null) {
 			Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);

@@ -23,14 +23,21 @@ public class CLADV {
 
     private static String[] columns = {
             "ID",
-            "IMAGE"
+            "IMAGE",
+            "STATUS"
     };
 
 
 
+    public static int deleteAllADV() {
+        return Database.getDatabase().delete(Database.TABLE_ADV, null, null);
+    }
+
     public static int deleteADV(String id) {
         final String[] args = {String.valueOf(id)};
-        return Database.getDatabase().delete(Database.TABLE_ADV, "ID=?", args);
+        ContentValues cv = new ContentValues();
+        cv.put(columns[2], 0);
+        return Database.getDatabase().update(Database.TABLE_ADV, cv, "ID=?",args);
     }
 
 
@@ -42,8 +49,24 @@ public class CLADV {
     }
 
     public static List<ADVObject> getAllADV() {
-
-        Cursor c = Database.getDatabase().query(Database.TABLE_ADV, columns, null, null, null, null, null);
+        String whereClause =  columns[2]+" > 0 ";
+        Cursor c = Database.getDatabase().query(Database.TABLE_ADV, columns, whereClause, null, null, null, null);
+        List<ADVObject> result = new ArrayList<ADVObject>();
+        if (c.moveToFirst()) {
+            do {
+                ADVObject advObject = new ADVObject(
+                        c.getString(0),
+                        c.getString(1)
+                );
+                result.add(advObject);
+            } while (c.moveToNext());
+        }
+        c.close();
+        return result;
+    }
+    public static List<ADVObject> getAllADVDelete() {
+        String whereClause =  columns[2]+" = 0";
+        Cursor c = Database.getDatabase().query(Database.TABLE_ADV, columns, whereClause, null, null, null, null);
         List<ADVObject> result = new ArrayList<ADVObject>();
         if (c.moveToFirst()) {
             do {

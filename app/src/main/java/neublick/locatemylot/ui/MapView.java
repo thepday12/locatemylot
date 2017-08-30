@@ -16,12 +16,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.ImageView;
 
 import java.util.Calendar;
 import java.util.List;
@@ -69,7 +67,9 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     //thep 2016/02/25
     public ObjectOverlap carObject = new ObjectOverlap();//end
     public ObjectOverlap liftLobbyObject = new ObjectOverlap();
-
+    //Tim duong 30/08/2017
+    public ObjectOverlap destinationObject = new ObjectOverlap();
+//End tim duong
     private Bitmap mOriginalBitmap;
 
     float initialScale;
@@ -390,6 +390,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             //thep 2016/02/25
             liftLobbyObject.applyMatrix(drawMatrix);//end
             userObject.applyMatrix(drawMatrix);
+            destinationObject.applyMatrix(drawMatrix);
             return true;
         }
     }
@@ -430,6 +431,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             //thep 2016/02/25
             liftLobbyObject.applyMatrix(drawMatrix);//end
             userObject.applyMatrix(drawMatrix);
+            destinationObject.applyMatrix(drawMatrix);
 
             return true;
         }
@@ -455,6 +457,115 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     void drawLine(Canvas drawer, float startX,float startY,float stopX,float stopY, Paint paint){
         drawer.drawLine(startX*Global.mRatioX,startY*Global.mRatioY,stopX*Global.mRatioX,stopY*Global.mRatioY,paint);
     }
+
+    public void wayDrawXY(float destinationX, float destinationY) {
+        System.gc();
+        if (mOriginalBitmap == null) {
+            return;
+        }
+        if (vertexList == null) {
+            le("vertexList=" + vertexList);
+            vertexList = CLPath.getAllVertexByCarparkId(Global.getCarparkID());
+/*
+			// tinh toan toa do (x, y) cua beacon tren local
+			for(int i = 0; i < vertexList.size(); ++i) {
+				Vertex vertexItem = vertexList.get(i);
+				vertexItem.x = vertexItem.x * Global.mRatioX;
+				vertexItem.y = vertexItem.y * Global.mRatioY;
+			}
+*/
+        }
+
+        // tinh toan khoang cach tu cac diem vertex toi userObject va carObject
+        for(int i = 0; i < vertexList.size(); ++i) {
+            Vertex vertexItem = vertexList.get(i);
+            vertexItem.calculateDistanceDestination(destinationX,destinationY);
+            vertexItem.calculateDistanceToUserObject(userObject);
+            vertexItem.minDistance = Double.POSITIVE_INFINITY;
+            vertexItem.previous = null;
+        }
+
+        VertexPair vertexPair = findVertexPair(vertexList);
+
+        Djikstra.computePaths(vertexPair.source);
+        List<Vertex> minWay = Djikstra.getShortestPathTo(vertexPair.target);
+
+        if (minWay.size() >= 2) {
+            System.gc();
+            // constructor save the reference Bitmap so we must create a copy bitmap
+            Bitmap mutableBitmap = Bitmap.createScaledBitmap(mOriginalBitmap, bitmapWidth, bitmapHeight, false);
+            Canvas drawer = new Canvas(mutableBitmap);
+
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            paint.setColor(context.getResources().getColor(R.color.colorWay));
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(10);
+            paint.setPathEffect(new DashPathEffect(new float[] {10, 5}, 0));
+
+            int sizeOfMinWay = minWay.size();
+            if (sizeOfMinWay == 0) {
+                // noi 2 diem userObject toi carObject
+                drawLine(drawer,
+                        userObject.location.originalX,
+                        userObject.location.originalY,
+                        destinationX,
+                        destinationY,
+                        paint
+                );
+            } else if (sizeOfMinWay == 1) {
+
+                Vertex midPoint = minWay.get(0);
+                drawLine(drawer, userObject.location.originalX, userObject.location.originalY, midPoint.x, midPoint.y, paint);
+                drawLine(drawer, midPoint.x, midPoint.y, destinationX ,destinationY, paint);
+
+            } else if (sizeOfMinWay == 2) {
+
+                Vertex vertex1 = minWay.get(0);
+                Vertex vertex2 = minWay.get(1);
+                PointF midPoint = new PointF((vertex1.x + vertex2.x)/2, (vertex1.y + vertex2.y)/2);
+                drawLine(drawer, userObject.location.originalX, userObject.location.originalY, midPoint.x, midPoint.y, paint);
+                drawLine(drawer,midPoint.x, midPoint.y, destinationX ,destinationY, paint);
+
+            } else if (sizeOfMinWay >= 3) {
+                // tao diem noi voi user-object
+                PointF start = new PointF(
+                        (minWay.get(0).x + minWay.get(1).x) / 2,
+                        (minWay.get(0).y + minWay.get(1).y) / 2
+                );
+
+                // tao diem noi voi car-object
+                PointF end = new PointF(
+                        (minWay.get(sizeOfMinWay - 2).x + minWay.get(sizeOfMinWay - 1).x) / 2,
+                        (minWay.get(sizeOfMinWay - 2).y + minWay.get(sizeOfMinWay - 1).y) / 2
+                );
+
+                // ve doan thang noi car-object voi trung diem cua vertex 0 va vertex 1 (goi la diem start)
+                drawLine(drawer, userObject.location.originalX, userObject.location.originalY, start.x, start.y, paint);
+
+                // ve doan thang noi diem start voi vertex 1
+                drawLine(drawer, start.x, start.y, minWay.get(1).x, minWay.get(1).y, paint);
+
+                for(int i = 1; i < sizeOfMinWay - 2; ++i) {
+                    Vertex fromVertex = minWay.get(i);
+                    Vertex toVertex = minWay.get(i + 1);
+                    drawLine(drawer, fromVertex.x, fromVertex.y, toVertex.x, toVertex.y, paint);
+                }
+
+                // ve doan thang noi vertex[size-2] toi diem end
+                drawLine(drawer, minWay.get(sizeOfMinWay - 2).x, minWay.get(sizeOfMinWay - 2).y, end.x, end.y, paint);
+
+                // ve doan thang noi diem end toi user-object
+                drawLine(drawer, end.x, end.y, destinationX ,destinationY, paint);
+            }
+            superSetImageBitmap(mutableBitmap); // save reference
+            setImageMatrix(drawMatrix);
+            invalidate();
+        }
+        le("the minWay: " + minWay.toString());
+    }
+
+
     public void wayDraw() {
         System.gc();
         if (mOriginalBitmap == null) {

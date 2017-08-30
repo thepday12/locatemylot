@@ -1,8 +1,9 @@
 package neublick.locatemylot.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,12 +12,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-
 import neublick.locatemylot.R;
 import neublick.locatemylot.app.Config;
 import neublick.locatemylot.app.Global;
 
-public class ADVWebActivity extends AppCompatActivity {
+public class WebDetailActivity extends AppCompatActivity {
     private WebView wvContent;
     private ProgressBar pbLoadWeb;
 
@@ -30,11 +30,15 @@ public class ADVWebActivity extends AppCompatActivity {
         wvContent.setWebViewClient(new myWebClient());
         wvContent.getSettings().setJavaScriptEnabled(true);
         wvContent.clearHistory();
-        //Fit content
         wvContent.getSettings().setLoadWithOverviewMode(true);
         wvContent.getSettings().setUseWideViewPort(true);
-        String id = getIntent().getStringExtra(Global.EXTRA_ADV_DATA);
-        String url = Config.CMS_URL + "/act.php?act=click_adv&adv_id="+id;
+        Intent intent = getIntent();
+        String url = intent.getStringExtra(Global.EXTRA_DATA);
+        String title = intent.getStringExtra(Global.EXTRA_TITLE);
+        if(title == null || title.isEmpty()){
+            title = "Promotion detail";
+        }
+        getSupportActionBar().setTitle(title);
         wvContent.loadUrl(url);
     }
 

@@ -96,9 +96,15 @@ public class Vertex implements Comparable<Vertex> {
 
 	// =====================================================================
 	public void calculateDistanceToCarObject(MapView.ObjectOverlap carObject) {
+        distanceToCarObject = Math.sqrt(
+                Math.pow(x - carObject.location.originalX, 2) +
+                        Math.pow(y - carObject.location.originalY, 2)
+        );
+    }
+	public void calculateDistanceDestination(float destinationX,float destinationY) {
 		distanceToCarObject = Math.sqrt(
-			Math.pow(x - carObject.location.originalX, 2) +
-			Math.pow(y - carObject.location.originalY, 2)
+			Math.pow(x - destinationX, 2) +
+			Math.pow(y - destinationY, 2)
 		);
 	}
 

@@ -78,6 +78,8 @@ public class LoadingScreenActivity extends AppCompatActivity {
     private String updateIUNumberString = "";
     private final int REQ_SIGN_IN_SIGN_UP = 1;
     private Dialog dialogEnterPhone;
+    private boolean isDownloadIng = false;
+    private boolean isShowing = false;
 
     private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
         @Override
@@ -127,11 +129,17 @@ public class LoadingScreenActivity extends AppCompatActivity {
         parkingSession.edit().putFloat(Global.VERSION_KEY, 2.0f).putString(Global.TEXT_VERSION_KEY, getString(R.string.text_version)).apply();
 //        ImageView welcomeImage = (ImageView) findViewById(R.id.welcome_image);
         dialog = new Dialog(LoadingScreenActivity.this);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            verifyPermissions(LoadingScreenActivity.this);
-        } else {
-            syncData();
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    verifyPermissions(LoadingScreenActivity.this);
+                } else {
+
+                    syncData();
+                }
+            }
+        }, 300);
 
     }
 
@@ -146,14 +154,15 @@ public class LoadingScreenActivity extends AppCompatActivity {
     private void syncData() {
         String oldData = getOldData();
         if (Utils.isInternetConnected(this)) {
-            if (oldData.isEmpty()) {
-                try {
-                    new AppUpdateTask(this).execute(getUrlSyncData()).get();
-                } catch (Exception e) {
-                }
-            } else {
-                checkBluetooth();
+//            if (oldData
+// .isEmpty()) {
+            try {
+                new AppUpdateTask(this).execute(getUrlSyncData()).get();
+            } catch (Exception e) {
             }
+//            } else {
+//                checkBluetooth();
+//            }
         } else {
             if (oldData.isEmpty()) {
                 showDialogNeedUpdate();
@@ -169,11 +178,18 @@ public class LoadingScreenActivity extends AppCompatActivity {
             $h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
+                    requestBluetooth();
                 }
             }, 1000);
         } else {
             showDialogEnterIU();
+        }
+    }
+
+    private void requestBluetooth() {
+        if (!isShowing) {
+            BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this, isShowing);
+            isShowing = true;
         }
     }
 
@@ -260,6 +276,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
             dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
+
                     startHomeActivity();
                 }
             });
@@ -276,6 +293,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
             if (id.isEmpty()) {
                 showSignInSignUp();
             } else {
+
                 startHomeActivity();
             }
         }
@@ -283,6 +301,8 @@ public class LoadingScreenActivity extends AppCompatActivity {
 
 
     private void startHomeActivity() {
+        if (isDownloadIng)
+            return;
         Intent mainActivityIntent = new Intent(LoadingScreenActivity.this, LocateMyLotActivity.class);
         mainActivityIntent.addFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP |
@@ -315,23 +335,26 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     showDialogEnterIU();
                 } else if (resultCode == RESULT_CANCELED) {
-                    new AlertDialog.Builder(this)
-                            .setTitle("LocateMyLot")
-                            .setMessage("Bluetooth is not enabled")
-                            .setNegativeButton("Enable bluetooth", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
-                                }
-                            })
-                            .setPositiveButton("Exit application", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-                            })
-                            .show();
+                    showDialogEnterIU();
+//                    new AlertDialog.Builder(this)
+//                            .setTitle("LocateMyLot")
+//                            .setMessage("Bluetooth is not enabled")
+//                            .setNegativeButton("Enable bluetooth", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
+//                                }
+//                            })
+//                            .setPositiveButton("Exit application", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    finish();
+//                                }
+//                            })
+//                            .show();
                 }
+                isShowing = false;
+
             }
             break;
             case REQ_SIGN_IN_SIGN_UP:
@@ -349,6 +372,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
     }
 
     private void validData() {
+
         String phone = UserUtil.getUserPhone(LoadingScreenActivity.this);
         if (phone.isEmpty() && !UserUtil.getUserId(LoadingScreenActivity.this).isEmpty()) {
             showDialogEnterPhone();
@@ -444,10 +468,10 @@ public class LoadingScreenActivity extends AppCompatActivity {
         public void onPostExecute(List<String> result) {
             if (result == null) {
                 le("CAN NOT UPDATE");
-                BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
+                requestBluetooth();
                 return;
             } else if (result.size() == 1 && result.get(0).equals("[UPTODATE]")) {
-                BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
+                requestBluetooth();
                 return;
             }
 
@@ -455,11 +479,11 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 if (parkingSession.getBoolean(Global.LAST_VERSION_COMPULSORY_KEY, false) && (parkingSession.getFloat(Global.VERSION_KEY, 0) < parkingSession.getFloat(Global.LAST_VERSION_KEY, 0))) {
                     showDialogUpdate();
                 } else {
-                    BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
+                    requestBluetooth();
                 }
                 return;
             }
-            setOldData(data);
+
             clearDataSQLite();
             List<String> listImageName = new ArrayList<>();
             boolean isLowVersion = false;
@@ -482,8 +506,13 @@ public class LoadingScreenActivity extends AppCompatActivity {
                             "(" + ss[1] + ",'" + ss[2] + "'," + ss[9] + "," + ss[10] + "," + ss[3] + "," + ss[4] + ",'" + ss[5] + "','" + ss[6] + "'," + ss[7] + "," + ss[8] + "," + isPromotion + ")");
                 } else if (ss[0].equals("C") && ss.length >= 7) {
                     if (ss.length >= 8)
-                        Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_CARPARKS + "(ID, NAME,FLOORS,CP_TYPE,LAT,LON,RATES_INFO) values" +
-                                "(" + ss[1] + ",'" + ss[2] + "','" + ss[3] + "'," + ss[4] + "," + ss[5] + "," + ss[6] + ",'" + ss[7] + "')");
+                        if (ss.length > 10) {
+                                Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_CARPARKS + "(ID, NAME,FLOORS,CP_TYPE,LAT,LON,RATES_INFO,WEB_LINK,WEB_NAME) values" +
+                                        "(" + ss[1] + ",'" + ss[2] + "','" + ss[3] + "'," + ss[4] + "," + ss[5] + "," + ss[6] + ",'" + ss[7] + "','" + ss[10] + "','" + ss[11] + "')");
+                        } else {
+                            Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_CARPARKS + "(ID, NAME,FLOORS,CP_TYPE,LAT,LON,RATES_INFO) values" +
+                                    "(" + ss[1] + ",'" + ss[2] + "','" + ss[3] + "'," + ss[4] + "," + ss[5] + "," + ss[6] + ",'" + ss[7] + "')");
+                        }
                     else
                         Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_CARPARKS + "(ID, NAME,FLOORS,CP_TYPE,LAT,LON,RATES_INFO) values" +
                                 "(" + ss[1] + ",'" + ss[2] + "','" + ss[3] + "'," + ss[4] + "," + ss[5] + "," + ss[6] + ",'')");
@@ -527,7 +556,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 }
             }
             new DownloadImage(listImageName, isLowVersion).executeOnExecutor(THREAD_POOL_EXECUTOR);
-
+            setOldData(data);
 
         }
 
@@ -546,6 +575,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
             protected void onPreExecute() {
                 mDialog = ProgressDialog.show(LoadingScreenActivity.this, null,
                         "Maps downloading..", true);
+                isDownloadIng = true;
                 super.onPreExecute();
             }
 
@@ -579,15 +609,19 @@ public class LoadingScreenActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                mDialog.dismiss();
+                if (mDialog != null) {
+                    mDialog.dismiss();
+                }
                 if (!aBoolean) {
                     Toast.makeText(mContext, "Can't download maps", Toast.LENGTH_SHORT).show();
                 }
                 if (mIsCompulsory) {
                     showDialogUpdate();
                 } else {
-                    BluetoothBroadcastReceiver.requestBluetoothEnabled(LoadingScreenActivity.this);
+                    requestBluetooth();
                 }
+                isDownloadIng = false;
+                startHomeActivity();
                 super.onPostExecute(aBoolean);
             }
         }

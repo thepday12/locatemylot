@@ -10,13 +10,14 @@
     android:background="@color/blue">
 
     <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="18dp"
         android:textStyle="bold"
-        android:text="Advertising"/>
+        android:text="Latest Ads"/>
     <ImageButton
         android:id="@+id/btClose"
         android:layout_alignParentRight="true"
@@ -24,6 +25,7 @@
         android:layout_height="36dp"
         android:background="@null"
         android:src="@drawable/ic_clear_white_24dp"/>
+
     <RelativeLayout
         android:id="@+id/controlsRelativeLayout"
         android:layout_width="fill_parent"

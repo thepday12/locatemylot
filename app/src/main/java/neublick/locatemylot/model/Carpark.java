@@ -6,6 +6,8 @@ public class Carpark {
     public int id=0;
     public String name="";
     public String floor="";
+    public String webName="";
+    public String webLink="";
     public String ratesInfo="";
     public int cpType;
     public double lat;

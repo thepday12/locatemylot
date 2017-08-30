@@ -194,6 +194,8 @@
         </activity>
         <activity android:name=".activity.ADVWebActivity" android:theme="@style/MyThemeWeb" >
         </activity>
+        <activity android:name=".activity.WebDetailActivity" android:theme="@style/MyThemeWeb" android:launchMode="singleTask" >
+        </activity>
     </application>
 
 </manifest>

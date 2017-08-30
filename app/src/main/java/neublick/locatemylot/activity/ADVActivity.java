@@ -37,6 +37,7 @@ public class ADVActivity extends AppCompatActivity {
     private ADVAdapter mPaperAdapter;
     private RelativeLayout rlMain;
     private LinearLayout dotsLayout;
+    private TextView tvTitle;
     private TextView[] dots;
     private int activeDotColor;
     private int inactiveDocsColor;
@@ -65,6 +66,7 @@ public class ADVActivity extends AppCompatActivity {
 
         rlMain = (RelativeLayout) findViewById(R.id.rlMain);
         vpContent = (ViewPager) findViewById(R.id.vpHomePaper);
+        tvTitle = (TextView) findViewById(R.id.tvTitle);
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 //             int color = Color.parseColor("#3498db");
@@ -100,18 +102,24 @@ public class ADVActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        Intent intent = getIntent();
+        if(intent.getBooleanExtra(Global.IS_PROMOTION,false)){
+            tvTitle.setText("Promotions");
+        }else{
+            tvTitle.setText("Latest Ads");
+        }
+
         try {
             List<ADVObject> advObjects = new ArrayList<>();
 
-            if(isAdvLocal) {
+//            if(isAdvLocal) {
                 advObjects = CLADV.getAllADV();
-            }else{
-                Intent intent = getIntent();
-                JSONArray jsonArray = new JSONArray(intent.getStringExtra(Global.ADV_DATA));
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    advObjects.add(new ADVObject(jsonArray.getJSONObject(i)));
-                }
-            }
+//            }else{
+//                JSONArray jsonArray = new JSONArray(intent.getStringExtra(Global.EXTRA_ADV_DATA));
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    advObjects.add(new ADVObject(jsonArray.getJSONObject(i)));
+//                }
+//            }
             numberOfSlides = advObjects.size();
             if(numberOfSlides>0){
                 mPaperAdapter = new ADVAdapter(getSupportFragmentManager(),ADVActivity.this,advObjects,isAdvLocal);
@@ -145,7 +153,7 @@ public class ADVActivity extends AppCompatActivity {
                 Toast.makeText(this, "No ads", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
 
         }
     }

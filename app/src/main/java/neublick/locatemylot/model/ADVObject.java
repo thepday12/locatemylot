@@ -3,6 +3,8 @@ package neublick.locatemylot.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import neublick.locatemylot.app.Config;
+
 /**
  * Created by theptokim on 7/21/17.
  */
@@ -42,6 +44,10 @@ public class ADVObject {
 
     public String getImage() {
         return image;
+    }
+
+    public String getImageFullLink() {
+        return Config.CMS_URL + "/cms/upload_files/" +image;
     }
 
     public void setImage(String image) {

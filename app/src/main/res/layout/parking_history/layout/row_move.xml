@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ivSleep"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    android:padding="4dp"
+    >
+
+    <TextView
+        android:id="@+id/tvMove"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textSize="14dp"/>
+</RelativeLayout>
+

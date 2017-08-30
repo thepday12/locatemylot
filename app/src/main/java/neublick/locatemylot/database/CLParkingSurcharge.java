@@ -27,7 +27,7 @@ public class CLParkingSurcharge {
 			"DAY_TYPE",
 			"BEGIN_TIME",
 			"END_TIME",
-			"SURCHARGE," +
+			"SURCHARGE",
 			"STATUS"
 	};
 

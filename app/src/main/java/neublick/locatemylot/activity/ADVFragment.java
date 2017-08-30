@@ -92,7 +92,7 @@ public class ADVFragment extends Fragment {
             @Override
             public void onSingleClick(View v) {
                 Intent intent = new Intent(mContext, ADVWebActivity.class);
-                intent.putExtra(Global.ADV_DATA, advId);
+                intent.putExtra(Global.EXTRA_ADV_DATA, advId);
                 startActivity(intent);
             }
         });
@@ -115,29 +115,36 @@ public class ADVFragment extends Fragment {
             });
         }
 
-        if (isLocal) {
-            btDownload.setImageResource(R.drawable.ic_delete);
-            btDownload.setOnClickListener(new OnSingleClickListener() {
-                @Override
-                public void onSingleClick(View v) {
-                    showDialogDelete();
-                }
-            });
-        } else {
-            if (advImageName.isEmpty() || BitmapUtil.imageAdvExist(advImageName)) {
-                rlDownload.setVisibility(View.INVISIBLE);
-            } else {
-                rlDownload.setVisibility(View.VISIBLE);
-                btDownload.setOnClickListener(new OnSingleClickListener() {
-                    @Override
-                    public void onSingleClick(View v) {
-                        if (!isDownloading) {
-                            new DownloadImageAdv().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
-                    }
-                });
+        btDownload.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                showDialogDelete();
             }
-        }
+        });
+
+//        if (isLocal) {
+//            btDownload.setImageResource(R.drawable.ic_delete);
+//            btDownload.setOnClickListener(new OnSingleClickListener() {
+//                @Override
+//                public void onSingleClick(View v) {
+//                    showDialogDelete();
+//                }
+//            });
+//        } else {
+//            if (advImageName.isEmpty() || BitmapUtil.imageAdvExist(advImageName)) {
+//                rlDownload.setVisibility(View.INVISIBLE);
+//            } else {
+//                rlDownload.setVisibility(View.VISIBLE);
+//                btDownload.setOnClickListener(new OnSingleClickListener() {
+//                    @Override
+//                    public void onSingleClick(View v) {
+//                        if (!isDownloading) {
+//                            new DownloadImageAdv().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                        }
+//                    }
+//                });
+//            }
+//        }
 
         super.onCreateView(inflater, container, savedInstanceState);
         return rootView;

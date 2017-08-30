@@ -37,7 +37,7 @@
         />
     <item
         android:id="@+id/action_setting"
-        android:orderInCategory="4"
+        android:orderInCategory="5"
         android:title="Settings"
         android:icon="@drawable/ic_setting"
         />
@@ -57,13 +57,20 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_promotion"
         />
+    <item
+        android:id="@+id/action_adv"
+        android:orderInCategory="4"
+        android:title="Advertising"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_adv"
+        />
 
 
 
 
     <item
         android:id="@+id/action_feedback"
-        android:orderInCategory="6"
+        android:orderInCategory="7"
         android:title="Feedback"
         app:showAsAction="always"
         android:icon="@drawable/ic_feedback"
@@ -71,7 +78,7 @@
 
     <item
         android:id="@+id/action_info"
-        android:orderInCategory="5"
+        android:orderInCategory="6"
         android:title="About LML"
         app:showAsAction="always"
         android:icon="@drawable/ic_copyright_white_24dp"
@@ -82,7 +89,7 @@
 
     <item
         android:id="@+id/action_help"
-        android:orderInCategory="7"
+        android:orderInCategory="8"
         android:title="Help"
         app:showAsAction="always"
         android:icon="@drawable/ic_help"
