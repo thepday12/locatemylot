@@ -68,7 +68,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/tvLineHorizontal"
             android:layout_below="@+id/toolBar"
-            android:paddingTop="4dp">
+            >
 
             <LinearLayout
                 android:id="@+id/llMapAndDetails"
@@ -81,7 +81,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginTop="4dp"
 
                     />
 
@@ -273,7 +272,7 @@
             android:visibility="invisible"
             android:id="@+id/rlDetailMove"
             android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_height="144dp"
             android:layout_above="@+id/quickControl"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="-8dp"

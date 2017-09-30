@@ -192,9 +192,19 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.AppCompatDialogNotCloseOnTouchOutSide">
         </activity>
-        <activity android:name=".activity.ADVWebActivity" android:theme="@style/MyThemeWeb" >
+        <activity
+            android:name=".activity.ADVWebActivity"
+            android:theme="@style/MyThemeWeb">
         </activity>
-        <activity android:name=".activity.WebDetailActivity" android:theme="@style/MyThemeWeb" android:launchMode="singleTask" >
+        <activity
+            android:name=".activity.WebDetailActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/MyThemeWeb">
+        </activity>
+        <activity
+            android:name=".activity.DetailMoveActivity"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
     </application>
 

@@ -14,6 +14,8 @@ public class ParkingHistory {
     public String liftData;
     public int isNormal;
     public float rates;
+    public int beaconCarId;
+    public int beaconLiftId;
 
 	@Override public String toString() {
 		return String.format("[id=%d, timeCheckIn=%d, timeCheckOut=%d, carparkId=%d]",

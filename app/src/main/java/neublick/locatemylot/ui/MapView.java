@@ -69,7 +69,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     public ObjectOverlap liftLobbyObject = new ObjectOverlap();
     //Tim duong 30/08/2017
     public ObjectOverlap destinationObject = new ObjectOverlap();
-//End tim duong
+    //End tim duong
     private Bitmap mOriginalBitmap;
 
     float initialScale;
@@ -79,7 +79,8 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     LightweightTimer timer;
 
     Runnable moveToMidRunnable = new Runnable() {
-        @Override public void run() {
+        @Override
+        public void run() {
 //            long now = Calendar.getInstance().getTimeInMillis();
 //            if (now - lastTimeActionTrigger >= 3000 && Global.isUserPositionVisible) {
 //                float deltaX = VIEW_WIDTH / 2 - userObject.location.calculateX;
@@ -105,7 +106,8 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
 
     public void centerByCarObject() {
         Runnable $centerByCarTask = new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 float deltaX = VIEW_WIDTH / 2 - carObject.location.calculateX;
                 float deltaY = VIEW_HEIGHT / 2 - carObject.location.calculateY;
 
@@ -145,7 +147,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     }
 
     public void setInitialScale(int viewWidth, int viewHeight) {
-        float initScale = (float)Math.min(viewWidth*1.0/bitmapWidth, viewHeight*1.0/bitmapHeight);
+        float initScale = (float) Math.min(viewWidth * 1.0 / bitmapWidth, viewHeight * 1.0 / bitmapHeight);
         lw("viewWidth= " + viewWidth);
         lw("bitmapWidth= " + bitmapWidth);
         lw("viewHeight= " + viewHeight);
@@ -162,14 +164,15 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         invalidate();
     }
 
-    @Override public boolean onTouchEvent(MotionEvent event) {
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
         // http://stackoverflow.com/questions/17890558/weird-onscroll-event-triggered-after-onscale-event
         scaleDetector.onTouchEvent(event);
         flingDetector.onTouchEvent(event);
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             onScaling = false;
             handler.removeCallbacks(moveToMidRunnable);
-        } else if (event.getAction() == MotionEvent.ACTION_UP && userObject.visible() ) {
+        } else if (event.getAction() == MotionEvent.ACTION_UP && userObject.visible()) {
             handler.postDelayed(moveToMidRunnable, 2500);
         }
         return true;
@@ -190,7 +193,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             scaleValue = Float.valueOf(ss[0]);
             tranX = Float.valueOf(ss[1]);
             tranY = Float.valueOf(ss[2]);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return null;
         }
 
@@ -205,7 +208,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         setImageMatrix(drawMatrix);
         invalidate();
 /*
-		carObject.original(carX, carY).applyMatrix(drawMatrix);
+        carObject.original(carX, carY).applyMatrix(drawMatrix);
 */
         lw(String.format("restoreState(scale=%.4f, transX=%.4f, transY=%.4f)", scaleValue, tranX, tranY));
         return drawMatrix;
@@ -232,13 +235,21 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
 
     public interface IObjectOverlap {
         IObjectOverlap view(View v);
+
         IObjectOverlap original(float pX, float pY);
+
         IObjectOverlap calculate(float pX, float pY);
+
         IObjectOverlap applyMatrix(Matrix matrix);
+
         IObjectOverlap zone(String z);
+
         IObjectOverlap floor(String floor);
+
         IObjectOverlap visible(boolean visible);
+
         IObjectOverlap updateViewLocation();
+
         IObjectOverlap measure(int measureX, int measureY);
     }
 
@@ -284,7 +295,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         }
 
         public boolean visible() {
-            return (view.getVisibility() == View.VISIBLE)? true: false;
+            return (view.getVisibility() == View.VISIBLE) ? true : false;
         }
 
         public ObjectOverlap visible(boolean visible) {
@@ -300,7 +311,8 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
 
         public ObjectOverlap updateViewLocation() {
             view.post(new Runnable() {
-                @Override public void run() {
+                @Override
+                public void run() {
                     view.setX(location.calculateX - VIEW_WIDTH / 2);
                     view.setY(location.calculateY - VIEW_HEIGHT / 2);
                 }
@@ -317,12 +329,14 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             super();
         }
 
-        @Override public ObjectOverlap updateViewLocation() {
+        @Override
+        public ObjectOverlap updateViewLocation() {
             super.updateViewLocation();
             return this;
         }
 
-        @Override public void onSensorChanged(SensorEvent sensorEvent) {
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
                 view.setRotation(sensorEvent.values[0]);
                 view.setRotation((Global.calibAngle + sensorEvent.values[0]) % 360);
@@ -330,7 +344,8 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         }
 
         // khong implement gi het
-        @Override public void onAccuracyChanged(Sensor sensor, int arg) {
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int arg) {
 
         }
     }
@@ -344,7 +359,8 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         public float calculateX;
         public float calculateY;
 
-        public PointFlt() { }
+        public PointFlt() {
+        }
 
         // setter
         public PointFlt original(float px, float py) {
@@ -365,19 +381,22 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         public PointFlt applyMatrix(Matrix matrix) {
             float[] floats = new float[9];
             matrix.getValues(floats);
-            calculateX = 	originalX*floats[Matrix.MSCALE_X]*Global.mRatioX; //Tung modify *Global.mRatioX, *Global.mRatioY
-            calculateY = 	originalY*floats[Matrix.MSCALE_Y]*Global.mRatioY;
-            calculateX += 	floats[Matrix.MTRANS_X];
-            calculateY += 	floats[Matrix.MTRANS_Y];
+            calculateX = originalX * floats[Matrix.MSCALE_X] * Global.mRatioX; //Tung modify *Global.mRatioX, *Global.mRatioY
+            calculateY = originalY * floats[Matrix.MSCALE_Y] * Global.mRatioY;
+            calculateX += floats[Matrix.MTRANS_X];
+            calculateY += floats[Matrix.MTRANS_Y];
             return this;
         }
     }
 
     class FlingListener extends GestureDetector.SimpleOnGestureListener {
-        @Override public boolean onDown(MotionEvent event) {
+        @Override
+        public boolean onDown(MotionEvent event) {
             return true;
         }
-        @Override public boolean onScroll(MotionEvent ev1, MotionEvent ev2, float distanceX, float distanceY) {
+
+        @Override
+        public boolean onScroll(MotionEvent ev1, MotionEvent ev2, float distanceX, float distanceY) {
             if (onScaling) {
                 return false;
             }
@@ -396,11 +415,14 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     }
 
     class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override public boolean onScaleBegin(ScaleGestureDetector s) {
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector s) {
             onScaling = true;
             return true;
         }
-        @Override public boolean onScale(ScaleGestureDetector s) {
+
+        @Override
+        public boolean onScale(ScaleGestureDetector s) {
             // save the scale factory
             float scale = s.getScaleFactor();
 
@@ -417,12 +439,12 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             mSaveScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, mSaveScale));
 
             // re-calculate the real scale factor
-            scale = mSaveScale/mOriginalScale;
+            scale = mSaveScale / mOriginalScale;
 
             float focusX = s.getFocusX();
             float focusY = s.getFocusY();
             drawMatrix.postScale(scale, scale, focusX, focusY);
-            le("SCALE = " + scale + " saveScale = " +mSaveScale);
+            le("SCALE = " + scale + " saveScale = " + mSaveScale);
             setImageMatrix(drawMatrix);
             invalidate();
 
@@ -454,20 +476,22 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     }
 
     List<Vertex> vertexList;
-    void drawLine(Canvas drawer, float startX,float startY,float stopX,float stopY, Paint paint){
-        drawer.drawLine(startX*Global.mRatioX,startY*Global.mRatioY,stopX*Global.mRatioX,stopY*Global.mRatioY,paint);
+
+    void drawLine(Canvas drawer, float startX, float startY, float stopX, float stopY, Paint paint) {
+        drawer.drawLine(startX * Global.mRatioX, startY * Global.mRatioY, stopX * Global.mRatioX, stopY * Global.mRatioY, paint);
     }
 
-    public void wayDrawXY(float destinationX, float destinationY) {
+    public void wayDrawXY(int carparkId,String floor,float destinationX, float destinationY) {
         System.gc();
         if (mOriginalBitmap == null) {
             return;
         }
         if (vertexList == null) {
             le("vertexList=" + vertexList);
-            vertexList = CLPath.getAllVertexByCarparkId(Global.getCarparkID());
+//            int carparkId = Global.getCarparkID();
+            vertexList = CLPath.getAllVertexByCarparkId(carparkId,floor);
 /*
-			// tinh toan toa do (x, y) cua beacon tren local
+            // tinh toan toa do (x, y) cua beacon tren local
 			for(int i = 0; i < vertexList.size(); ++i) {
 				Vertex vertexItem = vertexList.get(i);
 				vertexItem.x = vertexItem.x * Global.mRatioX;
@@ -477,9 +501,9 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         }
 
         // tinh toan khoang cach tu cac diem vertex toi userObject va carObject
-        for(int i = 0; i < vertexList.size(); ++i) {
+        for (int i = 0; i < vertexList.size(); ++i) {
             Vertex vertexItem = vertexList.get(i);
-            vertexItem.calculateDistanceDestination(destinationX,destinationY);
+            vertexItem.calculateDistanceDestination(destinationX, destinationY);
             vertexItem.calculateDistanceToUserObject(userObject);
             vertexItem.minDistance = Double.POSITIVE_INFINITY;
             vertexItem.previous = null;
@@ -501,7 +525,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             paint.setColor(context.getResources().getColor(R.color.colorWay));
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(10);
-            paint.setPathEffect(new DashPathEffect(new float[] {10, 5}, 0));
+            paint.setPathEffect(new DashPathEffect(new float[]{10, 5}, 0));
 
             int sizeOfMinWay = minWay.size();
             if (sizeOfMinWay == 0) {
@@ -517,15 +541,15 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
 
                 Vertex midPoint = minWay.get(0);
                 drawLine(drawer, userObject.location.originalX, userObject.location.originalY, midPoint.x, midPoint.y, paint);
-                drawLine(drawer, midPoint.x, midPoint.y, destinationX ,destinationY, paint);
+                drawLine(drawer, midPoint.x, midPoint.y, destinationX, destinationY, paint);
 
             } else if (sizeOfMinWay == 2) {
 
                 Vertex vertex1 = minWay.get(0);
                 Vertex vertex2 = minWay.get(1);
-                PointF midPoint = new PointF((vertex1.x + vertex2.x)/2, (vertex1.y + vertex2.y)/2);
+                PointF midPoint = new PointF((vertex1.x + vertex2.x) / 2, (vertex1.y + vertex2.y) / 2);
                 drawLine(drawer, userObject.location.originalX, userObject.location.originalY, midPoint.x, midPoint.y, paint);
-                drawLine(drawer,midPoint.x, midPoint.y, destinationX ,destinationY, paint);
+                drawLine(drawer, midPoint.x, midPoint.y, destinationX, destinationY, paint);
 
             } else if (sizeOfMinWay >= 3) {
                 // tao diem noi voi user-object
@@ -546,7 +570,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
                 // ve doan thang noi diem start voi vertex 1
                 drawLine(drawer, start.x, start.y, minWay.get(1).x, minWay.get(1).y, paint);
 
-                for(int i = 1; i < sizeOfMinWay - 2; ++i) {
+                for (int i = 1; i < sizeOfMinWay - 2; ++i) {
                     Vertex fromVertex = minWay.get(i);
                     Vertex toVertex = minWay.get(i + 1);
                     drawLine(drawer, fromVertex.x, fromVertex.y, toVertex.x, toVertex.y, paint);
@@ -556,7 +580,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
                 drawLine(drawer, minWay.get(sizeOfMinWay - 2).x, minWay.get(sizeOfMinWay - 2).y, end.x, end.y, paint);
 
                 // ve doan thang noi diem end toi user-object
-                drawLine(drawer, end.x, end.y, destinationX ,destinationY, paint);
+                drawLine(drawer, end.x, end.y, destinationX, destinationY, paint);
             }
             superSetImageBitmap(mutableBitmap); // save reference
             setImageMatrix(drawMatrix);
@@ -565,15 +589,136 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         le("the minWay: " + minWay.toString());
     }
 
+    public double getWayDistanceFromXY2XY(int carParkId,String floor, float startX, float startY, float destinationX, float destinationY) {
+        double distance = 0;
+        System.gc();
+        try {
+            if (vertexList == null) {
+                le("vertexList=" + vertexList);
+//                carParkId = 1;
+                vertexList = CLPath.getAllVertexByCarparkId(carParkId,floor);
+/*
+			// tinh toan toa do (x, y) cua beacon tren local
+			for(int i = 0; i < vertexList.size(); ++i) {
+				Vertex vertexItem = vertexList.get(i);
+				vertexItem.x = vertexItem.x * Global.mRatioX;
+				vertexItem.y = vertexItem.y * Global.mRatioY;
+			}
+*/
+            }
 
-    public void wayDraw() {
+            if (vertexList.size() <= 0) {
+                return Math.sqrt(
+                        Math.pow(startX - destinationX, 2) +
+                                Math.pow(startY - destinationY, 2));
+            }
+            // tinh toan khoang cach tu cac diem vertex toi userObject va carObject
+            for (int i = 0; i < vertexList.size(); ++i) {
+                Vertex vertexItem = vertexList.get(i);
+                vertexItem.calculateDistanceDestination(destinationX, destinationY);
+                vertexItem.calculateDistanceToUserObject(startX, startY);
+                vertexItem.minDistance = Double.POSITIVE_INFINITY;
+                vertexItem.previous = null;
+            }
+
+            VertexPair vertexPair = findVertexPair(vertexList);
+
+            Djikstra.computePaths(vertexPair.source);
+            List<Vertex> minWay = Djikstra.getShortestPathTo(vertexPair.target);
+
+            if (minWay.size() >= 2) {
+                System.gc();
+                // constructor save the reference Bitmap so we must create a copy bitmap
+                Bitmap mutableBitmap = Bitmap.createScaledBitmap(mOriginalBitmap, bitmapWidth, bitmapHeight, false);
+                Canvas drawer = new Canvas(mutableBitmap);
+
+                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+                paint.setColor(context.getResources().getColor(R.color.colorWay));
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(10);
+                paint.setPathEffect(new DashPathEffect(new float[]{10, 5}, 0));
+
+                int sizeOfMinWay = minWay.size();
+                if (sizeOfMinWay == 0) {
+                    distance = Math.sqrt(
+                            Math.pow(startX - destinationX, 2) +
+                                    Math.pow(startY - destinationY, 2));
+
+                } else if (sizeOfMinWay == 1) {
+                    Vertex midPoint = minWay.get(0);
+                    distance = Math.sqrt(
+                            Math.pow(startX - midPoint.x, 2) +
+                                    Math.pow(startY - midPoint.y, 2));
+                    distance += Math.sqrt(
+                            Math.pow(midPoint.x - destinationX, 2) +
+                                    Math.pow(midPoint.y - destinationY, 2));
+
+                } else if (sizeOfMinWay == 2) {
+
+                    Vertex vertex1 = minWay.get(0);
+                    Vertex vertex2 = minWay.get(1);
+                    PointF midPoint = new PointF((vertex1.x + vertex2.x) / 2, (vertex1.y + vertex2.y) / 2);
+
+                    distance = Math.sqrt(
+                            Math.pow(startX - midPoint.x, 2) +
+                                    Math.pow(startY - midPoint.y, 2));
+                    distance += Math.sqrt(
+                            Math.pow(midPoint.x - destinationX, 2) +
+                                    Math.pow(midPoint.y - destinationY, 2));
+
+                } else if (sizeOfMinWay >= 3) {
+                    // tao diem noi voi user-object
+                    PointF start = new PointF(
+                            (minWay.get(0).x + minWay.get(1).x) / 2,
+                            (minWay.get(0).y + minWay.get(1).y) / 2
+                    );
+
+                    // tao diem noi voi car-object
+                    PointF end = new PointF(
+                            (minWay.get(sizeOfMinWay - 2).x + minWay.get(sizeOfMinWay - 1).x) / 2,
+                            (minWay.get(sizeOfMinWay - 2).y + minWay.get(sizeOfMinWay - 1).y) / 2
+                    );
+
+                    distance = Math.sqrt(
+                            Math.pow(startX - start.x, 2) +
+                                    Math.pow(startY - start.y, 2));
+                    distance += Math.sqrt(
+                            Math.pow(start.x - minWay.get(1).x, 2) +
+                                    Math.pow(start.y - minWay.get(1).y, 2));
+                    for (int i = 1; i < sizeOfMinWay - 2; ++i) {
+                        Vertex fromVertex = minWay.get(i);
+                        Vertex toVertex = minWay.get(i + 1);
+                        distance += Math.sqrt(
+                                Math.pow(fromVertex.x - toVertex.x, 2) +
+                                        Math.pow(fromVertex.y - toVertex.y, 2));
+                    }
+
+                    distance += Math.sqrt(
+                            Math.pow(minWay.get(sizeOfMinWay - 2).x - end.x, 2) +
+                                    Math.pow(minWay.get(sizeOfMinWay - 2).y - end.y, 2));
+                    distance += Math.sqrt(
+                            Math.pow(end.x - destinationX, 2) +
+                                    Math.pow(end.y - destinationY, 2));
+
+                }
+            }
+        }catch (Exception e){
+
+        }
+        return  distance;
+    }
+
+
+    public void wayDraw(int id,String floor) {
         System.gc();
         if (mOriginalBitmap == null) {
             return;
         }
         if (vertexList == null) {
             le("vertexList=" + vertexList);
-            vertexList = CLPath.getAllVertexByCarparkId(Global.getCarparkID());
+//            int id = Global.getCarparkID();
+            vertexList = CLPath.getAllVertexByCarparkId(id,floor);
 /*
 			// tinh toan toa do (x, y) cua beacon tren local
 			for(int i = 0; i < vertexList.size(); ++i) {
@@ -585,7 +730,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         }
 
         // tinh toan khoang cach tu cac diem vertex toi userObject va carObject
-        for(int i = 0; i < vertexList.size(); ++i) {
+        for (int i = 0; i < vertexList.size(); ++i) {
             Vertex vertexItem = vertexList.get(i);
             vertexItem.calculateDistanceToCarObject(carObject);
             vertexItem.calculateDistanceToUserObject(userObject);
@@ -609,7 +754,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             paint.setColor(context.getResources().getColor(R.color.colorWay));
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(10);
-            paint.setPathEffect(new DashPathEffect(new float[] {10, 5}, 0));
+            paint.setPathEffect(new DashPathEffect(new float[]{10, 5}, 0));
 
             int sizeOfMinWay = minWay.size();
             if (sizeOfMinWay == 0) {
@@ -631,9 +776,9 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
 
                 Vertex vertex1 = minWay.get(0);
                 Vertex vertex2 = minWay.get(1);
-                PointF midPoint = new PointF((vertex1.x + vertex2.x)/2, (vertex1.y + vertex2.y)/2);
+                PointF midPoint = new PointF((vertex1.x + vertex2.x) / 2, (vertex1.y + vertex2.y) / 2);
                 drawLine(drawer, userObject.location.originalX, userObject.location.originalY, midPoint.x, midPoint.y, paint);
-                drawLine(drawer,midPoint.x, midPoint.y, carObject.location.originalX, carObject.location.originalY, paint);
+                drawLine(drawer, midPoint.x, midPoint.y, carObject.location.originalX, carObject.location.originalY, paint);
 
             } else if (sizeOfMinWay >= 3) {
                 // tao diem noi voi user-object
@@ -654,7 +799,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
                 // ve doan thang noi diem start voi vertex 1
                 drawLine(drawer, start.x, start.y, minWay.get(1).x, minWay.get(1).y, paint);
 
-                for(int i = 1; i < sizeOfMinWay - 2; ++i) {
+                for (int i = 1; i < sizeOfMinWay - 2; ++i) {
                     Vertex fromVertex = minWay.get(i);
                     Vertex toVertex = minWay.get(i + 1);
                     drawLine(drawer, fromVertex.x, fromVertex.y, toVertex.x, toVertex.y, paint);
@@ -677,7 +822,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     public VertexPair findVertexPair(List<Vertex> vertexList) {
         int source = 0;
         int target = 0;
-        for(int i = 1; i < vertexList.size(); ++i) {
+        for (int i = 1; i < vertexList.size(); ++i) {
             if (vertexList.get(source).distanceToCarObject > vertexList.get(i).distanceToCarObject) {
                 source = i;
             }
@@ -692,6 +837,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     public static class VertexPair {
         Vertex source;
         Vertex target;
+
         public VertexPair(Vertex src, Vertex tgt) {
             source = src;
             target = tgt;
@@ -708,7 +854,8 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         android.util.Log.e(TAG, s);
     }
 
-    @Override protected void onMeasure(int specW, int specH) {
+    @Override
+    protected void onMeasure(int specW, int specH) {
         super.onMeasure(specW, specH);
         VIEW_WIDTH = MeasureSpec.getSize(specW);
         VIEW_HEIGHT = MeasureSpec.getSize(specH);

@@ -12,7 +12,7 @@ public class Database extends SQLiteOpenHelper {
     private static Database INSTANCE;
     private static SQLiteDatabase sqlite;
     private static String DB_NAME = "new_db_x_y";
-    private static int DB_VERSION = 7;
+    private static int DB_VERSION = 11;
     public static final String TABLE_BEACON = "CL_BEACONS";
     public static final String TABLE_PATH = "CL_PATH";
     public static final String TABLE_PARKING_HISTORY = "CL_PARKING_HISTORY";
@@ -23,6 +23,7 @@ public class Database extends SQLiteOpenHelper {
     public static final String TABLE_PROMOTION = "CL_PROMOTION";
     public static final String TABLE_HINT_SHARE_LOCATION = "CL_HINT_SHARE_LOCATION";
     public static final String TABLE_ADV = "CL_ADV";
+    public static final String TABLE_SHOW_ADV = "TABLE_SHOW_ADV";
 
     public static void initialize(Context context) {
         if (null == INSTANCE) {
@@ -57,14 +58,16 @@ public class Database extends SQLiteOpenHelper {
                 //0: normal, 1: beacon welcome carpark, 2: thang máy (lift) 3: my beacon 4: check out
                 "BEACON_TYPE INTEGER DEFAULT 0)"
         );
-
+//ID INTEGER,FLOOR VARCHAR DEFAULT '',  X REAL,  Y REAL,  LABEL VARCHAR,  ADJ VARCHAR,
+//  CARPARK_ID INTEGER , PRIMARY KEY (ID, CARPARK_ID,FLOOR)
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PATH + "(" +
                 "ID INTEGER, " +
+                "FLOOR VARCHAR DEFAULT '', " +
                 "X REAL, " +
                 "Y REAL, " +
                 "LABEL VARCHAR, " +
                 "ADJ VARCHAR, " +
-                "CARPARK_ID INTEGER , PRIMARY KEY (ID, CARPARK_ID) )"
+                "CARPARK_ID INTEGER , PRIMARY KEY (ID, CARPARK_ID,FLOOR) )"
         );
 
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PROMOTION + "(" +
@@ -103,7 +106,9 @@ public class Database extends SQLiteOpenHelper {
                 "CARPARK_ID INTEGER," +
                 "LIFT_DATA VARCHAR," +
                 "RATES REAL DEFAULT 0, " +
-                "IS_NORMAL INTEGER)"
+                "IS_NORMAL INTEGER," +
+                "LIFT INTEGER DEFAULT -100, " +
+                "CAR INTEGER DEFAULT -100) "
         );
 
         db.execSQL("CREATE TABLE IF NOT EXISTS CL_SETTING(" +
@@ -150,6 +155,8 @@ public class Database extends SQLiteOpenHelper {
                 "STATUS INTEGER DEFAULT 1)"
         );
 
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_SHOW_ADV + "(ID INTEGER PRIMARY KEY, TIME_SHOW REAL DEFAULT 0)");
+
     }
 
     @Override
@@ -157,6 +164,9 @@ public class Database extends SQLiteOpenHelper {
         updateVersion5(db, oldVersion);
         updateVersion6(db, oldVersion);
         updateVersion7(db, oldVersion);
+        updateVersion8(db, oldVersion);
+        updateVersion9(db, oldVersion);
+        updateVersion11(db, oldVersion);
     }
 
     private void updateVersion5(SQLiteDatabase db, int oldVersion) {
@@ -195,6 +205,37 @@ public class Database extends SQLiteOpenHelper {
                     "WEB_LINK TEXT DEFAULT ''";
             db.execSQL(sqlString);
             db.execSQL(sqlString2);
+        }
+    }
+
+    private void updateVersion8(SQLiteDatabase db, int oldVersion) {
+        if (oldVersion < 8) {
+            db.execSQL("DROP TABLE " + TABLE_PATH + ";CREATE TABLE IF NOT EXISTS " + TABLE_PATH + "(" +
+                    "ID INTEGER, " +
+                    "FLOOR VARCHAR DEFAULT '', " +
+                    "X REAL, " +
+                    "Y REAL, " +
+                    "LABEL VARCHAR, " +
+                    "ADJ VARCHAR, " +
+                    "CARPARK_ID INTEGER , PRIMARY KEY (ID, CARPARK_ID,FLOOR) )"
+            );
+        }
+    }
+
+    private void updateVersion9(SQLiteDatabase db, int oldVersion) {
+        if (oldVersion < 9) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_SHOW_ADV + "(ID INTEGER PRIMARY KEY, TIME_SHOW REAL DEFAULT 0)");
+        }
+    }
+
+    private void updateVersion11(SQLiteDatabase db, int oldVersion) {
+        if (oldVersion < 11) {
+            String query = "ALTER TABLE " + TABLE_PARKING_HISTORY + " ADD COLUMN " +
+                    "LIFT INTEGER DEFAULT 0;";
+            String query1 = "ALTER TABLE " + TABLE_PARKING_HISTORY + " ADD COLUMN " +
+                    "CAR INTEGER DEFAULT 0;";
+//            db.execSQL(query);
+            db.execSQL(query1);
         }
     }
 

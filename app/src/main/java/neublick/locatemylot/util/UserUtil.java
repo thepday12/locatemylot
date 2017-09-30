@@ -161,6 +161,88 @@ public class UserUtil {
     }
 
 
+    public static String getHistory(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return user.getString("history", "");
+    }
+
+    /***
+     *checkInInfo.timeCheckIn.stringValue+"~"+timeCheckOut.stringValue+"~"+beaconCar.x.stringValue+"~"+beaconCar.y.stringValue+"~"+beaconCar.zone+"~"+beaconCar.floor+"~"+checkInInfo.carParkId.stringValue+"~"+checkInInfo.beaconLift.stringValue+"~"+beaconCar.id.stringValue+"~"+rates.stringValue+"~"+isNormal.stringValue
+     * @param context
+     * @param history
+     */
+
+    public static void addHistory(Context context, String history) {
+        String data = getHistory(context);
+        if(data.isEmpty())
+            data = history;
+        else{
+            data +=":" +history;
+        }
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putString("history", data).apply();
+    }
+
+    public static void clearHistory(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putString("history", "").apply();
+    }
+
+
+    public static String getAddAdv(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return user.getString("add_adv", "");
+    }
+
+
+    public static void addAddAdv(Context context, String adv) {
+        String data = getHistory(context);
+        if(data.isEmpty())
+            data = adv;
+        else{
+            data +=":" +adv;
+        }
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putString("add_adv", data).apply();
+    }
+
+    public static void clearAddAdv(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putString("add_adv", "").apply();
+    }
+
+    public static String getRemoveAdv(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return user.getString("add_adv", "");
+    }
+
+
+    public static void addRemoveAdv(Context context, String adv) {
+        String data = getHistory(context);
+        if(data.isEmpty())
+            data = adv;
+        else{
+            data +=":" +adv;
+        }
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putString("remove_adv", data).apply();
+    }
+
+    public static void clearRemoveAdv(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putString("remove_adv", "").apply();
+    }
+
+    public static boolean isUpdateFirst(Context context) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return user.getBoolean("update_first", false);
+    }
+
+    public static void setUpdateFirst(Context context, Boolean isUpdateFirst) {
+        final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        user.edit().putBoolean("update_first", isUpdateFirst).apply();
+    }
+
     public static boolean isPhoneVerification(Context context) {
         final SharedPreferences user = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         return user.getBoolean("otp_status", false);
@@ -183,6 +265,10 @@ public class UserUtil {
                 .putString("full_name", fullName)
                 .putString("avt", avatar)
                 .putBoolean("otp_status", status)
+                .putString("history", "")
+                .putString("add_adv", "")
+                .putString("remove_adv", "")
+                .putBoolean("update_first", false)
                 .apply();
 
     }

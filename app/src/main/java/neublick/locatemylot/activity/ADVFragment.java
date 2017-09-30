@@ -35,6 +35,7 @@ import neublick.locatemylot.database.CLADV;
 import neublick.locatemylot.model.ADVObject;
 import neublick.locatemylot.util.BitmapUtil;
 import neublick.locatemylot.util.OnSingleClickListener;
+import neublick.locatemylot.util.UserUtil;
 
 
 /**
@@ -169,6 +170,7 @@ public class ADVFragment extends Fragment {
             public void onClick(View v) {
                 BitmapUtil.imageAdvDelete(advImageName);
                 CLADV.deleteADV(advId);
+                UserUtil.addRemoveAdv(mContext,advId);
                 Intent intent = new Intent(Global.UPDATE_VIEW_ADV_KEY);
                 mContext.sendBroadcast(intent);
                 dialog.dismiss();

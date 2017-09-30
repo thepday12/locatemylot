@@ -22,17 +22,15 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,9 +55,7 @@ import java.util.concurrent.ExecutionException;
 import neublick.locatemylot.R;
 import neublick.locatemylot.app.Config;
 import neublick.locatemylot.app.Global;
-import neublick.locatemylot.database.CLHintShareLocation;
 import neublick.locatemylot.database.Database;
-import neublick.locatemylot.dialog.DialogShareLocation;
 import neublick.locatemylot.dialog.DialogSignInSignUp;
 import neublick.locatemylot.receiver.BluetoothBroadcastReceiver;
 import neublick.locatemylot.util.GPSHelper;
@@ -71,6 +67,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
 
     private SharedPreferences parkingSession;
     private Dialog dialog;
+    private ProgressBar pbLoading;
     private Dialog dialogNeedUpdate;
     private boolean isUpdateIUNumber = false;
     private boolean isWaitInternet = false;
@@ -145,10 +142,13 @@ public class LoadingScreenActivity extends AppCompatActivity {
 
     public void showSignInSignUp() {
         String id = UserUtil.getUserId(LoadingScreenActivity.this);
+        if(pbLoading!=null)
+        pbLoading.setVisibility(View.GONE);
         if (id.isEmpty()) {
             Intent intent = new Intent(LoadingScreenActivity.this, DialogSignInSignUp.class);
             startActivityForResult(intent, REQ_SIGN_IN_SIGN_UP);
         }
+
     }
 
     private void syncData() {
@@ -202,6 +202,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
         dialogNeedUpdate.setContentView(R.layout.dialog_need_update);
         dialogNeedUpdate.setCanceledOnTouchOutside(false);
 
+         pbLoading = (ProgressBar) dialogNeedUpdate.findViewById(R.id.pbLoading);
         Button btOk = (Button) dialogNeedUpdate.findViewById(R.id.btOk);
         Button btExitApp = (Button) dialogNeedUpdate.findViewById(R.id.btExitApp);
         btOk.setOnClickListener(new View.OnClickListener() {
@@ -523,8 +524,12 @@ public class LoadingScreenActivity extends AppCompatActivity {
                         }
                     }
                 } else if (ss[0].equals("P") && ss.length >= 7) {
-                    Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_PATH + "(ID, X, Y, LABEL, ADJ, CARPARK_ID) values" +
-                            "(" + ss[1] + "," + ss[2] + "," + ss[3] + ",'" + ss[4] + "','" + ss[5] + "'," + ss[6] + ")");
+                    String floor = "";
+                    if(ss.length>= 8){
+                        floor = ss[7];
+                    }
+                    Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_PATH + "(ID, X, Y, LABEL, ADJ, CARPARK_ID,FLOOR) values" +
+                            "(" + ss[1] + "," + ss[2] + "," + ss[3] + ",'" + ss[4] + "','" + ss[5] + "'," + ss[6] + ",'"+floor+"')");
                 } else if (ss[0].equals("PR") && ss.length >= 9) {
 
                     Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_PARKING_RATES + "(ID, CARPARK_ID, DAY_TYPE, BEGIN_TIME, END_TIME, FIRST_MINS,FIRST_RATE,SUB_MINS,SUB_RATES,STATUS) values" +

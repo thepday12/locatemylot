@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="neublick.locatemylot.activity.DetailMoveActivity">
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:text="Detail Move"
+        android:gravity="center"
+        android:background="@color/colorPrimary"/>
+    <ImageButton
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_arrow_back_white_24dp"
+        android:background="@null"
+        android:padding="12dp"
+        android:id="@+id/btBack"
+        android:scaleType="fitCenter"/>
+    <RelativeLayout
+        android:layout_below="@+id/btBack"
+        android:id="@+id/rlMap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <neublick.locatemylot.ui.MapView
+            android:id="@+id/newMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <include layout="@layout/user_object2"/>
+
+        <include layout="@layout/car_object"/>
+
+        <include layout="@layout/lift_lobby_object"/>
+
+        <ImageView
+            android:id="@+id/ivDestination"
+            android:layout_width="24dp"
+            android:visibility="invisible"
+            android:layout_height="24dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_locate"/>
+        <ProgressBar
+            android:id="@+id/pbLoadingMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </RelativeLayout>
+</RelativeLayout>
