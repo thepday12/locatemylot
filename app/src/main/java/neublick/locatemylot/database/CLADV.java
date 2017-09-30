@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import neublick.locatemylot.model.ADVObject;
-import neublick.locatemylot.model.ShareLocationHint;
 
 /*
 ID INTEGER PRIMARY KEY
@@ -42,10 +41,14 @@ public class CLADV {
 
 
     public static long addItem(ADVObject advObject) {
+        try {
             ContentValues cv = new ContentValues();
             cv.put(columns[0], advObject.getId());
             cv.put(columns[1], advObject.getImage());
             return Database.getDatabase().insert(Database.TABLE_ADV, null, cv);
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     public static List<ADVObject> getAllADV() {
