@@ -119,7 +119,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 filter);
         setContentView(R.layout.activity_loading_screen);
         dialogEnterPhone = new Dialog(LoadingScreenActivity.this);
-
+//
         Global.activityLoading = this;
         isEnableBluetooth = getIntent().getBooleanExtra(Global.IS_TURN_ON_BLUETOOTH, false);
         parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);

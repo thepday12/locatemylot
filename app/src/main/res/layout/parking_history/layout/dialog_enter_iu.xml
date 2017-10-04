@@ -24,7 +24,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center"
-        android:text="Please enter your IU number to get 30 mins free parking"
+        android:text="Please enter your IU number"
         android:textSize="18dp"/>
 
 

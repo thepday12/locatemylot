@@ -16,6 +16,8 @@
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:text="Web at carpark"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
             android:gravity="center"
             android:textColor="@color/white"
             android:background="@android:color/holo_red_light"
@@ -25,7 +27,7 @@
             android:id="@+id/carpark_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18dp"
+            android:textSize="16dp"
             android:gravity="center"
             android:textColor="#3498db"
             />
@@ -44,18 +46,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="#828282"
-            android:text=""
-            android:textSize="15dp"
+            android:textColor="@color/black"
+            android:textSize="14dp"
             />
         <TextView
             android:id="@+id/lift_zone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="#828282"
-            android:textSize="15dp"
-            android:text=""
+            android:textColor="@color/black"
+            android:textSize="14dp"
             />
     </LinearLayout>
 

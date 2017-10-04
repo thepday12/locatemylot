@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import neublick.locatemylot.R;
 import neublick.locatemylot.activity.LocateMyLotActivity;
@@ -48,7 +47,6 @@ import neublick.locatemylot.database.CLADV;
 import neublick.locatemylot.database.CLBeacon;
 import neublick.locatemylot.database.CLCarpark;
 import neublick.locatemylot.database.CLParkingHistory;
-import neublick.locatemylot.database.CLSHOWADV;
 import neublick.locatemylot.dialog.DialogSelectCarPark;
 import neublick.locatemylot.model.ADVObject;
 import neublick.locatemylot.model.BeaconPoint;
@@ -143,8 +141,8 @@ public class BackgroundService extends AbstractService {
 //                     Log.e("MAJOR_DETECT", found.get(i).getMajor()+"_"+found.get(i).getMinor());
 
                     // lay ve beacon theo beacon_id cua no
-//                    BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
-                    BeaconPoint beaconItem = getBeaconById(6001+new Random().nextInt(40), 3);
+                    BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
+//                    BeaconPoint beaconItem = getBeaconById(6001+new Random().nextInt(40), 3);
 //                    BeaconPoint beaconItem = getBeaconById(5004, 3);
 
 //                    BeaconPoint beaconItem = getBeaconById(1012, 1);
@@ -388,13 +386,13 @@ public class BackgroundService extends AbstractService {
                             if(beaconIdList.endsWith(","))
                                 beaconIdList = beaconIdList.substring(0, beaconIdList.length() - 1);
                             String beaconID =beaconIdList.split(",")[0];
-
-                            if(CLSHOWADV.isValidShowAdv(beaconID,currentTime)) {
-                                if(!UserUtil.getUserId(mContext).isEmpty()) {
-                                    CLSHOWADV.addItem(beaconID, currentTime);
-                                    new GetADV(beaconID).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                                }
-                            }
+//                              An ADV
+//                            if(CLSHOWADV.isValidShowAdv(beaconID,currentTime)) {
+//                                if(!UserUtil.getUserId(mContext).isEmpty()) {
+//                                    CLSHOWADV.addItem(beaconID, currentTime);
+//                                    new GetADV(beaconID).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                                }
+//                            }
                         }
 
                     }

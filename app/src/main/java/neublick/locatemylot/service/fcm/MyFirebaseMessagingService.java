@@ -10,9 +10,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.PowerManager;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -76,9 +74,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     intent.putExtra(Global.SHARE_DATA_EXTRA, result);
                                     getBaseContext().startActivity(intent);
 
-                                } else {
+//                                } else {
                                     String from_user = jsonObject.getString("user_from_name");
-                                    showNotification(getBaseContext(), result, from_user + " shared vehicle's location with you", from_user + " " + getBaseContext().getString(R.string.text_share_location));
+                                    showNotification(getBaseContext(), result, "Location sharing", from_user + " " + getBaseContext().getString(R.string.text_share_location));
                                 }
                             }
                         }

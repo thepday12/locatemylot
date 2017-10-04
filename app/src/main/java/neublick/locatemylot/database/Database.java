@@ -230,12 +230,22 @@ public class Database extends SQLiteOpenHelper {
 
     private void updateVersion11(SQLiteDatabase db, int oldVersion) {
         if (oldVersion < 11) {
-            String query = "ALTER TABLE " + TABLE_PARKING_HISTORY + " ADD COLUMN " +
-                    "LIFT INTEGER DEFAULT 0;";
-            String query1 = "ALTER TABLE " + TABLE_PARKING_HISTORY + " ADD COLUMN " +
-                    "CAR INTEGER DEFAULT 0;";
-//            db.execSQL(query);
-            db.execSQL(query1);
+            try {
+                String query = "ALTER TABLE " + TABLE_PARKING_HISTORY + " ADD COLUMN " +
+                        "LIFT INTEGER DEFAULT 0;";
+                db.execSQL(query);
+
+            } catch (Exception e) {
+
+            }
+            try {
+                String query1 = "ALTER TABLE " + TABLE_PARKING_HISTORY + " ADD COLUMN " +
+                        "CAR INTEGER DEFAULT 0;";
+                db.execSQL(query1);
+
+            } catch (Exception e) {
+
+            }
         }
     }
 

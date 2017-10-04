@@ -3472,7 +3472,7 @@ public class LocateMyLotActivity extends BaseActivity {
                 zone = "";
             }
             getCarZone().setVisibility(View.VISIBLE);
-            getCarZone().setText("You are parked at Floor " + floor + zone);
+            getCarZone().setText("You are parked at Floor " + floor +" "+ zone);
         } else {
             getCarZone().setText("");
             getCarZone().setVisibility(View.GONE);
