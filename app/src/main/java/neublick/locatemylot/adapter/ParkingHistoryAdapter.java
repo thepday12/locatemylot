@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
@@ -63,7 +64,8 @@ public class ParkingHistoryAdapter extends BaseAdapter {
 
         final ParkingHistory item = (ParkingHistory) getItem(position);
 
-        CircleImageView photo = (CircleImageView) view.findViewById(R.id.parking_photo);
+        final ProgressBar pbLoading = (ProgressBar) view.findViewById(R.id.pbLoading);
+        final CircleImageView photo = (CircleImageView) view.findViewById(R.id.parking_photo);
         ImageView deleteCmd = (ImageView) view.findViewById(R.id.lml_action_history_delete);
         ImageView editCmd = (ImageView) view.findViewById(R.id.lml_action_history_edit);
 
@@ -89,10 +91,25 @@ public class ParkingHistoryAdapter extends BaseAdapter {
 
 //        new DisplayImageViewTask(photo).execute(item.photoName);
         if(item.photoName.isEmpty()){
+            pbLoading.setVisibility(View.INVISIBLE);
             Picasso.with(activity).load(R.drawable.no_image).into(photo);
         }else {
-            File file = Utils.getImageFile(item.photoName);
-            Picasso.with(activity).load(file).error(R.drawable.no_image).into(photo);
+//            File file = Utils.getImageFile(item.photoName);
+            pbLoading.setVisibility(View.VISIBLE);
+
+            Picasso.with(activity).load(item.photoName).error(R.drawable.no_image).into(photo, new Callback() {
+                @Override
+                public void onSuccess() {
+                    pbLoading.setVisibility(View.INVISIBLE);
+
+                }
+
+                @Override
+                public void onError() {
+                    pbLoading.setVisibility(View.INVISIBLE);
+                    Picasso.with(activity).load(R.drawable.no_image).into(photo);
+                }
+            });
         }
         carparkName.postDelayed(new Runnable() {
             @Override
@@ -209,4 +226,5 @@ public class ParkingHistoryAdapter extends BaseAdapter {
         final String TAG = ParkingHistoryAdapter.class.getSimpleName();
         android.util.Log.e(TAG, s);
     }
+
 }

@@ -135,15 +135,21 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
 
     public void setImageBitmap(Bitmap bitmap) {
         // create a mutable bitmap called mOriginalBitmap
+//        mOriginalBitmap = bitmap;
+
         mOriginalBitmap = BitmapUtil.convertToMutable(bitmap);
-        bitmap.recycle();
+//        bitmap.recycle();
+
+
 //        mOriginalBitmap =bitmap;
         // it create a new BitmapDrawable from the bitmap parameter
         // may be pass value
-        superSetImageBitmap(mOriginalBitmap);
+        if(mOriginalBitmap!=null) {
+            superSetImageBitmap(mOriginalBitmap);
 
-        bitmapWidth = bitmap.getWidth();
-        bitmapHeight = bitmap.getHeight();
+            bitmapWidth = bitmap.getWidth();
+            bitmapHeight = bitmap.getHeight();
+        }
     }
 
     public void setInitialScale(int viewWidth, int viewHeight) {

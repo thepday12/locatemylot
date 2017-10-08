@@ -120,8 +120,8 @@ public class BackgroundService extends AbstractService {
         addListenerLocation();
         if (beaconManager == null) {
             beaconManager = new BeaconManager(mContext);
-            beaconManager.setBackgroundScanPeriod(300, 0);
-            beaconManager.setForegroundScanPeriod(300, 0);
+            beaconManager.setBackgroundScanPeriod(1000, 0);
+            beaconManager.setForegroundScanPeriod(1000, 0);
         }
 
 
@@ -142,8 +142,8 @@ public class BackgroundService extends AbstractService {
 
                     // lay ve beacon theo beacon_id cua no
                     BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
-//                    BeaconPoint beaconItem = getBeaconById(6001+new Random().nextInt(40), 3);
-//                    BeaconPoint beaconItem = getBeaconById(5004, 3);
+//                    BeaconPoint beaconItem = getBeaconById(6001+new Random().nextInt(7), 3);
+//                    BeaconPoint beaconItem = getBeaconById(7021+new Random().nextInt(2), 3);
 
 //                    BeaconPoint beaconItem = getBeaconById(1012, 1);
 //                    BeaconPoint beaconItem = null;
@@ -265,12 +265,12 @@ public class BackgroundService extends AbstractService {
 
 
                 // sap xep tang dan theo khoang cach 161118
-                Collections.sort(beaconItems, new Comparator<BeaconPoint>() {
-                    @Override
-                    public int compare(BeaconPoint lhs, BeaconPoint rhs) {
-                        return (int) (lhs.mDistance - rhs.mDistance);
-                    }
-                });
+//                Collections.sort(beaconItems, new Comparator<BeaconPoint>() {
+//                    @Override
+//                    public int compare(BeaconPoint lhs, BeaconPoint rhs) {
+//                        return (int) (lhs.mDistance - rhs.mDistance);
+//                    }
+//                });
 
 //                logBeaconsFound(beaconItems);
 
@@ -285,21 +285,28 @@ public class BackgroundService extends AbstractService {
 				}
 */
                 // So luong beacon >= 2, tinh toan newX, newY
-                int size = Math.min(beaconItems.size(), Config.BEACON_FOUND_TRIM_FOR_CALCULATING);
-                double totalD = 0;
-                double tx = 0, ty = 0;
-                for (int i = 0; i < size; ++i) {
-                    BeaconPoint beaconPoint = beaconItems.get(i);
-                    totalD += beaconPoint.mDistance;
-                    tx += beaconPoint.mX * beaconPoint.mDistance;
-                    ty += beaconPoint.mY * beaconPoint.mDistance;
-                }
+
+//                int size = Math.min(beaconItems.size(), Config.BEACON_FOUND_TRIM_FOR_CALCULATING);
+//                double totalD = 0;
+//                double tx = 0, ty = 0;
+//                for (int i = 0; i < size; ++i) {
+//                    BeaconPoint beaconPoint = beaconItems.get(i);
+//                    totalD += beaconPoint.mDistance;
+//                    tx += beaconPoint.mX * beaconPoint.mDistance;
+//                    ty += beaconPoint.mY * beaconPoint.mDistance;
+//                }
+
+                // retrieve the location base the map on server
+//                double serverX = tx / totalD;
+//                double serverY = ty / totalD;
+
+
+                BeaconPoint beaconNear = beaconItems.get(0);
+                double serverX = beaconNear.mX;
+                double serverY = beaconNear.mY;
 
                 Bundle bundle = new Bundle();
 
-                // retrieve the location base the map on server
-                double serverX = tx / totalD;
-                double serverY = ty / totalD;
 
                 //Thep - 2016/11/11 - Sau khi sort khoang cach tien hanh kiem tra
                 boolean isCheckIn = mParkingSession.isCheckIn();//lay sau khi qua welcome
@@ -319,13 +326,13 @@ public class BackgroundService extends AbstractService {
                                 mParkingSession.setLastTimeQuestionLift(currentTime);
                                 if (LocateMyLotApp.locateMyLotActivityVisible) {
                                     Intent intent = new Intent(Global.DETECT_LIFT_LOBBY_BEACON);
-                                    intent.putExtra(Global.LIFT_LOBBY_BEACON_ID_KEY, beaconItems.get(0).mId);
+                                    intent.putExtra(Global.LIFT_LOBBY_BEACON_ID_KEY, beaconPoint.mId);
                                     sendBroadcast(intent);
                                 } else {
                                     // chuyen locateMyLotActivity sang foreground
                                     Intent resumeIntent = new Intent(mContext, LocateMyLotActivity.class);
                                     resumeIntent.putExtra(Global.IS_LIFT_LOBBY_EXTRA, true);
-                                    resumeIntent.putExtra(Global.ID_LIFT_LOBBY_EXTRA, beaconItems.get(0).mId);
+                                    resumeIntent.putExtra(Global.ID_LIFT_LOBBY_EXTRA, beaconPoint.mId);
                                     resumeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                            startActivity(resumeIntent);
                                     String title = "Locate My Lot";
@@ -339,7 +346,7 @@ public class BackgroundService extends AbstractService {
                                         String dataSave = currentMapLiftLobby + ";" + beaconPoint.mX + ";" + beaconPoint.mY + ";" + zone + ";" + beaconPoint.mFloor ;
                                         mParkingSession.setLiftLobby(dataSave);
                                     }
-                                    showNotification(mContext, LocateMyLotActivity.LIFT_LOBBY_VALUE, beaconItems.get(0).mId, title, text);
+                                    showNotification(mContext, LocateMyLotActivity.LIFT_LOBBY_VALUE, beaconPoint.mId, title, text);
 
                                 }
                             }
@@ -483,7 +490,7 @@ public class BackgroundService extends AbstractService {
                                 newEntry.x = 0;//parkingSession.getFloat("ORIGINAL_X", 0);
                                 newEntry.y = 0;//parkingSession.getFloat("ORIGINAL_Y", 0);
                             }
-                            newEntry.photoName = mParkingSession.getPhotoName();
+                            newEntry.photoName = mParkingSession.getPhotoUri();
                             long timeCheckOut = Calendar.getInstance().getTimeInMillis();
                             newEntry.timeCheckIn = mParkingSession.getTimeCheckIn();//parkingSession.getLong("TIME_CHECKIN",-1);
                             newEntry.timeCheckOut = timeCheckOut;

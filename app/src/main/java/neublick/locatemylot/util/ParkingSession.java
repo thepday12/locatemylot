@@ -168,11 +168,11 @@ public class ParkingSession {
         parkingSession.edit().putString(LIFT_LOBBY_SAVE, liftLoby).apply();
     }//12-Photo
 
-    public String getPhotoName() {
+    public String getPhotoUri() {
         return parkingSession.getString(PHOTO_NAME, "");
     }
 
-    public void setPhotoName(String photoName) {
+    public void setPhotoUri(String photoName) {
         parkingSession.edit().putString(PHOTO_NAME, photoName).apply();
     }//13- Previous Photo
 

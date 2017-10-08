@@ -111,6 +111,7 @@ public class DetailMoveActivity extends FragmentActivity {
                 if (savedMatrix != null) {
                     getMapViewCarObject().applyMatrix(savedMatrix);
                     getMapViewUserObject().applyMatrix(savedMatrix);
+                    getMapViewDestinationObject().applyMatrix(savedMatrix);
                 }
                     /*else {
                         getMapViewCarObject().applyMatrix(getMapView().MATRIX_INITIAL_SCALE);
@@ -165,8 +166,7 @@ public class DetailMoveActivity extends FragmentActivity {
                 int resizeUser = (int) Utils.convertDpToPixel(14, DetailMoveActivity.this);
 
                 if (detailMoveObject.getStartX() > 0 || detailMoveObject.getStartY() > 0) {
-                    getMapViewUserObject().original(detailMoveObject.getStartX(), detailMoveObject.getStartY()).applyMatrix(getMapView().drawMatrix).visible(true);
-                    getMapView().wayClear();
+//                    getMapViewUserObject().original(detailMoveObject.getStartX(), detailMoveObject.getStartY()).applyMatrix(getMapView().drawMatrix).visible(true);
 //                    getMapView().wayDrawXY(detailMoveObject.getDestinationX(), detailMoveObject.getDestinationY());
                     getMapViewUserObject().original(detailMoveObject.getStartX()-resizeUser, detailMoveObject.getStartY()-resizeUser).applyMatrix(getMapView().drawMatrix).visible(true);
                 }
@@ -176,6 +176,10 @@ public class DetailMoveActivity extends FragmentActivity {
                 }
                 getMapViewDestinationObject().original(detailMoveObject.getDestinationX() - resize, detailMoveObject.getDestinationY() - resize).applyMatrix(getMapView().drawMatrix).visible(true);
 
+                getMapView().wayClear();
+                String data[] = detailMoveObject.getMapName().replace(".png","").split("_");
+                getMapView().wayDrawXY(Integer.valueOf(data[0]),data[1],detailMoveObject.getDestinationX(), detailMoveObject.getDestinationY());
+                getMapViewDestinationObject().original(detailMoveObject.getDestinationX() - resize, detailMoveObject.getDestinationY() - resize).applyMatrix(getMapView().drawMatrix).visible(true);
 
 
 

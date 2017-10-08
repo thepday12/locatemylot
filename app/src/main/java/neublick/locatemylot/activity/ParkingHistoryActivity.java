@@ -7,14 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
-
-import static android.view.View.OnClickListener;
 
 import neublick.locatemylot.R;
 import neublick.locatemylot.adapter.ParkingHistoryAdapter;
@@ -23,6 +20,8 @@ import neublick.locatemylot.database.CLParkingHistory;
 import neublick.locatemylot.model.ParkingHistory;
 import neublick.locatemylot.util.ParkingSession;
 import neublick.locatemylot.util.Utils;
+
+import static android.view.View.OnClickListener;
 
 public class ParkingHistoryActivity extends AppCompatActivity implements OnClickListener {
     private ListView historyListView;
@@ -94,7 +93,7 @@ public class ParkingHistoryActivity extends AppCompatActivity implements OnClick
                             mParkingSession.setCheckIn(true);
                             mParkingSession.setCarParkCheckIn(parkingHistoryItem.carpackId);
                             mParkingSession.setCheckInFromHistory(true);
-                            mParkingSession.setPhotoName(parkingHistoryItem.photoName);
+                            mParkingSession.setPhotoUri(parkingHistoryItem.photoName);
                             mParkingSession.setTimeCheckIn(parkingHistoryItem.timeCheckIn);
                             Global.entryTime = -1;
                             if (parkingHistoryItem.isNormal > 0) {

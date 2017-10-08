@@ -89,8 +89,12 @@ public class ServiceManager {
 	}
 
 	public void start() {
-		doStartService();
-		doBindService();
+        try {
+            doStartService();
+            doBindService();
+        }catch (Exception e){
+
+        }
 	}
 
 	public void stop() {

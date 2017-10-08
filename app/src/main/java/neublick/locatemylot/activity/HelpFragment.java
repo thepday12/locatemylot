@@ -15,7 +15,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +34,6 @@ import java.util.Date;
 import de.hdodenhof.circleimageview.CircleImageView;
 import neublick.locatemylot.R;
 import neublick.locatemylot.app.Global;
-import neublick.locatemylot.util.LightweightTimer;
 import neublick.locatemylot.util.ParkingSession;
 import neublick.locatemylot.util.Utils;
 
@@ -209,7 +207,7 @@ public class HelpFragment extends Fragment {
 //                ivHelpWay.setLayoutParams(layoutParams);
 //                ivHelpWay.setScaleType(ImageView.ScaleType.FIT_END);
                 ParkingSession mParkingSession = ParkingSession.getInstanceSharedPreferences(getActivity());
-                final String fileName = mParkingSession.getPhotoName();//parkingSession.getString("PHOTO_NAME", "");
+                final String fileName = mParkingSession.getPhotoUri();//parkingSession.getString("PHOTO_NAME", "");
 
                 // fileName chac chan khac "" ?!
                 if (!fileName.equals("")) {

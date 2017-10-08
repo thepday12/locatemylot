@@ -265,7 +265,7 @@
             android:textColor="@color/white"
             android:layout_above="@+id/quickControl"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="-4dp"
+            android:layout_marginBottom="-2dp"
             android:background="#cc000000"
             android:textSize="14dp"/>
         <RelativeLayout
@@ -275,7 +275,7 @@
             android:layout_height="144dp"
             android:layout_above="@+id/quickControl"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="-4dp"
+            android:layout_marginBottom="-2dp"
             >
 
 

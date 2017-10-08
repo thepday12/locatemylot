@@ -91,3 +91,7 @@
 }
 -keep class com.wang.avi.** { *; }
 -keep class com.wang.avi.indicators.** { *; }
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+}

@@ -26,13 +26,11 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.Vibrator;
-import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -119,6 +117,7 @@ import neublick.locatemylot.ui.SquareImageButton;
 import neublick.locatemylot.ui.ToggleSquareImageButton;
 import neublick.locatemylot.util.BitmapUtil;
 import neublick.locatemylot.util.GPSHelper;
+import neublick.locatemylot.util.ImagePicker;
 import neublick.locatemylot.util.LightweightTimer;
 import neublick.locatemylot.util.LightweightTimerExt;
 import neublick.locatemylot.util.ParkingSession;
@@ -160,6 +159,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private RelativeLayout rlSlideHelp, rlMap, rlHandlerRates, rlDetailRatesTop;
     private ImageButton btHandler, btHideHandler;
     private CircleImageView btCamera;
+    private ProgressBar pbLoadingLocation;
     private float sumRates = 0;
     private List<ParkingRates> parkingRatesList = new ArrayList<>();
     private List<ParkingSurcharge> parkingSurchargesList = new ArrayList<>();
@@ -418,9 +418,8 @@ public class LocateMyLotActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 //
         mUserId = UserUtil.getUserId(LocateMyLotActivity.this);
-
         registerReceiver(myBroadcastReceiver1, new IntentFilter(Global.DETECT_LIFT_LOBBY_BEACON));
-
+//int i = 1/0;
         registerReceiver(broadCastReload, new IntentFilter(Global.UPDATE_INFO_BROADCAST_KEY));
         registerReceiver(broadCastShowAdv, new IntentFilter(Global.SHOW_ADV_BROADCAST));
         mParkingSession = ParkingSession.getInstanceSharedPreferences(LocateMyLotActivity.this);
@@ -437,6 +436,7 @@ public class LocateMyLotActivity extends BaseActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main2);
         pbLoadingMap = (ProgressBar) findViewById(R.id.pbLoadingMap);
+        pbLoadingLocation = (ProgressBar) findViewById(R.id.pbLoadingLocation);
         btCamera = (CircleImageView) findViewById(R.id.func_camera);
         btHandler = (ImageButton) findViewById(R.id.btHandler);
         llParkingRates = (LinearLayout) findViewById(R.id.llParkingRates);
@@ -519,14 +519,14 @@ public class LocateMyLotActivity extends BaseActivity {
         btCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String photoName = mParkingSession.getPhotoName();//parkingSession.getString("PHOTO_NAME", "");
+                final String photoName = mParkingSession.getPhotoUri();//parkingSession.getString("PHOTO_NAME", "");
                 // fileName chac chan khac "" ?!
                 if (!photoName.equals("")) {
-                    File file = Utils.getImageFile(photoName);
-                    if (file != null && file.exists()) {
+//                    File file = Utils.getImageFile(photoName);
+//                    if (file != null && file.exists()) {
                         showDialogZoomPhoto();
                         return;
-                    }
+//                    }
                 }
                 verifyPermissions(LocateMyLotActivity.this);
             }
@@ -567,6 +567,10 @@ public class LocateMyLotActivity extends BaseActivity {
                 getMapViewLiftLobbyObject().measure(
                         getMapViewLiftLobbyObject().view.getMeasuredWidth(),
                         getMapViewLiftLobbyObject().view.getMeasuredHeight()
+                );
+                getMapViewDestinationObject().measure(
+                        getMapViewDestinationObject().view.getMeasuredWidth(),
+                        getMapViewDestinationObject().view.getMeasuredHeight()
                 );
 
                 // promotion chay tu phai sang trai la o day :))
@@ -886,6 +890,7 @@ public class LocateMyLotActivity extends BaseActivity {
                         }//end
                     }
                 });
+
                 serviceManager.start();
 //                startService(new Intent(LocateMyLotActivity.this,BackgroundService.class));
                 mRootWidth = getRootView().getMeasuredWidth();
@@ -1290,7 +1295,7 @@ public class LocateMyLotActivity extends BaseActivity {
         btRemovePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mParkingSession.setPhotoName("");
+                mParkingSession.setPhotoUri("");
                 Picasso.with(LocateMyLotActivity.this).load(R.drawable.ic_photo_camera).into(btCamera);
                 dialog.dismiss();
             }
@@ -1899,7 +1904,7 @@ public class LocateMyLotActivity extends BaseActivity {
         } catch (Exception e) {
 
         }
-        newEntry.photoName = mParkingSession.getPhotoName();
+        newEntry.photoName = mParkingSession.getPhotoUri();
         long timeCheckOut = Calendar.getInstance().getTimeInMillis();
         timeCheckOut = timeCheckOut;
         newEntry.timeCheckIn = mParkingSession.getTimeCheckIn();//parkingSession.getLong("TIME_CHECKIN",-1);
@@ -1922,6 +1927,7 @@ public class LocateMyLotActivity extends BaseActivity {
         if(Utils.isInternetConnected(LocateMyLotActivity.this)){
             sendDataHistory2Server();
         }
+        Picasso.with(LocateMyLotActivity.this).load(R.drawable.ic_photo_camera).into(btCamera);
         mParkingSession.setCheckOut(timeCheckOut);
         reloadAfterCheckout();
 
@@ -2256,6 +2262,7 @@ public class LocateMyLotActivity extends BaseActivity {
 //end
                         if (savedMatrix != null) {
                             getMapViewCarObject().applyMatrix(savedMatrix);
+                            getMapViewDestinationObject().applyMatrix(savedMatrix);
                             getMapViewLiftLobbyObject().applyMatrix(savedMatrix);
                         }
                     /*else {
@@ -2273,11 +2280,11 @@ public class LocateMyLotActivity extends BaseActivity {
         }, 500);
 
         // RESTORE SCREEN VIEW ATTACHED TO THE MAP
-        final String photoName = mParkingSession.getPhotoName();//parkingSession.getString("PHOTO_NAME", "");
+        final String photoName = mParkingSession.getPhotoUri();//parkingSession.getString("PHOTO_NAME", "");
         // fileName chac chan khac "" ?!
         if (!photoName.equals("")) {
-            File file = Utils.getImageFile(photoName);
-            loadAttachView(file);
+//            File file = Utils.getImageFile(photoName);
+            loadAttachView(photoName);
         } else {
 //            if (llTime.getVisibility() == View.VISIBLE)
 //                getViewAttached2().setVisibility(View.GONE);
@@ -2322,7 +2329,7 @@ public class LocateMyLotActivity extends BaseActivity {
         getExtra();
     }
 
-    private void loadAttachView(File file) {
+    private void loadAttachView(String uriImage) {
 //        if (llTime.getVisibility() == View.VISIBLE) {
 //            Picasso.with(LocateMyLotActivity.this).load(file).into(getViewAttached2(), new Callback() {
 //                @Override
@@ -2338,17 +2345,18 @@ public class LocateMyLotActivity extends BaseActivity {
 //                }
 //            });
 //        } else {
-        Picasso.with(LocateMyLotActivity.this).load(file).into(btCamera, new Callback() {
+        pbLoadingLocation.setVisibility(View.VISIBLE);
+        Picasso.with(LocateMyLotActivity.this).load(uriImage).into(btCamera, new Callback() {
             @Override
             public void onSuccess() {
-//                getViewAttached().setVisibility(View.VISIBLE);
-
+                pbLoadingLocation.setVisibility(View.GONE);
             }
 
             @Override
             public void onError() {
-//                getViewAttached().setVisibility(View.GONE);
-
+                pbLoadingLocation.setVisibility(View.GONE);
+                mParkingSession.setPhotoUri("");
+                Picasso.with(LocateMyLotActivity.this).load(R.drawable.ic_photo_camera).into(btCamera);
             }
         });
 //        }
@@ -2523,44 +2531,73 @@ public class LocateMyLotActivity extends BaseActivity {
     }
 
     private void dispatchCaptureIntent() {
-        Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File parentDir = new File(Environment.getExternalStorageDirectory(), Config.PHOTO_SAVE_DIR);
-        parentDir.mkdirs();
-
-        final String fileName = java.util.UUID.randomUUID().toString() + ".jpg";
-        //SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
-        File file = new File(parentDir, fileName);
-
-        final String previousFileName = mParkingSession.getPhotoName();//parkingSession.getString("PHOTO_NAME", "");
-        mParkingSession.setPhotoName(fileName);
-        mParkingSession.setPreviousPhotoName(previousFileName);
-
-        Uri uri = Uri.fromFile(file);
-        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        startActivityForResult(captureIntent, REQUEST_CAPTURE_IMAGE);
+//        Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+////        File parentDir = new File(Environment.getExternalStorageDirectory(), Config.PHOTO_SAVE_DIR);
+//
+////        parentDir.mkdirs();
+//
+//        final String fileName = java.util.UUID.randomUUID().toString() + ".jpg";
+////        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + fileName);
+//
+//        //SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
+////        File file = new File(parentDir, fileName);
+//
+//        final String previousFileName = mParkingSession.getPhotoUri();//parkingSession.getString("PHOTO_NAME", "");
+//        mParkingSession.setPhotoUri(fileName);
+//        mParkingSession.setPreviousPhotoName(previousFileName);
+//        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+//
+//        File file = new File(dir, fileName);
+//        Uri uri = Uri.fromFile(file);
+//        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+//        startActivity(captureIntent, REQUEST_CAPTURE_IMAGE);
+        Intent chooseImageIntent = ImagePicker.getPickImageIntent(LocateMyLotActivity.this);
+        startActivityForResult(chooseImageIntent, REQUEST_CAPTURE_IMAGE);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == REQUEST_CAPTURE_IMAGE) {
             if (resultCode == RESULT_OK) {
-                File parentDir = new File(Environment.getExternalStorageDirectory(), Config.PHOTO_SAVE_DIR);
-                parentDir.mkdirs();
-                //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
-                final String fileName = mParkingSession.getPhotoName();//parkingSession.getString("PHOTO_NAME", "");
+//                File parentDir = new File(Environment.getExternalStorageDirectory(), Config.PHOTO_SAVE_DIR);
+//                parentDir.mkdirs();
+//                //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
+//                final String fileName = mParkingSession.getPhotoUri();//parkingSession.getString("PHOTO_NAME", "");
+//
+//                // fileName chac chan khac "" ?!
+//                if (!fileName.equals("")) {
+//                    File file = Utils.getImageFile(fileName);
+//                    loadAttachView(file);
+////                    new TaskShowImage<RoundedImageView>(LocateMyLotActivity.this, getViewAttached()).execute(fileName);
+//                }
+                SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
+//        File file = new File(parentDir, fileName);
+                Uri selectedImageUri;
+                File imageFile = ImagePicker.getTempFile(LocateMyLotActivity.this);
+                boolean isCamera = (intent == null ||
+                        intent.getData() == null ||
+                        intent.getData().toString().contains(imageFile.toString()));
+                if (isCamera) {     /** CAMERA **/
+                    selectedImageUri = Uri.fromFile(imageFile);
+                } else {            /** ALBUM **/
+                    selectedImageUri = intent.getData();
 
-                // fileName chac chan khac "" ?!
-                if (!fileName.equals("")) {
-                    File file = Utils.getImageFile(fileName);
-                    loadAttachView(file);
+                }
+                if (selectedImageUri!=null) {
+                    String imageUri = selectedImageUri.toString();
+                    loadAttachView(imageUri);
+                    final String previousFileName = mParkingSession.getPhotoUri();//parkingSession.getString("PHOTO_NAME", "");
+                    mParkingSession.setPhotoUri(imageUri);
+                    mParkingSession.setPreviousPhotoName(previousFileName);
 //                    new TaskShowImage<RoundedImageView>(LocateMyLotActivity.this, getViewAttached()).execute(fileName);
                 }
+
 
             } else {
                 // restore the previous photoName
                 //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
-                mParkingSession.setPhotoName(mParkingSession.getPreviousPhotoName());
+//                mParkingSession.setPhotoUri(mParkingSession.getPreviousPhotoName());
             }
         } else if (requestCode == REQUEST_BLUETOOTH) {
             if (resultCode == RESULT_CANCELED) {
@@ -2569,7 +2606,7 @@ public class LocateMyLotActivity extends BaseActivity {
         } else if (requestCode == RESULT_SELECT_CARPARK) {
 //            if (resultCode == Activity.RESULT_OK) {
 //                dismissMyDialog();
-//                int carparkId = data.getIntExtra(DialogSelectCarPark.CARPARK_ID, DEFAULT_CARPARK_NULL);
+//                int carparkId = intent.getIntExtra(DialogSelectCarPark.CARPARK_ID, DEFAULT_CARPARK_NULL);
 //                if (carparkId >= 0) {
 //                    currentCapark = carparkId;
 //                    checkInAction(false);
@@ -2742,7 +2779,10 @@ public class LocateMyLotActivity extends BaseActivity {
         setTextDetails(currentCapark, floor);
     }
 
-    public void checkInLiftLobby(BeaconPoint beaconPoint) {
+    public void checkInLiftLobby(final BeaconPoint beaconPoint) {
+        if(beaconPoint.mBeaconType !=2){
+            return;
+        }
         //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
         // operating on user/mobile && car objects
         // dim car object on the map
@@ -3498,7 +3538,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private void setTextLiftLobby(String zone) {
         if (zone != null && !zone.isEmpty()) {
             getLiftZone().setVisibility(View.VISIBLE);
-            getLiftZone().setText("You have exited at Lift Lobby  " + zone);
+            getLiftZone().setText("You have exited at Lift Lobby " + zone);
         } else {
             getLiftZone().setText("");
             getLiftZone().setVisibility(View.GONE);
@@ -3609,6 +3649,7 @@ public class LocateMyLotActivity extends BaseActivity {
         } else {
             dispatchCaptureIntent();
         }
+
     }
 
     @Override
