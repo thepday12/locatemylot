@@ -19,11 +19,11 @@ import java.io.File;
 import neublick.locatemylot.R;
 import neublick.locatemylot.app.Global;
 import neublick.locatemylot.model.DetailMoveObject;
-import neublick.locatemylot.ui.MapView;
+import neublick.locatemylot.ui.MapViewCopy;
 import neublick.locatemylot.util.Utils;
 
 public class DetailMoveActivity extends FragmentActivity {
-    private MapView mMapView;
+    private MapViewCopy mMapView;
     private ProgressBar pbLoadingMap;
     private DetailMoveObject detailMoveObject;
     private TextView tvTitle;
@@ -59,21 +59,21 @@ public class DetailMoveActivity extends FragmentActivity {
 
     }
 
-    public MapView getMapView() {
+    public MapViewCopy getMapView() {
         if (mMapView == null) {
-            mMapView = (MapView) findViewById(R.id.newMap);
+            mMapView = (MapViewCopy) findViewById(R.id.newMap);
         }
         return mMapView;
     }
 
-    public MapView.UserObjectOverlap getMapViewUserObject() {
+    public MapViewCopy.UserObjectOverlap getMapViewUserObject() {
         if (getMapView().userObject.view == null) {
             getMapView().userObject.view(findViewById(R.id.user_object));
         }
         return getMapView().userObject;
     }
 
-    public MapView.ObjectOverlap getMapViewLiftLobbyObject() {
+    public MapViewCopy.ObjectOverlap getMapViewLiftLobbyObject() {
         if (getMapView().liftLobbyObject.view == null) {
             ImageView imageView = (ImageView) findViewById(R.id.lift_lobby_object);
             getMapView().liftLobbyObject.view(imageView);
@@ -82,7 +82,7 @@ public class DetailMoveActivity extends FragmentActivity {
     }
 
     //thep 2016/02/24
-    public MapView.ObjectOverlap getMapViewCarObject() {
+    public MapViewCopy.ObjectOverlap getMapViewCarObject() {
         if (getMapView().carObject.view == null) {
             ImageView imageView = (ImageView) findViewById(R.id.car_object);
             getMapView().carObject.view(imageView);
@@ -90,7 +90,7 @@ public class DetailMoveActivity extends FragmentActivity {
         return getMapView().carObject;
     }
 
-    public MapView.ObjectOverlap getMapViewDestinationObject() {
+    public MapViewCopy.ObjectOverlap getMapViewDestinationObject() {
         if (getMapView().destinationObject.view == null) {
             ImageView imageView = (ImageView) findViewById(R.id.ivDestination);
             getMapView().destinationObject.view(imageView);
@@ -162,6 +162,7 @@ public class DetailMoveActivity extends FragmentActivity {
                 // tinh ti so quy doi tu ban do tren server sang local
 //                Global.mRatioX = (float) (getMapView().bitmapWidth * 1.0 / server_width);
 //                Global.mRatioY = (float) (getMapView().bitmapHeight * 1.0 / server_height);
+
                 int resize = (int) Utils.convertDpToPixel(8, DetailMoveActivity.this);
                 int resizeUser = (int) Utils.convertDpToPixel(14, DetailMoveActivity.this);
 
@@ -176,12 +177,10 @@ public class DetailMoveActivity extends FragmentActivity {
                 }
                 getMapViewDestinationObject().original(detailMoveObject.getDestinationX() - resize, detailMoveObject.getDestinationY() - resize).applyMatrix(getMapView().drawMatrix).visible(true);
 
-                getMapView().wayClear();
+
+
                 String data[] = detailMoveObject.getMapName().replace(".png","").split("_");
-                getMapView().wayDrawXY(Integer.valueOf(data[0]),data[1],detailMoveObject.getDestinationX(), detailMoveObject.getDestinationY());
-                getMapViewDestinationObject().original(detailMoveObject.getDestinationX() - resize, detailMoveObject.getDestinationY() - resize).applyMatrix(getMapView().drawMatrix).visible(true);
-
-
+                getMapView().wayDrawXY(resize,Integer.valueOf(data[0]),data[1],getMapViewDestinationObject().location.originalX, getMapViewDestinationObject().location.originalY);
 
 
 

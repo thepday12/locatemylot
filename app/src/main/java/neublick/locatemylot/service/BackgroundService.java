@@ -142,7 +142,7 @@ public class BackgroundService extends AbstractService {
 
                     // lay ve beacon theo beacon_id cua no
                     BeaconPoint beaconItem = getBeaconById(found.get(i).getMajor(), found.get(i).getMinor());
-//                    BeaconPoint beaconItem = getBeaconById(6001+new Random().nextInt(7), 3);
+//                    BeaconPoint beaconItem = getBeaconById(6007+new Random().nextInt(20), 3);
 //                    BeaconPoint beaconItem = getBeaconById(7021+new Random().nextInt(2), 3);
 
 //                    BeaconPoint beaconItem = getBeaconById(1012, 1);

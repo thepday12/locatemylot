@@ -24,13 +24,19 @@
         android:padding="12dp"
         android:id="@+id/btBack"
         android:scaleType="fitCenter"/>
-    <RelativeLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="7" android:orientation="vertical"
         android:layout_below="@+id/btBack"
+        >
+    <RelativeLayout
         android:id="@+id/rlMap"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="2">
 
-        <neublick.locatemylot.ui.MapView
+        <neublick.locatemylot.ui.MapViewCopy
             android:id="@+id/newMap"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
@@ -55,4 +61,9 @@
             android:layout_centerInParent="true"
             android:visibility="gone"/>
     </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"/>
+    </LinearLayout>
 </RelativeLayout>

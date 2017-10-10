@@ -188,6 +188,8 @@ public class LocateMyLotActivity extends BaseActivity {
 
     private int mBeaconCar=-100,mBeaconLift =-100;
     private int currentBeaconId=-100;
+    private  float currentServerX = -100;
+    private  float currentServerY = -100;
     private ProgressDialog mDialog;
     //end
     //Thep update 2016/08/06
@@ -505,7 +507,7 @@ public class LocateMyLotActivity extends BaseActivity {
             }
         });
 
-        SIZE_OF_DESTINATION = (int) Utils.convertDpToPixel(8, LocateMyLotActivity.this);
+        SIZE_OF_DESTINATION = (int) Utils.convertDpToPixel(0, LocateMyLotActivity.this);
 
 
         //end tim duong
@@ -595,11 +597,11 @@ public class LocateMyLotActivity extends BaseActivity {
                         if (LocateMyLotApp.locateMyLotActivityVisible && (msg.what == BackgroundService.MOBILE_LOCATION_RETRIEVAL)) {
                             Bundle retrieveData = msg.getData();
 //                            getMapView().setVisibility(View.VISIBLE);
-                            float serverX = (float) (retrieveData.getDouble("X"));
-                            float serverY = (float) (retrieveData.getDouble("Y"));
+                             currentServerX = (float) (retrieveData.getDouble("X"));
+                             currentServerY = (float) (retrieveData.getDouble("Y"));
 
-                            float localX = Global.mRatioX * serverX;
-                            float localY = Global.mRatioY * serverY;
+                            float localX = Global.mRatioX * currentServerX;
+                            float localY = Global.mRatioY * currentServerY;
                             currentBeaconId = retrieveData.getInt("BEACON_ID");
 //222String name = currentCapark + "_" + currentFloor + ".png";
                             //Thep update 2016/08/05
@@ -613,7 +615,7 @@ public class LocateMyLotActivity extends BaseActivity {
                             name = carParkId + "_" + floor + ".png";
                             setMap(carParkId, floor);
                             getMapViewUserObject()
-                                    .original(serverX, serverY)
+                                    .original(currentServerX, currentServerY)
                                     .applyMatrix(getMapView().drawMatrix)
                                     .zone(zone)
                                     .floor(floor)
@@ -689,8 +691,8 @@ public class LocateMyLotActivity extends BaseActivity {
                                                  * Co Lift tai cho do xe va co lift tai vi tri hien tai
                                                  */
                                                 supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                        getMapView().userObject.location.originalX,
-                                                        getMapView().userObject.location.originalY,
+                                                        currentServerX,
+                                                        currentServerY,
                                                         beaconLiftAtFloor.mX, beaconLiftAtFloor.mY,
                                                         "Use elevator at " + carParkCheckInCar.name + " to the " + floorCheckIn, false
                                                 ));
@@ -717,12 +719,15 @@ public class LocateMyLotActivity extends BaseActivity {
                                                         getMapViewDestinationObject().original(beaconStairNear.mX - SIZE_OF_DESTINATION, beaconStairNear.mY - SIZE_OF_DESTINATION).applyMatrix(getMapView().drawMatrix).visible(true);
                                                     }
 
-                                                    supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                            getMapView().userObject.location.originalX,
-                                                            getMapView().userObject.location.originalY,
-                                                            beaconStairNear.mX, beaconStairNear.mY,
-                                                            "Use stair at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
-                                                    ));
+
+                                                        supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
+                                                                currentServerX,
+                                                                currentServerY,
+                                                                beaconStairNear.mX, beaconStairNear.mY,
+                                                                "Use stair at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
+                                                        ));
+
+
                                                     /***
                                                      * CHUA CHINH XAC CAN SUA KHI XONG TRUNG GIAN
                                                      */
@@ -733,22 +738,22 @@ public class LocateMyLotActivity extends BaseActivity {
                                                     ));
 
                                                 } else {//Khong co lift gan tang do xe
-                                                    BeaconPoint beaconStairNear = getBeaconStairNear(floorsAtCarPark, beaconsInCarPark, currentFloor, floorCheckIn);
-                                                    if (beaconStairNear != null) {
-                                                        getMapView().wayClear();
-                                                        getMapView().wayDrawXY(beaconStairNear.mCarparkId, beaconStairNear.mFloor, beaconStairNear.mX, beaconStairNear.mY);
-                                                        getMapViewDestinationObject().original(beaconStairNear.mX - SIZE_OF_DESTINATION, beaconStairNear.mY - SIZE_OF_DESTINATION).applyMatrix(getMapView().drawMatrix).visible(true);
-                                                    }
-                                                    /***
-                                                     * CHUA CHINH XAC CAN SUA KHI XONG TRUNG GIAN
-                                                     * XAC DINH SO TANG PHAI DI QUA VA HIEN THI
-                                                     */
-                                                    supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                            getMapView().userObject.location.originalX,
-                                                            getMapView().userObject.location.originalY,
-                                                            beaconStairNear.mX, beaconStairNear.mY,
-                                                            "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, false
-                                                    ));
+//                                                    BeaconPoint beaconStairNear = getBeaconStairNear(floorsAtCarPark, beaconsInCarPark, currentFloor, floorCheckIn);
+//                                                    if (beaconStairNear != null) {
+//                                                        getMapView().wayClear();
+//                                                        getMapView().wayDrawXY(beaconStairNear.mCarparkId, beaconStairNear.mFloor, beaconStairNear.mX, beaconStairNear.mY);
+//                                                        getMapViewDestinationObject().original(beaconStairNear.mX - SIZE_OF_DESTINATION, beaconStairNear.mY - SIZE_OF_DESTINATION).applyMatrix(getMapView().drawMatrix).visible(true);
+//                                                    }
+//                                                    /***
+//                                                     * CHUA CHINH XAC CAN SUA KHI XONG TRUNG GIAN
+//                                                     * XAC DINH SO TANG PHAI DI QUA VA HIEN THI
+//                                                     */
+//                                                    supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
+//                                                            getMapView().userObject.location.originalX,
+//                                                            getMapView().userObject.location.originalY,
+//                                                            beaconStairNear.mX, beaconStairNear.mY,
+//                                                            "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, false
+//                                                    ));
                                                 }
                                             }
                                         } else {
@@ -766,8 +771,8 @@ public class LocateMyLotActivity extends BaseActivity {
                                                     getMapViewDestinationObject().original(beaconLiftAtFloor.mX - SIZE_OF_DESTINATION, beaconLiftAtFloor.mY - SIZE_OF_DESTINATION).applyMatrix(getMapView().drawMatrix).visible(true);
 
                                                     supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                            getMapView().userObject.location.originalX,
-                                                            getMapView().userObject.location.originalY,
+                                                         currentServerX,
+                                                            currentServerY,
                                                             beaconLiftAtFloor.mX, beaconLiftAtFloor.mY,
                                                             "Use elevator at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
                                                     ));
@@ -777,8 +782,8 @@ public class LocateMyLotActivity extends BaseActivity {
                                                      * VA THANG BO TIEP THEO (lap)
                                                      */
                                                     supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                            getMapView().userObject.location.originalX,
-                                                            getMapView().userObject.location.originalY,
+                                                            currentServerX,
+                                                            currentServerY,
                                                             beaconLiftAtFloor.mX, beaconLiftAtFloor.mY,
                                                             "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, false
                                                     ));
@@ -795,8 +800,8 @@ public class LocateMyLotActivity extends BaseActivity {
                                                  * XAC DINH SO TANG PHAI DI QUA VA HIEN THI
                                                  */
                                                 supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                        getMapView().userObject.location.originalX,
-                                                        getMapView().userObject.location.originalY,
+                                                        currentServerX,
+                                                        currentServerY,
                                                         beaconStairNear.mX, beaconStairNear.mY,
                                                         "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, false
                                                 ));
@@ -1766,6 +1771,7 @@ public class LocateMyLotActivity extends BaseActivity {
 
 
                                 }
+                                lvMove.setAdapter(moveAdapter);
                             }
 //                            getMapView().centerByCarObject();
                         }
@@ -1881,6 +1887,9 @@ public class LocateMyLotActivity extends BaseActivity {
     }
 
     private void checkout() {
+        getMapView().wayClear();
+        funcWay.modifyState(false);
+        getMapView().wayMode = false;
         currentMapCar = "";
         currentMapLiftLobby = "";
 
@@ -1929,6 +1938,7 @@ public class LocateMyLotActivity extends BaseActivity {
         }
         Picasso.with(LocateMyLotActivity.this).load(R.drawable.ic_photo_camera).into(btCamera);
         mParkingSession.setCheckOut(timeCheckOut);
+        mParkingSession.setCheckIn(false);
         reloadAfterCheckout();
 
     }

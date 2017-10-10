@@ -3,6 +3,7 @@ package neublick.locatemylot.djikstra;
 import java.util.List;
 
 import neublick.locatemylot.ui.MapView;
+import neublick.locatemylot.ui.MapViewCopy;
 
 public class Vertex implements Comparable<Vertex> {
 
@@ -107,7 +108,13 @@ public class Vertex implements Comparable<Vertex> {
                 Math.pow(x - carObject.location.originalX, 2) +
                         Math.pow(y - carObject.location.originalY, 2)
         );
+    }public void calculateDistanceToCarObject(MapViewCopy.ObjectOverlap carObject) {
+        distanceToCarObject = Math.sqrt(
+                Math.pow(x - carObject.location.originalX, 2) +
+                        Math.pow(y - carObject.location.originalY, 2)
+        );
     }
+
 
     public void calculateDistanceDestination(float destinationX, float destinationY) {
         distanceToCarObject = Math.sqrt(
@@ -121,7 +128,13 @@ public class Vertex implements Comparable<Vertex> {
                 Math.pow(x - userObject.location.originalX, 2) +
                         Math.pow(y - userObject.location.originalY, 2)
         );
+    } public void calculateDistanceToUserObject(MapViewCopy.ObjectOverlap userObject) {
+        distanceToUserObject = Math.sqrt(
+                Math.pow(x - userObject.location.originalX, 2) +
+                        Math.pow(y - userObject.location.originalY, 2)
+        );
     }
+
 
     public void calculateDistanceToUserObject(float destinationX, float destinationY) {
         distanceToUserObject = Math.sqrt(

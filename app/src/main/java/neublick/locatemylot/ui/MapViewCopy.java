@@ -32,7 +32,7 @@ import neublick.locatemylot.djikstra.Vertex;
 import neublick.locatemylot.util.BitmapUtil;
 import neublick.locatemylot.util.LightweightTimer;
 
-public class MapView extends android.support.v7.widget.AppCompatImageView {
+public class MapViewCopy extends android.support.v7.widget.AppCompatImageView {
 
     // real max_zoom = mInitialScale*MAX_ZOOM
     static float MIN_ZOOM = 0.25f;
@@ -123,7 +123,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         $myhandler.postDelayed($centerByCarTask, 0);
     }
 
-    public MapView(Context context, AttributeSet attrSet) {
+    public MapViewCopy(Context context, AttributeSet attrSet) {
         super(context, attrSet);
         this.context = context;
         setScaleType(ScaleType.MATRIX);
@@ -487,7 +487,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         drawer.drawLine(startX * Global.mRatioX, startY * Global.mRatioY, stopX * Global.mRatioX, stopY * Global.mRatioY, paint);
     }
 
-    public void wayDrawXY(int carparkId,String floor,float destinationX, float destinationY) {
+    public void wayDrawXY(int resize,int carparkId,String floor,float destinationX, float destinationY) {
         System.gc();
         if (mOriginalBitmap == null) {
             return;
@@ -520,8 +520,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
         djikstra.computePaths(vertexPair.source);
         List<Vertex> minWay = djikstra.getShortestPathTo(vertexPair.target);
 
-        if (minWay.size() >= 2) { //old
-//        if (minWay.size() >= 0) {
+        if (minWay.size() >= 0) {
             System.gc();
             // constructor save the reference Bitmap so we must create a copy bitmap
             Bitmap mutableBitmap = Bitmap.createScaledBitmap(mOriginalBitmap, bitmapWidth, bitmapHeight, false);
@@ -538,25 +537,25 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
             if (sizeOfMinWay == 0) {
                 // noi 2 diem userObject toi carObject
                 drawLine(drawer,
-                        userObject.location.originalX,
-                        userObject.location.originalY,
-                        destinationX,
-                        destinationY,
+                        userObject.location.originalX+resize,
+                        userObject.location.originalY+resize,
+                        destinationX+resize,
+                        destinationY+resize,
                         paint
                 );
             } else if (sizeOfMinWay == 1) {
 
                 Vertex midPoint = minWay.get(0);
-                drawLine(drawer, userObject.location.originalX, userObject.location.originalY, midPoint.x, midPoint.y, paint);
-                drawLine(drawer, midPoint.x, midPoint.y, destinationX, destinationY, paint);
+                drawLine(drawer, userObject.location.originalX+resize, userObject.location.originalY+resize, midPoint.x, midPoint.y, paint);
+                drawLine(drawer, midPoint.x, midPoint.y, destinationX+resize, destinationY+resize, paint);
 
             } else if (sizeOfMinWay == 2) {
 
                 Vertex vertex1 = minWay.get(0);
                 Vertex vertex2 = minWay.get(1);
                 PointF midPoint = new PointF((vertex1.x + vertex2.x) / 2, (vertex1.y + vertex2.y) / 2);
-                drawLine(drawer, userObject.location.originalX, userObject.location.originalY, midPoint.x, midPoint.y, paint);
-                drawLine(drawer, midPoint.x, midPoint.y, destinationX, destinationY, paint);
+                drawLine(drawer, userObject.location.originalX+resize, userObject.location.originalY+resize, midPoint.x, midPoint.y, paint);
+                drawLine(drawer, midPoint.x, midPoint.y, destinationX+resize, destinationY+resize, paint);
 
             } else if (sizeOfMinWay >= 3) {
                 // tao diem noi voi user-object
@@ -572,7 +571,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
                 );
 
                 // ve doan thang noi car-object voi trung diem cua vertex 0 va vertex 1 (goi la diem start)
-                drawLine(drawer, userObject.location.originalX, userObject.location.originalY, start.x, start.y, paint);
+                drawLine(drawer, userObject.location.originalX+resize, userObject.location.originalY+resize, start.x, start.y, paint);
 
                 // ve doan thang noi diem start voi vertex 1
                 drawLine(drawer, start.x, start.y, minWay.get(1).x, minWay.get(1).y, paint);
@@ -587,7 +586,7 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
                 drawLine(drawer, minWay.get(sizeOfMinWay - 2).x, minWay.get(sizeOfMinWay - 2).y, end.x, end.y, paint);
 
                 // ve doan thang noi diem end toi user-object
-                drawLine(drawer, end.x, end.y, destinationX, destinationY, paint);
+                drawLine(drawer, end.x, end.y, destinationX+resize, destinationY+resize, paint);
             }
             superSetImageBitmap(mutableBitmap); // save reference
             setImageMatrix(drawMatrix);
@@ -854,12 +853,12 @@ public class MapView extends android.support.v7.widget.AppCompatImageView {
     }
 
     static void lw(String s) {
-        final String TAG = MapView.class.getSimpleName();
+        final String TAG = MapViewCopy.class.getSimpleName();
         android.util.Log.w(TAG, s);
     }
 
     static void le(String s) {
-        final String TAG = MapView.class.getSimpleName();
+        final String TAG = MapViewCopy.class.getSimpleName();
         android.util.Log.e(TAG, s);
     }
 
