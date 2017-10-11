@@ -2,28 +2,18 @@ package neublick.locatemylot.adapter;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.estimote.sdk.repackaged.gson_v2_3_1.com.google.gson.Gson;
-
-import java.io.File;
 import java.util.List;
 
 import neublick.locatemylot.R;
-import neublick.locatemylot.activity.DetailMoveActivity;
-import neublick.locatemylot.app.Global;
-import neublick.locatemylot.model.Carpark;
 import neublick.locatemylot.model.DetailMoveObject;
-import neublick.locatemylot.util.OnSingleClickListener;
 
 
 public class MoveAdapter extends BaseAdapter {
@@ -67,6 +57,11 @@ public class MoveAdapter extends BaseAdapter {
         }
         final DetailMoveObject object = mListItem.get(position);
         mHoler.tvMove.setText(object.getText());
+        if(position > 0) {
+            mHoler.tvMove.setTextColor(Color.CYAN);
+        }else{
+            mHoler.tvMove.setTextColor(Color.MAGENTA);
+        }
 //        view.setOnClickListener(new OnSingleClickListener() {
 //            @Override
 //            public void onSingleClick(View v) {

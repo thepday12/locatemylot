@@ -387,8 +387,8 @@ public class MapViewCopy extends android.support.v7.widget.AppCompatImageView {
         public PointFlt applyMatrix(Matrix matrix) {
             float[] floats = new float[9];
             matrix.getValues(floats);
-            calculateX = originalX * floats[Matrix.MSCALE_X] * Global.mRatioX; //Tung modify *Global.mRatioX, *Global.mRatioY
-            calculateY = originalY * floats[Matrix.MSCALE_Y] * Global.mRatioY;
+            calculateX = originalX * floats[Matrix.MSCALE_X] * Global.mRatioXCopy; //Tung modify *Global.mRatioXCopy, *Global.mRatioYCopy
+            calculateY = originalY * floats[Matrix.MSCALE_Y] * Global.mRatioYCopy;
             calculateX += floats[Matrix.MTRANS_X];
             calculateY += floats[Matrix.MTRANS_Y];
             return this;
@@ -484,7 +484,7 @@ public class MapViewCopy extends android.support.v7.widget.AppCompatImageView {
     List<Vertex> vertexList;
 
     void drawLine(Canvas drawer, float startX, float startY, float stopX, float stopY, Paint paint) {
-        drawer.drawLine(startX * Global.mRatioX, startY * Global.mRatioY, stopX * Global.mRatioX, stopY * Global.mRatioY, paint);
+        drawer.drawLine(startX * Global.mRatioXCopy, startY * Global.mRatioYCopy, stopX * Global.mRatioXCopy, stopY * Global.mRatioYCopy, paint);
     }
 
     public void wayDrawXY(int resize,int carparkId,String floor,float destinationX, float destinationY) {
@@ -500,8 +500,8 @@ public class MapViewCopy extends android.support.v7.widget.AppCompatImageView {
             // tinh toan toa do (x, y) cua beacon tren local
 			for(int i = 0; i < vertexList.size(); ++i) {
 				Vertex vertexItem = vertexList.get(i);
-				vertexItem.x = vertexItem.x * Global.mRatioX;
-				vertexItem.y = vertexItem.y * Global.mRatioY;
+				vertexItem.x = vertexItem.x * Global.mRatioXCopy;
+				vertexItem.y = vertexItem.y * Global.mRatioYCopy;
 			}
 */
         }
@@ -607,8 +607,8 @@ public class MapViewCopy extends android.support.v7.widget.AppCompatImageView {
 			// tinh toan toa do (x, y) cua beacon tren local
 			for(int i = 0; i < vertexList.size(); ++i) {
 				Vertex vertexItem = vertexList.get(i);
-				vertexItem.x = vertexItem.x * Global.mRatioX;
-				vertexItem.y = vertexItem.y * Global.mRatioY;
+				vertexItem.x = vertexItem.x * Global.mRatioXCopy;
+				vertexItem.y = vertexItem.y * Global.mRatioYCopy;
 			}
 */
             }
@@ -730,8 +730,8 @@ public class MapViewCopy extends android.support.v7.widget.AppCompatImageView {
 			// tinh toan toa do (x, y) cua beacon tren local
 			for(int i = 0; i < vertexList.size(); ++i) {
 				Vertex vertexItem = vertexList.get(i);
-				vertexItem.x = vertexItem.x * Global.mRatioX;
-				vertexItem.y = vertexItem.y * Global.mRatioY;
+				vertexItem.x = vertexItem.x * Global.mRatioXCopy;
+				vertexItem.y = vertexItem.y * Global.mRatioYCopy;
 			}
 */
         }

@@ -73,6 +73,8 @@ public class Global {
     public static final String MY_ADV_DIR= Environment.getExternalStorageDirectory() + "/locatemylot_data/adv/";
     public static float mRatioX=0;
     public static float mRatioY=0;
+    public static float mRatioXCopy=0;
+    public static float mRatioYCopy=0;
     public static long timeBeaconFound = 0;
     public static long timeCheckOut = 0;
     public static boolean isUpdateInfo = false;

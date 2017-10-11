@@ -503,6 +503,7 @@ public class LoadingScreenActivity extends AppCompatActivity {
                     if (!isPromotion.equals("1")) {
                         isPromotion = "0";
                     }
+                    //D~3345~92~612~275~B Level 7~L7~122~2~7092~3~0
                     Database.getDatabase().execSQL("insert or replace into " + Database.TABLE_BEACON + "(ID, NAME,MAJOR,MINOR, X, Y, ZONE, FLOOR, CARPARK_ID, BEACON_TYPE,IS_PROMOTION) values" +
                             "(" + ss[1] + ",'" + ss[2] + "'," + ss[9] + "," + ss[10] + "," + ss[3] + "," + ss[4] + ",'" + ss[5] + "','" + ss[6] + "'," + ss[7] + "," + ss[8] + "," + isPromotion + ")");
                 } else if (ss[0].equals("C") && ss.length >= 7) {

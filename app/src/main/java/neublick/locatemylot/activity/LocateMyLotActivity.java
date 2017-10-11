@@ -1346,6 +1346,11 @@ public class LocateMyLotActivity extends BaseActivity {
     }
 
     private void setNotfoundBeacon() {
+        lastMapAddListMove ="";
+        if (rlSlideHelp.getVisibility() == View.VISIBLE) {
+            if(getMapView().wayMode)
+                showDetailMoveSlideHelpVisble();
+        }
         if (rlMap.getVisibility() == View.VISIBLE) {
             getMapViewUserObject().visible(false);
             Global.isUserPositionVisible = false;
@@ -1663,10 +1668,11 @@ public class LocateMyLotActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
+                    boolean isCheckInCar = mParkingSession.isCarCheckLocation();
                     boolean isCheckIn = mParkingSession.isCheckIn();
                     boolean isNormalCheckIn = mParkingSession.isNormalCheckIn();
 
-                    if (!isCheckIn) {
+                    if (!isCheckInCar||!isCheckIn) {
                         new AlertDialog.Builder(LocateMyLotActivity.this)
                                 .setTitle("Information")
                                 .setMessage("You need to check in first before using this function")
@@ -1702,76 +1708,7 @@ public class LocateMyLotActivity extends BaseActivity {
                             mParkingSession.setWayMode(getMapView().wayMode);
 
                             if (rlSlideHelp.getVisibility() == View.VISIBLE) {
-                                supportMove.clear();
-                                int carParkCheckIn = mParkingSession.getCarParkCheckIn();
-                                String floorCheckIn = mParkingSession.getLastFloorCheckIn();
-                                List<BeaconPoint> beaconsInCarPark = CLBeacon.getBeaconsByCarparkId(carParkCheckIn);
-                                Carpark carParkCheckInCar = CLCarpark.getCarparkByCarparkId(carParkCheckIn);
-                                BeaconPoint liftAtCarParked = null;
-                                //Danh sach floors at carpark
-                                String[] floorsAtCarPark = carParkCheckInCar.floor.split(",");
-                                /***
-                                 * Lay danh sach beacon Lift tai carpark
-                                 */
-                                List<BeaconPoint> beaconLift = new ArrayList<BeaconPoint>();
-                                for (BeaconPoint beaconPoint : beaconsInCarPark) {
-                                    if (beaconPoint.mBeaconType == 2) {
-                                        beaconLift.add(beaconPoint);
-                                    }
-                                }
-                                /***
-                                 * Kiem tra co lift tai noi do xe ko?
-                                 */
-                                float destinationX = mParkingSession.getX();
-                                float destinationY = mParkingSession.getY();
-                                liftAtCarParked = getLiftNearCarParked(carParkCheckIn, beaconLift, floorCheckIn, destinationX, destinationY);
-
-                                if (liftAtCarParked != null) {
-                                    supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
-                                            liftAtCarParked.mX,
-                                            liftAtCarParked.mY,
-                                            destinationX, destinationY,
-                                            "Use elevator at " + carParkCheckInCar.name + " to the " + floorCheckIn, true
-                                    ));
-                                } else {
-                                    /***
-                                     * Neu khong tim lift gan nhat
-                                     */
-                                    BeaconPoint liftNearCarParked = getBeaconNear(floorsAtCarPark, beaconLift, floorCheckIn);
-
-                                    if (liftNearCarParked != null) {
-                                        supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
-                                                -1,
-                                                -1,
-                                                liftNearCarParked.mX, liftNearCarParked.mY,
-                                                "Use elevator at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
-                                        ));
-/***
- *
- * CHUA CHINH XAC CAN SUA KHI XONG TRUNG GIAN
- */
-                                        supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
-                                                -1,
-                                                -1,
-                                                mParkingSession.getX(), mParkingSession.getY(),
-                                                "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, true
-                                        ));
-
-                                    } else {
-                                        /***
-                                         * CHUA CHINH XAC CAN SUA KHI XONG TRUNG GIAN
-                                         */
-                                        supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
-                                                -1,
-                                                -1,
-                                                mParkingSession.getX(), mParkingSession.getY(),
-                                                "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, true
-                                        ));
-                                    }
-
-
-                                }
-                                lvMove.setAdapter(moveAdapter);
+                                showDetailMoveSlideHelpVisble();
                             }
 //                            getMapView().centerByCarObject();
                         }
@@ -1780,6 +1717,93 @@ public class LocateMyLotActivity extends BaseActivity {
             });
         }
         return funcWay;
+    }
+
+    private void showDetailMoveSlideHelpVisble() {
+        if(!getFuncWay().statePressed){
+            return;
+        }
+        supportMove.clear();
+        int carParkCheckIn = mParkingSession.getCarParkCheckIn();
+        String floorCheckIn = mParkingSession.getLastFloorCheckIn();
+        List<BeaconPoint> beaconsInCarPark = CLBeacon.getBeaconsByCarparkId(carParkCheckIn);
+        Carpark carParkCheckInCar = CLCarpark.getCarparkByCarparkId(carParkCheckIn);
+        BeaconPoint liftAtCarParked = null;
+        //Danh sach floors at carpark
+        String[] floorsAtCarPark = carParkCheckInCar.floor.split(",");
+        /***
+         * Lay danh sach beacon Lift tai carpark
+         */
+        List<BeaconPoint> beaconLift = new ArrayList<BeaconPoint>();
+        for (BeaconPoint beaconPoint : beaconsInCarPark) {
+            if (beaconPoint.mBeaconType == 2) {
+                beaconLift.add(beaconPoint);
+            }
+        }
+        /***
+         * Kiem tra co lift tai noi do xe ko?
+         */
+        float destinationX = mParkingSession.getX();
+        float destinationY = mParkingSession.getY();
+        liftAtCarParked = getLiftNearCarParked(carParkCheckIn, beaconLift, floorCheckIn, destinationX, destinationY);
+
+        if (liftAtCarParked != null) {
+            supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
+                    liftAtCarParked.mX,
+                    liftAtCarParked.mY,
+                    destinationX, destinationY,
+                    "Use elevator at " + carParkCheckInCar.name + " to the " + floorCheckIn, true
+            ));
+        } else {
+            /***
+             * Neu khong tim lift gan nhat
+             */
+            BeaconPoint liftNearCarParked = getBeaconNear(floorsAtCarPark, beaconLift, floorCheckIn);
+
+            if (liftNearCarParked != null) {
+                supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
+                        -1,
+                        -1,
+                        liftNearCarParked.mX, liftNearCarParked.mY,
+                        "Use elevator at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
+                ));
+/***
+ *
+ * CHUA CHINH XAC CAN SUA KHI XONG TRUNG GIAN
+ */
+                supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
+                        -1,
+                        -1,
+                        mParkingSession.getX(), mParkingSession.getY(),
+                        "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, true
+                ));
+
+            } else {
+                /***
+                 * CHUA CHINH XAC CAN SUA KHI XONG TRUNG GIAN
+                 */
+                supportMove.add(new DetailMoveObject(carParkCheckIn + "_" + floorCheckIn + ".png",
+                        -1,
+                        -1,
+                        mParkingSession.getX(), mParkingSession.getY(),
+                        "Use stair at " + carParkCheckInCar.name + " to the " + floorCheckIn, true
+                ));
+            }
+
+
+        }
+
+        moveAdapter = new MoveAdapter(LocateMyLotActivity.this,supportMove);
+        lvMove.setAdapter(moveAdapter);
+        if(supportMove.size()>0){
+            if(rlDetailMove.getVisibility() != View.VISIBLE){
+                showDetailMove();
+            }
+        }else{
+            if(rlDetailMove.getVisibility() == View.VISIBLE){
+                hideDetailMove();
+            }
+        }
     }
 
     private BeaconPoint getLiftNearCarParked(int carParkCheckInCarId, List<BeaconPoint> beaconLift, String floorCheckIn, float destinationX, float destinationY) {
@@ -2424,7 +2448,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private void resumeLiftLobby(String mapName) {
         //currentMapLiftLobby+";"+x+";"+y+";"+zone+";"+floor;
         String data = mParkingSession.getLiftLobby();//parkingSession.getString("LIFT_LOBBY_SAVE", "");
-        if (data.contains(mapName)) {
+        if (!data.isEmpty()&&data.contains(mapName)) {
             float x_lift_lobby = 0;
             float y_lift_lobby = 0;
             String zone_lift_lobby = "";
@@ -2706,6 +2730,7 @@ public class LocateMyLotActivity extends BaseActivity {
     public void forceCheckIn(int beaconId, int carparkId, boolean isNormalCheckIn, int type) {
         mParkingSession.setZone(getMapViewUserObject().zone);//parkingSession.edit().putString("ZONE", getMapViewUserObject().zone).apply();
         mParkingSession.setCarParkCheckIn(carparkId);
+        mParkingSession.setCarCheckInBeaconId(beaconId);
         //Thep update 2016/08/19 - update trang thai chung
         mParkingSession.setNormalCheckIn(isNormalCheckIn);
         currentCapark = carparkId;
@@ -2799,12 +2824,13 @@ public class LocateMyLotActivity extends BaseActivity {
         //Thep update 2016/08/05
         int carpark = beaconPoint.mCarparkId;
         String floor = beaconPoint.mFloor;
+        String zone = beaconPoint.mZone;
+
         currentMapLiftLobby = carpark + "_" + floor + ".png";
         //end
         float x = beaconPoint.mX;//getMapViewUserObject().location.originalX;
         float y = beaconPoint.mY;//getMapViewUserObject().location.originalY;
 //        String floor = getMapViewUserObject().floor;
-        String zone = getMapViewUserObject().zone;
 
 
 //		getCarparkFloor().setText(String.format("Floor %s", floor));
@@ -3014,6 +3040,9 @@ public class LocateMyLotActivity extends BaseActivity {
 
     //Thep - 2016/02/24
     private void showDialogLiftLobby(final BeaconPoint beaconPoint, boolean isChange) {
+        if(beaconPoint.mBeaconType !=2){
+            return;
+        }
         if (beaconPoint.mCarparkId != mParkingSession.getCarParkCheckIn()) {
             //Khac carpark ko hien lift lobby -> ko thong nhat du lieu share, save,..
             return;
@@ -3022,26 +3051,14 @@ public class LocateMyLotActivity extends BaseActivity {
             return;
         }
 
-//        if (getMapView().getVisibility() != View.VISIBLE) {
-//            return;
-//        }
-        //        update 2016/09/27 - checkin voi nhieu lift lobby theo kieu thay the
-//        String liftLobbySave = parkingSession.getString("LIFT_LOBBY_SAVE", "");
-//        if (!liftLobbySave.isEmpty())
-//            return;
-//        if (!LocateMyLotApp.locateMyLotActivityVisible) {
-//            // chuyen locateMyLotActivity sang foreground
-//            Intent resumeIntent = new Intent(getApplicationContext(), LocateMyLotActivity.class);
-//            resumeIntent.putExtra(Global.IS_LIFT_LOBBY_EXTRA, true);
-//            resumeIntent.putExtra(Global.ID_LIFT_LOBBY_EXTRA, beaconPoint.mId);
-//            resumeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            startActivity(resumeIntent);
-//        }
+
         lastTimeQuestion = System.currentTimeMillis();
         String dataCurrentLiftLobby = mParkingSession.getLiftLobby();
         if (dataCurrentLiftLobby.isEmpty()) {
-            checkInLiftLobby(beaconPoint);
-            mBeaconLift = beaconPoint.mId;
+            if(beaconPoint.mBeaconType == 2) {
+                checkInLiftLobby(beaconPoint);
+                mBeaconLift = beaconPoint.mId;
+            }
         } else if (!dataCurrentLiftLobby.equals(getDataSaveLift(beaconPoint))) {
             if (isChange)
                 alertDialogDetect.dismiss();

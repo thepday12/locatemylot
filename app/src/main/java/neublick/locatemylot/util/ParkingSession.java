@@ -16,6 +16,7 @@ public class ParkingSession {
 
     private SharedPreferences parkingSession;
 
+    private final String CHECK_IN_CAR_BEACON = "CHECK_IN_CAR_BEACON";
     private final String CHECK_IN_CARPARK = "CHECKIN_CARPARK";
     private final String LAST_CHECK_IN_CARPARK = "LAST_CHECK_IN_CARPARK";
     private final String LAST_CARPARK_SHOW_CONFIRM = "LAST_CARPARK_SHOW_CONFIRM";
@@ -76,6 +77,14 @@ public class ParkingSession {
 
     public void setCarParkCheckIn(int carParkId) {
         parkingSession.edit().putInt(CHECK_IN_CARPARK, carParkId).apply();
+    }
+
+    public int getCarCheckInBeaconId() {
+        return parkingSession.getInt(CHECK_IN_CAR_BEACON, DEFAULT_CARPARK_NULL);
+    }
+
+    public void setCarCheckInBeaconId(int carParkId) {
+        parkingSession.edit().putInt(CHECK_IN_CAR_BEACON, carParkId).apply();
     }
 
     //2-is check in

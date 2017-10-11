@@ -160,8 +160,8 @@ public class DetailMoveActivity extends FragmentActivity {
                 server_height = server_width * getMapView().bitmapHeight / getMapView().bitmapWidth;
 
                 // tinh ti so quy doi tu ban do tren server sang local
-//                Global.mRatioX = (float) (getMapView().bitmapWidth * 1.0 / server_width);
-//                Global.mRatioY = (float) (getMapView().bitmapHeight * 1.0 / server_height);
+                Global.mRatioXCopy = (float) (getMapView().bitmapWidth * 1.0 / server_width);
+                Global.mRatioYCopy = (float) (getMapView().bitmapHeight * 1.0 / server_height);
 
                 int resize = (int) Utils.convertDpToPixel(8, DetailMoveActivity.this);
                 int resizeUser = (int) Utils.convertDpToPixel(14, DetailMoveActivity.this);
@@ -169,7 +169,7 @@ public class DetailMoveActivity extends FragmentActivity {
                 if (detailMoveObject.getStartX() > 0 || detailMoveObject.getStartY() > 0) {
 //                    getMapViewUserObject().original(detailMoveObject.getStartX(), detailMoveObject.getStartY()).applyMatrix(getMapView().drawMatrix).visible(true);
 //                    getMapView().wayDrawXY(detailMoveObject.getDestinationX(), detailMoveObject.getDestinationY());
-                    getMapViewUserObject().original(detailMoveObject.getStartX()-resizeUser, detailMoveObject.getStartY()-resizeUser).applyMatrix(getMapView().drawMatrix).visible(true);
+                    getMapViewUserObject().original(detailMoveObject.getStartX()-resizeUser, detailMoveObject.getStartY()-resizeUser).applyMatrix(getMapView().drawMatrix).visible(false);
                 }
 
                 if (detailMoveObject.isDestinationIsCar()) {
@@ -178,9 +178,8 @@ public class DetailMoveActivity extends FragmentActivity {
                 getMapViewDestinationObject().original(detailMoveObject.getDestinationX() - resize, detailMoveObject.getDestinationY() - resize).applyMatrix(getMapView().drawMatrix).visible(true);
 
 
-
                 String data[] = detailMoveObject.getMapName().replace(".png","").split("_");
-                getMapView().wayDrawXY(resize,Integer.valueOf(data[0]),data[1],getMapViewDestinationObject().location.originalX, getMapViewDestinationObject().location.originalY);
+//                getMapView().wayDrawXY(resize,Integer.valueOf(data[0]),data[1],getMapViewDestinationObject().location.originalX, getMapViewDestinationObject().location.originalY);
 
 
 
