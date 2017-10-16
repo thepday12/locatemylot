@@ -1688,9 +1688,7 @@ public class LocateMyLotActivity extends BaseActivity {
 
                             if (funcWay.statePressed) {
                                 funcWay.modifyState(false);
-                                rlDetailMove.setVisibility(View.INVISIBLE);
-                                tvShowMoveDetail.setVisibility(View.INVISIBLE);
-                                getMapViewDestinationObject().visible(false);
+                                removeDetailWay();
                             } else {
                                 funcWay.modifyState(true);
                                 if (getMapViewCarObject().view.getVisibility() != View.VISIBLE)
@@ -1717,6 +1715,12 @@ public class LocateMyLotActivity extends BaseActivity {
             });
         }
         return funcWay;
+    }
+
+    private void removeDetailWay() {
+        rlDetailMove.setVisibility(View.INVISIBLE);
+        tvShowMoveDetail.setVisibility(View.INVISIBLE);
+        getMapViewDestinationObject().visible(false);
     }
 
     private void showDetailMoveSlideHelpVisble() {
@@ -1913,6 +1917,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private void checkout() {
         getMapView().wayClear();
         funcWay.modifyState(false);
+        removeDetailWay();
         getMapView().wayMode = false;
         currentMapCar = "";
         currentMapLiftLobby = "";

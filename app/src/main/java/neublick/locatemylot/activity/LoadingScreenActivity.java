@@ -375,9 +375,13 @@ public class LoadingScreenActivity extends AppCompatActivity {
     private void validData() {
 
         String phone = UserUtil.getUserPhone(LoadingScreenActivity.this);
+        String uiNumber = UserUtil.getIUNumber(LoadingScreenActivity.this);
+        String uiNumberTMP = UserUtil.getIUNumberTMP(LoadingScreenActivity.this);
         if (phone.isEmpty() && !UserUtil.getUserId(LoadingScreenActivity.this).isEmpty()) {
             showDialogEnterPhone();
-        } else {
+        }else if(uiNumber.isEmpty() && uiNumberTMP.isEmpty()){
+            showDialogEnterIU();
+        }else {
             startHomeActivity();
         }
     }

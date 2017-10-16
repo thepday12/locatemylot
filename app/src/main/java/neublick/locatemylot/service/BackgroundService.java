@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import neublick.locatemylot.R;
 import neublick.locatemylot.activity.LocateMyLotActivity;
@@ -66,7 +67,8 @@ import static neublick.locatemylot.activity.LocateMyLotActivity.PENDING_INTENT_I
 
 public class BackgroundService extends AbstractService {
 
-    private static final Region ALL_ESTIMOTE_BEACONS_REGION = new Region("rid", null, null, null);
+//    private static final Region ALL_ESTIMOTE_BEACONS_REGION = new Region("rid", null, null, null);//Toan bo cac beacon
+    private static final Region ALL_ESTIMOTE_BEACONS_REGION = new Region("rid",  UUID.fromString("8286F122-6385-2F0C-8888-E9CFD08C3B73"), null, null);
     private static long lastTimeDetectMyBeacon = -1;
     // entry point interacting with EstimoteSDK
     BeaconManager beaconManager;
