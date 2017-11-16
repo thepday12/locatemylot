@@ -94,7 +94,9 @@ public class ParkingHistoryActivity extends AppCompatActivity implements OnClick
                             mParkingSession.setCarParkCheckIn(parkingHistoryItem.carpackId);
                             mParkingSession.setCheckInFromHistory(true);
                             mParkingSession.setPhotoUri(parkingHistoryItem.photoName);
+
                             mParkingSession.setTimeCheckIn(parkingHistoryItem.timeCheckIn);
+//                            mParkingSession.setTimeCheckIn(System.currentTimeMillis()); //Thoi diem tinh gio  = time hien tai
                             Global.entryTime = -1;
                             if (parkingHistoryItem.isNormal > 0) {
                                 mParkingSession.setNormalCheckIn(true);

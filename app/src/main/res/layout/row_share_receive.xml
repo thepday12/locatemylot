@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parking_history_item"
+    android:layout_width="match_parent"
+    android:layout_height="96dp"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:id="@+id/rlPhoto"
+            android:layout_width="80dp"
+            android:layout_marginRight="16dp"
+            android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/no_image"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="2dp"
+            />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pbLoading"
+                android:visibility="invisible"
+                android:layout_centerInParent="true"/>
+            </RelativeLayout>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:layout_marginRight="48dp"
+            android:layout_toRightOf="@+id/rlPhoto"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvFrom"
+                android:textSize="15dp"
+                android:textColor="@color/darkGray"
+                android:textStyle="bold"
+                android:text="From: Thep To KIm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_marginTop="8dp"
+                android:id="@+id/tvTimeReceived"
+                android:textSize="14dp"
+                android:textColor="@color/gray"
+                android:text="Received: 14/01/2017"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                >
+                <TextView
+                    android:textSize="12dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/gray"
+                    android:text="Type: "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tvType"
+                    android:textSize="12dp"
+                    android:textStyle="bold|italic"
+                    android:textColor="@color/gray"
+                    android:text=""
+                    android:singleLine="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivDelete"
+            android:layout_width="48dp"
+            android:layout_alignParentRight="true"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/lml_history_button_delete"
+            />
+
+
+
+        <include
+            layout="@layout/phi_checkin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/rlPhoto"
+            android:layout_weight="1"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:visibility="gone"
+        android:background="@android:color/darker_gray"/>
+</LinearLayout>

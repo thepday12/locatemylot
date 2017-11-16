@@ -5,11 +5,13 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -22,6 +24,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -32,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,8 +48,12 @@ import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -82,6 +90,8 @@ import neublick.locatemylot.receiver.AlarmAlertBroadcastReceiver;
 
 // helper class :-)
 public class Utils {
+    public static final String METHOD_POST = "POST" ;
+
     public static void showMessage(final Dialog dialogNotice, String message, String title, final Activity context, final boolean isClose) {
         if (context == null) return;
         if (dialogNotice != null && !dialogNotice.isShowing()) {
@@ -362,6 +372,22 @@ public class Utils {
         return CLCarpark.getCarparkNameByCarparkId(carparkId);
     }
 
+
+    public static String shareCarPhoto(Context context,HashMap hashMap,Uri uriImage) {
+            String url = Config.CMS_URL + "/act.php";
+            String pathToImageFile = Utils.getRealPathFromUri(context, uriImage);
+            String fileMimeType = Utils.getMimeType(context, uriImage);
+            return performPostCallUseHeader(url, hashMap, METHOD_POST, pathToImageFile, "image", fileMimeType,Global.MAX_WIDTH_IMAGE, Global.MAX_HEIGHT_IMAGE);
+
+    }
+
+    public static String shareScreenBitmap(HashMap hashMap,Bitmap bitmap,String userId) {
+            String url = Config.CMS_URL + "/act.php";
+            String imageName =  "screen_share"+userId;
+            return performPostCallUseHeader(url, hashMap,imageName, METHOD_POST, bitmap, Global.MAX_WIDTH_IMAGE, Global.MAX_HEIGHT_IMAGE);
+
+    }
+
     //Thep update 2016/08/05
     public static String getCurrentCarparkNameWithCarparkId(int carparkId) {
         if (carparkId == 0) {
@@ -493,6 +519,296 @@ public class Utils {
         return response.trim();
     }
 
+
+    private static String performPostCallUseHeader(String requestURL, HashMap<String, Object> postDataParams, String method, String filepath, String fileField, String fileMimeType, int maxWidth, int maxHeight) {
+
+        URL url;
+        String response = "";
+        HttpURLConnection conn = null;
+        ByteArrayOutputStream bos = null;
+
+        DataOutputStream outputStream = null;
+        String twoHyphens = "--";
+        String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
+        String lineEnd = "\r\n";
+
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+
+        String[] q = filepath.split("/");
+        int idx = q.length - 1;
+
+
+        try {
+
+            File file = new File(filepath);
+
+            Bitmap bitmap = BitmapUtil.resizeImage(file, maxWidth, maxHeight);
+            if (bitmap != null) {
+
+                bos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bos);
+            }
+//            byte[] bitmapdata = bos.toByteArray();
+            url = new URL(requestURL);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(method);
+//            String accessToken = UtilSharedPreferences.getInstanceSharedPreferences(mContext).getAccessToken();
+
+//            conn.setRequestProperty("User-Agent", "SosieApp");
+//            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("User-Agent", "Android Multipart HTTP Client 1.0");
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+
+//            if (!accessToken.isEmpty()) {
+////                String basicAuth = "Bearer " +accessToken;
+//                String basicAuth = accessToken;
+//                conn.setRequestProperty("Authorization", basicAuth);
+//            }
+            conn.setReadTimeout(30000);
+            conn.setConnectTimeout(30000);
+            conn.setDoInput(true);
+            if (method == METHOD_POST)
+                conn.setDoOutput(true);
+
+//            if (postDataParams.size() > 0) {
+//                OutputStream os = conn.getOutputStream();
+//                BufferedWriter writer = new BufferedWriter(
+//                        new OutputStreamWriter(os, "UTF-8"));
+//                writer.write(getPostDataString(postDataParams));
+//            }
+
+            outputStream = new DataOutputStream(conn.getOutputStream());
+
+
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + q[idx] + "\"" + lineEnd);
+            outputStream.writeBytes("Content-Type: " + fileMimeType + lineEnd);
+            outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
+
+            outputStream.writeBytes(lineEnd);
+            if (bos == null) {
+                FileInputStream fileInputStream = new FileInputStream(file);
+
+                outputStream.writeBytes(getPostData(postDataParams));
+
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                while (bytesRead > 0) {
+                    outputStream.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                }
+
+            } else {
+                outputStream.write(bos.toByteArray());
+            }
+            outputStream.writeBytes(lineEnd);
+
+            for (Map.Entry<String, Object> entry : postDataParams.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue().toString();
+
+                outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"" + key + "\"" + lineEnd);
+                outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
+                outputStream.writeBytes(lineEnd);
+                outputStream.writeBytes(value);
+                outputStream.writeBytes(lineEnd);
+
+            }
+
+            outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line = br.readLine()) != null) {
+//                    response += "\n" + line;
+                    response += line;
+                }
+            } else {
+                String line;
+
+                BufferedReader br;
+                if (responseCode > 200 && responseCode < 400)
+                    br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                else
+                    br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+
+
+                while ((line = br.readLine()) != null) {
+//                    response += "\n" + line;
+                    response += line;
+                }
+            }
+        } catch (Exception e) {
+
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.flush();
+                    outputStream.close();
+
+                }
+            } catch (IOException e) {
+
+            }
+            try{
+                if(bos!=null){
+                    bos.close();
+                    bos.flush();
+                }
+            }catch (Exception e){
+
+            }
+            if (conn != null)
+                conn.disconnect();
+        }
+        Log.e("RESPONSE_SERVER", response);
+        return response;
+    }
+
+    private static String performPostCallUseHeader(String requestURL, HashMap<String, Object> postDataParams,String imageName, String method, Bitmap screenBitmap, int maxWidth, int maxHeight) {
+
+        URL url;
+        String response = "";
+        HttpURLConnection conn = null;
+        ByteArrayOutputStream bos = null;
+
+        DataOutputStream outputStream = null;
+        String twoHyphens = "--";
+        String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
+        String lineEnd = "\r\n";
+
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+
+
+
+        try {
+
+
+
+//            Bitmap bitmap = BitmapUtil.resizeImage(screenBitmap, maxWidth, maxHeight);
+            Bitmap bitmap = screenBitmap;
+            if (bitmap != null) {
+
+                bos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            }
+//            byte[] bitmapdata = bos.toByteArray();
+            url = new URL(requestURL);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(method);
+
+//            conn.setRequestProperty("User-Agent", "SosieApp");
+//            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("User-Agent", "Android Multipart HTTP Client 1.0");
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+
+            conn.setReadTimeout(30000);
+            conn.setConnectTimeout(30000);
+            conn.setDoInput(true);
+            if (method == METHOD_POST)
+                conn.setDoOutput(true);
+
+            outputStream = new DataOutputStream(conn.getOutputStream());
+
+
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\""+imageName +".png\"" + lineEnd);
+            outputStream.writeBytes("Content-Type: image/png" + lineEnd);
+            outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
+
+            outputStream.writeBytes(lineEnd);
+            if (bos != null) {
+                outputStream.write(bos.toByteArray());
+            }else {
+                return response;
+            }
+            outputStream.writeBytes(lineEnd);
+
+            for (Map.Entry<String, Object> entry : postDataParams.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue().toString();
+
+                outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"" + key + "\"" + lineEnd);
+                outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
+                outputStream.writeBytes(lineEnd);
+                outputStream.writeBytes(value);
+                outputStream.writeBytes(lineEnd);
+
+            }
+
+            outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+
+            int responseCode = conn.getResponseCode();
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line = br.readLine()) != null) {
+                    response += line;
+                }
+            } else {
+                String line;
+
+                BufferedReader br;
+                if (responseCode > 200 && responseCode < 400)
+                    br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                else
+                    br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+
+
+                while ((line = br.readLine()) != null) {
+                    response += line;
+                }
+            }
+        } catch (Exception e) {
+
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.flush();
+                    outputStream.close();
+
+                }
+            } catch (IOException e) {
+
+            }
+            try{
+                if(bos!=null){
+                    bos.close();
+                    bos.flush();
+                }
+            }catch (Exception e){
+
+            }
+            if (conn != null)
+                conn.disconnect();
+        }
+        Log.e("RESPONSE_SERVER", response);
+        return response;
+    }
+
     /***
      * Data encode
      * @param params
@@ -513,6 +829,21 @@ public class Utils {
             result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
         }
         Log.e("RESPONSE_SERVER_DATA", result.toString());
+        return result.toString();
+    }
+
+    private static String getPostData(HashMap<String, Object> params) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            if (first)
+                first = false;
+            else
+                result.append("&");
+            result.append(entry.getKey());
+            result.append("=");
+            result.append(entry.getValue());
+        }
         return result.toString();
     }
 
@@ -916,6 +1247,37 @@ public class Utils {
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Ringtone r = RingtoneManager.getRingtone(context, soundUri);
         r.play();
+    }
+
+    public static String getRealPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } catch (Exception e) {
+            return contentUri.getPath();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    public static String getMimeType(Context context, Uri uri) {
+        String mimeType = null;
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            ContentResolver cr = context.getContentResolver();
+            mimeType = cr.getType(uri);
+        } else {
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+                    .toString());
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    fileExtension.toLowerCase());
+        }
+        return mimeType;
     }
 
 //    Animation fadeIn = new AlphaAnimation(0, 1);

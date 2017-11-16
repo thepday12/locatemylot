@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp"
+    >
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginRight="4dp"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_clear_white_24dp"
+        android:tint="@color/black"
+        android:id="@+id/ivClose"
+        android:layout_alignParentRight="true"
+
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btShareLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_blue_bg"
+            android:text="Share location"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            />
+
+        <Button
+            android:id="@+id/btShareScreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_green_bg"
+            android:text="Share image screen"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            />
+    </LinearLayout>
+</RelativeLayout>
+    

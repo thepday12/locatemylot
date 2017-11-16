@@ -2,9 +2,12 @@ package neublick.locatemylot.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.os.Environment;
+import android.view.View;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -163,5 +166,85 @@ public class BitmapUtil {
             return false;
         }
 
+    }
+
+    public static Bitmap viewToBitmap(View view,int width,int height) {
+        try {
+            Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            view.draw(canvas);
+            //Scale bitmap
+            return Bitmap.createScaledBitmap(bitmap,width,height, true);
+//            return bitmap;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Bitmap resizeImage(File file, int maxWidth, int maxHeight){
+// create the options
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+
+//just decode the file
+        opts.inJustDecodeBounds = false;
+
+        Bitmap bp = null;
+        try {
+            bp = BitmapFactory.decodeStream(new FileInputStream(file), null, opts);
+            if(bp==null)
+                bp = BitmapFactory.decodeFile(file.getAbsolutePath());
+        } catch (Exception e) {
+            return null;
+        }
+//        Bitmap bp = BitmapFactory.decodeFile(path, opts);
+
+//get the original size
+        int orignalHeight = opts.outHeight;
+        int orignalWidth = opts.outWidth;
+//initialization of the scale
+        int resizeScale = 1;
+//get the good scale
+        if ( orignalWidth > maxWidth || orignalHeight > maxHeight ) {
+            final int heightRatio = Math.round((float) orignalHeight / (float) maxHeight);
+            final int widthRatio = Math.round((float) orignalWidth / (float) maxWidth);
+            resizeScale = heightRatio < widthRatio ? heightRatio : widthRatio;
+
+            maxHeight = maxHeight*maxWidth/orignalWidth;
+            bp=Bitmap.createScaledBitmap(bp,
+                    maxWidth, maxHeight, false);
+        }
+//put the scale instruction (1 -> scale to (1/1); 8-> scale to 1/8)
+        opts.inSampleSize = resizeScale;
+        opts.inJustDecodeBounds = false;
+//get the futur size of the bitmap
+        int bmSize = (orignalWidth / resizeScale) * (orignalHeight / resizeScale) * 4;
+//check if it's possible to store into the vm java the picture
+        if ( Runtime.getRuntime().freeMemory() > bmSize ) {
+//decode the file
+            try {
+                bp = BitmapFactory.decodeStream(new FileInputStream(file), null, opts);
+            } catch (FileNotFoundException e) {
+            }
+        }
+        return bp;
+    }
+
+    public static Bitmap resizeImage(Bitmap bp, int maxWidth, int maxHeight){
+        int orignalHeight = bp.getHeight();
+        int orignalWidth = bp.getWidth();
+//initialization of the scale
+//        int resizeScale = 1;
+//get the good scale
+        if ( orignalWidth > maxWidth || orignalHeight > maxHeight ) {
+            final int heightRatio = Math.round((float) orignalHeight / (float) maxHeight);
+            final int widthRatio = Math.round((float) orignalWidth / (float) maxWidth);
+//            resizeScale = heightRatio < widthRatio ? heightRatio : widthRatio;
+
+            maxHeight = maxHeight*maxWidth/orignalWidth;
+            bp=Bitmap.createScaledBitmap(bp,
+                    maxWidth, maxHeight, false);
+        }
+
+        return bp;
     }
 }

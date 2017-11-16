@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_sign_in"
-        android:orderInCategory="1"
         android:title="Sign In"
         app:showAsAction="always"
         android:icon="@drawable/ic_sign_in_out"
@@ -13,7 +12,6 @@
 
     <item
         android:id="@+id/action_sign_out"
-        android:orderInCategory="1"
         android:title="Sign Out"
         android:visible="false"
         app:showAsAction="always"
@@ -22,7 +20,6 @@
 
     <item
         android:id="@+id/action_change_pass"
-        android:orderInCategory="1"
         android:title="Change password"
         app:showAsAction="always"
         android:icon="@drawable/ic_lock_outline_black_24dp"
@@ -30,36 +27,34 @@
 
     <item
         android:id="@+id/action_history"
-        android:orderInCategory="2"
         android:title="History"
         app:showAsAction="always"
         android:icon="@drawable/ic_history_white_24dp"
         />
-    <item
-        android:id="@+id/action_setting"
-        android:orderInCategory="5"
-        android:title="Settings"
-        android:icon="@drawable/ic_setting"
-        />
+
     <item
         android:id="@+id/action_share_location"
-        android:orderInCategory="2"
         android:title="Share My Vehicle Location"
         app:showAsAction="always"
         android:icon="@drawable/ic_share"
         />
 
+    <item
+        android:id="@+id/action_share_receive"
+        android:title="Share receive"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_group_work"
+        />
+
 
     <item
         android:id="@+id/action_promotion"
-        android:orderInCategory="3"
         android:title="Promotions"
         app:showAsAction="always"
         android:icon="@drawable/ic_promotion"
         />
     <item
         android:id="@+id/action_adv"
-        android:orderInCategory="4"
         android:title="Advertising"
         app:showAsAction="always"
         android:icon="@drawable/ic_adv"
@@ -67,29 +62,32 @@
 
 
 
+    <item
+        android:id="@+id/action_setting"
+        android:title="Settings"
+        android:icon="@drawable/ic_setting"
+        />
+
+    <item
+        android:id="@+id/action_info"
+        android:title="About LML"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_copyright_white_24dp"
+        />
 
     <item
         android:id="@+id/action_feedback"
-        android:orderInCategory="7"
         android:title="Feedback"
         app:showAsAction="always"
         android:icon="@drawable/ic_feedback"
         />
 
-    <item
-        android:id="@+id/action_info"
-        android:orderInCategory="6"
-        android:title="About LML"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_copyright_white_24dp"
-        />
 
 
 
 
     <item
         android:id="@+id/action_help"
-        android:orderInCategory="8"
         android:title="Help"
         app:showAsAction="always"
         android:icon="@drawable/ic_help"

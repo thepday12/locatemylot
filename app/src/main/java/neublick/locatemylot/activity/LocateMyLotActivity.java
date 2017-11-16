@@ -98,6 +98,7 @@ import neublick.locatemylot.database.CLParkingRates;
 import neublick.locatemylot.database.CLParkingSurcharge;
 import neublick.locatemylot.dialog.DialogGetSharedLocation;
 import neublick.locatemylot.dialog.DialogSelectCarPark;
+import neublick.locatemylot.dialog.DialogShareLocation;
 import neublick.locatemylot.dialog.DialogUserLocation;
 import neublick.locatemylot.model.ADVObject;
 import neublick.locatemylot.model.BeaconPoint;
@@ -111,6 +112,7 @@ import neublick.locatemylot.model.ParkingSurcharge;
 import neublick.locatemylot.receiver.BluetoothBroadcastReceiver;
 import neublick.locatemylot.service.BackgroundService;
 import neublick.locatemylot.service.ServiceManager;
+import neublick.locatemylot.service.fcm.MyFirebaseMessagingService;
 import neublick.locatemylot.ui.MapView;
 import neublick.locatemylot.ui.RoundedImageView;
 import neublick.locatemylot.ui.SquareImageButton;
@@ -142,7 +144,7 @@ public class LocateMyLotActivity extends BaseActivity {
 
     ServiceManager serviceManager;
     //Tim duong 2017/08/24
-    private RelativeLayout rlDetailMove;
+    private RelativeLayout rlDetailMove, rlContent;
     private TextView tvHiddenMoveDetail, tvShowMoveDetail;
     private ListView lvMove;
     private boolean isAnamationMoveRun = false;
@@ -151,6 +153,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private MoveAdapter moveAdapter;
     private int SIZE_OF_DESTINATION = 0;
     private String lastMapAddListMove = "";
+    public static Bitmap BITMAP_SHARE_SCREEN = null;
     //END Tim duong
     int mRootWidth;
     //Thep update 2016/08/12
@@ -174,7 +177,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private boolean isUpdateLotRunning = false;
     public static List<Carpark> carParkAndLots = new ArrayList<>();
     public static final String BROADCAST_UPDATE_LOT = "BROADCAST_UPDATE_LOT";
-    private Dialog dialogNotice;
+    private Dialog dialogNotice, dialogShareScreen;
     private String mUserId;
     //end
     //Thep update 2016/08/05
@@ -186,10 +189,10 @@ public class LocateMyLotActivity extends BaseActivity {
     private String currentMapLiftLobby = "";
     private String currentMapCar = "";
 
-    private int mBeaconCar=-100,mBeaconLift =-100;
-    private int currentBeaconId=-100;
-    private  float currentServerX = -100;
-    private  float currentServerY = -100;
+    private int mBeaconCar = -100, mBeaconLift = -100;
+    private int currentBeaconId = -100;
+    private float currentServerX = -100;
+    private float currentServerY = -100;
     private ProgressDialog mDialog;
     //end
     //Thep update 2016/08/06
@@ -432,6 +435,11 @@ public class LocateMyLotActivity extends BaseActivity {
             dialogNotice.requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
 
+
+        dialogShareScreen = new Dialog(LocateMyLotActivity.this);
+        dialogShareScreen.setCanceledOnTouchOutside(false);
+        dialogShareScreen.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         //getAppHash();onCre
         GPSHelper.clearNotificationGPS(LocateMyLotActivity.this);
         bluetoothReceiver = new BluetoothBroadcastReceiver();
@@ -443,6 +451,7 @@ public class LocateMyLotActivity extends BaseActivity {
         btHandler = (ImageButton) findViewById(R.id.btHandler);
         llParkingRates = (LinearLayout) findViewById(R.id.llParkingRates);
         rlHandlerRates = (RelativeLayout) findViewById(R.id.rlHandlerRates);
+        rlContent = (RelativeLayout) findViewById(R.id.rlContent);
         rlDetailRatesTop = (RelativeLayout) findViewById(R.id.rlDetailRatesTop);
         btHideHandler = (ImageButton) findViewById(R.id.btHideHandler);
         tvWebAtCarPark = (TextView) findViewById(R.id.tvWebAtCarPark);
@@ -526,8 +535,8 @@ public class LocateMyLotActivity extends BaseActivity {
                 if (!photoName.equals("")) {
 //                    File file = Utils.getImageFile(photoName);
 //                    if (file != null && file.exists()) {
-                        showDialogZoomPhoto();
-                        return;
+                    showDialogZoomPhoto();
+                    return;
 //                    }
                 }
                 verifyPermissions(LocateMyLotActivity.this);
@@ -597,8 +606,8 @@ public class LocateMyLotActivity extends BaseActivity {
                         if (LocateMyLotApp.locateMyLotActivityVisible && (msg.what == BackgroundService.MOBILE_LOCATION_RETRIEVAL)) {
                             Bundle retrieveData = msg.getData();
 //                            getMapView().setVisibility(View.VISIBLE);
-                             currentServerX = (float) (retrieveData.getDouble("X"));
-                             currentServerY = (float) (retrieveData.getDouble("Y"));
+                            currentServerX = (float) (retrieveData.getDouble("X"));
+                            currentServerY = (float) (retrieveData.getDouble("Y"));
 
                             float localX = Global.mRatioX * currentServerX;
                             float localY = Global.mRatioY * currentServerY;
@@ -720,12 +729,12 @@ public class LocateMyLotActivity extends BaseActivity {
                                                     }
 
 
-                                                        supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                                currentServerX,
-                                                                currentServerY,
-                                                                beaconStairNear.mX, beaconStairNear.mY,
-                                                                "Use stair at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
-                                                        ));
+                                                    supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
+                                                            currentServerX,
+                                                            currentServerY,
+                                                            beaconStairNear.mX, beaconStairNear.mY,
+                                                            "Use stair at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
+                                                    ));
 
 
                                                     /***
@@ -771,7 +780,7 @@ public class LocateMyLotActivity extends BaseActivity {
                                                     getMapViewDestinationObject().original(beaconLiftAtFloor.mX - SIZE_OF_DESTINATION, beaconLiftAtFloor.mY - SIZE_OF_DESTINATION).applyMatrix(getMapView().drawMatrix).visible(true);
 
                                                     supportMove.add(new DetailMoveObject(carParkId + "_" + floor + ".png",
-                                                         currentServerX,
+                                                            currentServerX,
                                                             currentServerY,
                                                             beaconLiftAtFloor.mX, beaconLiftAtFloor.mY,
                                                             "Use elevator at " + carParkCheckInCar.name + " to the " + liftNearCarParked.mFloor, false
@@ -981,10 +990,60 @@ public class LocateMyLotActivity extends BaseActivity {
             } else {
 
                 sendDataAdv2Server();
-               sendDataHistory2Server();
+                sendDataHistory2Server();
             }
         }
     }
+
+    @Override
+    protected void showDialogShareScreen() {
+        if (!dialogShareScreen.isShowing()) {
+            dialogShareScreen.setContentView(R.layout.dialog_screen_share);
+            Button btShare = (Button) dialogShareScreen.findViewById(R.id.btShare);
+            Button btCancel = (Button) dialogShareScreen.findViewById(R.id.btCancel);
+            ImageView ivScreen = (ImageView) dialogShareScreen.findViewById(R.id.ivScreenShare);
+            ProgressBar pbLoadScreenShareImage = (ProgressBar) dialogShareScreen.findViewById(R.id.pbLoadScreenShareImage);
+            BITMAP_SHARE_SCREEN = null;
+
+            btShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (BITMAP_SHARE_SCREEN != null) {
+                        dialogShareScreen.dismiss();
+
+                        Intent intent = new Intent(LocateMyLotActivity.this, DialogShareLocation.class);
+                        intent.putExtra("TYPE", Global.TYPE_SHARE_SCREEN);
+//                        intent.putExtra("BITMAP", bitmapShareScreen);
+                        startActivity(intent);
+
+//                        showDialogShare(Global.TYPE_SHARE_SCREEN, bitmapShareScreen);
+                    } else {
+                        Toast.makeText(mContext, "Wait photo loaded", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            btCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogShareScreen.dismiss();
+                }
+            });
+            ViewGroup.LayoutParams layoutParams = ivScreen.getLayoutParams();
+
+            int imageWidth = (int) (rlContent.getWidth() - Utils.convertDpToPixel(120, LocateMyLotActivity.this));
+            int imageHeight = imageWidth * rlContent.getHeight() / rlContent.getWidth();
+            layoutParams.width = imageWidth;
+            layoutParams.height = imageHeight;
+            ivScreen.setLayoutParams(layoutParams);
+            new GetBitmap(ivScreen, pbLoadScreenShareImage, imageWidth, imageHeight).execute();
+
+
+            dialogShareScreen.show();
+        }
+
+        super.showDialogShareScreen();
+    }
+
 
     /***
      * Lay ra beacon Lift gan USer nhat
@@ -1291,13 +1350,15 @@ public class LocateMyLotActivity extends BaseActivity {
         // set the custom dialog components - text, image and button
 
         ImageView ivImageZoom = (ImageView) dialog.findViewById(R.id.ivImageZoom);
-        Button btRemovePhoto = (Button) dialog.findViewById(R.id.btRemovePhoto);
-        final Button btCancel = (Button) dialog.findViewById(R.id.btCancel);
+        ImageView ivRemovePhoto = (ImageView) dialog.findViewById(R.id.ivRemovePhoto);
+        ImageView ivShare = (ImageView) dialog.findViewById(R.id.ivShare);
+        ImageView ivBack = (ImageView) dialog.findViewById(R.id.ivBack);
 //        Picasso.with(LocateMyLotActivity.this).load(file).into(ivImageZoom);
-        ivImageZoom.setImageDrawable(btCamera.getDrawable());
+//        ivImageZoom.setImageDrawable(btCamera.getDrawable());
+        Picasso.with(LocateMyLotActivity.this).load(mParkingSession.getPhotoUri()).into(ivImageZoom);
 
 
-        btRemovePhoto.setOnClickListener(new View.OnClickListener() {
+        ivRemovePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mParkingSession.setPhotoUri("");
@@ -1305,10 +1366,19 @@ public class LocateMyLotActivity extends BaseActivity {
                 dialog.dismiss();
             }
         });
-        btCancel.setOnClickListener(new View.OnClickListener() {
+        ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+            }
+        });
+        ivShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LocateMyLotActivity.this, DialogShareLocation.class);
+                intent.putExtra("TYPE", Global.TYPE_SHARE_CAR_PHOTO);
+                intent.putExtra("IMAGE_URI", mParkingSession.getPhotoUri());
+                startActivity(intent);
             }
         });
 
@@ -1346,9 +1416,9 @@ public class LocateMyLotActivity extends BaseActivity {
     }
 
     private void setNotfoundBeacon() {
-        lastMapAddListMove ="";
+        lastMapAddListMove = "";
         if (rlSlideHelp.getVisibility() == View.VISIBLE) {
-            if(getMapView().wayMode)
+            if (getMapView().wayMode)
                 showDetailMoveSlideHelpVisble();
         }
         if (rlMap.getVisibility() == View.VISIBLE) {
@@ -1385,7 +1455,7 @@ public class LocateMyLotActivity extends BaseActivity {
                 String name = neublick.locatemylot.util.Utils.getCurrentCarparkNameWithCarparkId(carparkId);
                 //end
                 BackgroundService.isWelcome = false;
-                forceCheckIn(-100,carparkId, true, 0);
+                forceCheckIn(-100, carparkId, true, 0);
 
                 String title = "Confirm Check-out";
                 String text = "Do you really want to check out?";
@@ -1672,7 +1742,7 @@ public class LocateMyLotActivity extends BaseActivity {
                     boolean isCheckIn = mParkingSession.isCheckIn();
                     boolean isNormalCheckIn = mParkingSession.isNormalCheckIn();
 
-                    if (!isCheckInCar||!isCheckIn) {
+                    if (!isCheckInCar || !isCheckIn) {
                         new AlertDialog.Builder(LocateMyLotActivity.this)
                                 .setTitle("Information")
                                 .setMessage("You need to check in first before using this function")
@@ -1724,7 +1794,7 @@ public class LocateMyLotActivity extends BaseActivity {
     }
 
     private void showDetailMoveSlideHelpVisble() {
-        if(!getFuncWay().statePressed){
+        if (!getFuncWay().statePressed) {
             return;
         }
         supportMove.clear();
@@ -1797,14 +1867,14 @@ public class LocateMyLotActivity extends BaseActivity {
 
         }
 
-        moveAdapter = new MoveAdapter(LocateMyLotActivity.this,supportMove);
+        moveAdapter = new MoveAdapter(LocateMyLotActivity.this, supportMove);
         lvMove.setAdapter(moveAdapter);
-        if(supportMove.size()>0){
-            if(rlDetailMove.getVisibility() != View.VISIBLE){
+        if (supportMove.size() > 0) {
+            if (rlDetailMove.getVisibility() != View.VISIBLE) {
                 showDetailMove();
             }
-        }else{
-            if(rlDetailMove.getVisibility() == View.VISIBLE){
+        } else {
+            if (rlDetailMove.getVisibility() == View.VISIBLE) {
                 hideDetailMove();
             }
         }
@@ -1842,14 +1912,14 @@ public class LocateMyLotActivity extends BaseActivity {
             funcCheckIn.setMyOnClickListener(new ToggleSquareImageButton.MyOnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    checkInAction(currentBeaconId,true);
+                    checkInAction(currentBeaconId, true);
                 }
             });
         }
         return funcCheckIn;
     }
 
-    public void checkInAction(final int beaconId,final boolean isNormalCheckIn) {
+    public void checkInAction(final int beaconId, final boolean isNormalCheckIn) {
         //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
         boolean isCheckIn = mParkingSession.isCheckIn();
         final int carparkId = currentCapark;
@@ -1857,18 +1927,18 @@ public class LocateMyLotActivity extends BaseActivity {
         if (!isCheckIn) {
             if (isNormalCheckIn) {
                 if (currentCapark >= 0 && !currentFloor.isEmpty()) {
-                    showDialogCheckIn(beaconId,2, carparkId);
+                    showDialogCheckIn(beaconId, 2, carparkId);
                 } else {
                     Toast.makeText(LocateMyLotActivity.this, getString(R.string.no_carpark), Toast.LENGTH_SHORT).show();
                 }
             } else {//Thep update 2016/08/19 - Update xu ly click timer
-                forceCheckIn(beaconId,currentCapark, isNormalCheckIn, 0);
+                forceCheckIn(beaconId, currentCapark, isNormalCheckIn, 0);
             }
         } else {
             if (isNormalCheckIn) {
                 if (!mParkingSession.isCarCheckLocation()) {
                     if (currentCapark >= 0 && !currentFloor.isEmpty() && mParkingSession.isNormalCheckIn()) {
-                        showDialogCheckIn(beaconId,1, carparkId);
+                        showDialogCheckIn(beaconId, 1, carparkId);
                     } else {
                         showDialogCheckOut("");
 //                        Toast.makeText(LocateMyLotActivity.this, getString(R.string.no_carpark), Toast.LENGTH_SHORT).show();
@@ -1957,12 +2027,12 @@ public class LocateMyLotActivity extends BaseActivity {
         newEntry.beaconCarId = mBeaconCar;
         newEntry.beaconLiftId = mBeaconLift;
 
-        String dataHistory = newEntry.timeCheckIn+"~"+newEntry.timeCheckOut+"~"+newEntry.x+"~"+
-                newEntry.y+"~"+newEntry.zone+"~"+newEntry.floor+"~"+newEntry.carpackId+"~"+
-                newEntry.beaconLiftId+"~"+newEntry.beaconCarId+"~"+newEntry.rates+"~"+newEntry.isNormal;
-        UserUtil.addHistory(LocateMyLotActivity.this,dataHistory);
+        String dataHistory = newEntry.timeCheckIn + "~" + newEntry.timeCheckOut + "~" + newEntry.x + "~" +
+                newEntry.y + "~" + newEntry.zone + "~" + newEntry.floor + "~" + newEntry.carpackId + "~" +
+                newEntry.beaconLiftId + "~" + newEntry.beaconCarId + "~" + newEntry.rates + "~" + newEntry.isNormal;
+        UserUtil.addHistory(LocateMyLotActivity.this, dataHistory);
         CLParkingHistory.addEntry(newEntry);
-        if(Utils.isInternetConnected(LocateMyLotActivity.this)){
+        if (Utils.isInternetConnected(LocateMyLotActivity.this)) {
             sendDataHistory2Server();
         }
         Picasso.with(LocateMyLotActivity.this).load(R.drawable.ic_photo_camera).into(btCamera);
@@ -1995,7 +2065,7 @@ public class LocateMyLotActivity extends BaseActivity {
             public void onCheckIn() {
                 // force to checkIn, do not care if checked in
 //                if(mMapView.getVisibility()==View.VISIBLE) {
-                forceCheckIn(beaconId,carparkId, true, type);
+                forceCheckIn(beaconId, carparkId, true, type);
 
                 this.dismiss();
 //                }else{
@@ -2404,10 +2474,45 @@ public class LocateMyLotActivity extends BaseActivity {
     private void checkShareLocation() {
         if (ShareLocationUtil.isNewData(LocateMyLotActivity.this, UserUtil.getUserId(LocateMyLotActivity.this))) {
             Global.isGetSharedLocationDialogShown = true;
-            Intent intent = new Intent(getBaseContext(), DialogGetSharedLocation.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Global.SHARE_DATA_EXTRA, ShareLocationUtil.getLastShareLocation(LocateMyLotActivity.this));
-            startActivity(intent);
+            String data = ShareLocationUtil.getLastShareLocation(LocateMyLotActivity.this);
+            int type = Global.TYPE_SHARE_LOCATION;
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(data);
+                type = new JSONObject(data).getInt("type");
+            } catch (JSONException e) {
+            }
+            switch (type) {
+                case Global.TYPE_SHARE_LOCATION:{
+                    Intent intent = new Intent(getBaseContext(), DialogGetSharedLocation.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra(Global.SHARE_DATA_EXTRA, data);
+                    startActivity(intent);}
+                    break;
+                default: {
+                    if(jsonObject!=null) {
+                        String imageUrl = "";
+                        String fromUserName ="";
+                        try {
+                            imageUrl = jsonObject.getString("image_url");
+                            fromUserName = jsonObject.getString("user_from_name");
+
+                        } catch (JSONException e) {
+
+                        }
+                        if(!imageUrl.isEmpty()) {
+                            Intent intent = new Intent(LocateMyLotActivity.this, DetailImageActivity.class);
+                            intent.putExtra("IMAGE_URL", imageUrl);
+                            intent.putExtra("FROM", fromUserName);
+                            intent.putExtra("IS_NEW", true);
+                            startActivity(intent);
+                        }
+                    }
+                }break;
+
+
+            }
+
         }
     }
 
@@ -2453,7 +2558,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private void resumeLiftLobby(String mapName) {
         //currentMapLiftLobby+";"+x+";"+y+";"+zone+";"+floor;
         String data = mParkingSession.getLiftLobby();//parkingSession.getString("LIFT_LOBBY_SAVE", "");
-        if (!data.isEmpty()&&data.contains(mapName)) {
+        if (!data.isEmpty() && data.contains(mapName)) {
             float x_lift_lobby = 0;
             float y_lift_lobby = 0;
             String zone_lift_lobby = "";
@@ -2623,13 +2728,14 @@ public class LocateMyLotActivity extends BaseActivity {
                     selectedImageUri = intent.getData();
 
                 }
-                if (selectedImageUri!=null) {
+                if (selectedImageUri != null) {
                     String imageUri = selectedImageUri.toString();
                     loadAttachView(imageUri);
                     final String previousFileName = mParkingSession.getPhotoUri();//parkingSession.getString("PHOTO_NAME", "");
                     mParkingSession.setPhotoUri(imageUri);
                     mParkingSession.setPreviousPhotoName(previousFileName);
 //                    new TaskShowImage<RoundedImageView>(LocateMyLotActivity.this, getViewAttached()).execute(fileName);
+                    showDialogZoomPhoto();
                 }
 
 
@@ -2744,7 +2850,7 @@ public class LocateMyLotActivity extends BaseActivity {
             String name = carparkId + "_" + currentFloor + ".png";
             showMapHiddenSleepSlide(name);
 //            llTime.setVisibility(View.INVISIBLE);
-            mBeaconCar= beaconId;
+            mBeaconCar = beaconId;
             if (type != 0)
                 getFuncCheckIn().modifyState();
         } else {
@@ -2820,7 +2926,7 @@ public class LocateMyLotActivity extends BaseActivity {
     }
 
     public void checkInLiftLobby(final BeaconPoint beaconPoint) {
-        if(beaconPoint.mBeaconType !=2){
+        if (beaconPoint.mBeaconType != 2) {
             return;
         }
         //final SharedPreferences parkingSession = getSharedPreferences("PARKING_SESSION", MODE_PRIVATE);
@@ -3045,7 +3151,7 @@ public class LocateMyLotActivity extends BaseActivity {
 
     //Thep - 2016/02/24
     private void showDialogLiftLobby(final BeaconPoint beaconPoint, boolean isChange) {
-        if(beaconPoint.mBeaconType !=2){
+        if (beaconPoint.mBeaconType != 2) {
             return;
         }
         if (beaconPoint.mCarparkId != mParkingSession.getCarParkCheckIn()) {
@@ -3060,7 +3166,7 @@ public class LocateMyLotActivity extends BaseActivity {
         lastTimeQuestion = System.currentTimeMillis();
         String dataCurrentLiftLobby = mParkingSession.getLiftLobby();
         if (dataCurrentLiftLobby.isEmpty()) {
-            if(beaconPoint.mBeaconType == 2) {
+            if (beaconPoint.mBeaconType == 2) {
                 checkInLiftLobby(beaconPoint);
                 mBeaconLift = beaconPoint.mId;
             }
@@ -3439,7 +3545,7 @@ public class LocateMyLotActivity extends BaseActivity {
                             if (carpark >= 0) {
                                 getCarparkName().setText(CLCarpark.getCarparkNameByCarparkId(carpark));
                                 currentCapark = carpark;
-                                checkInAction(currentBeaconId,false);
+                                checkInAction(currentBeaconId, false);
                                 llCarParkType.setVisibility(View.GONE);
                                 funcTime.modifyState(false);
                                 dialog.dismiss();
@@ -3544,7 +3650,7 @@ public class LocateMyLotActivity extends BaseActivity {
                 zone = "";
             }
             getCarZone().setVisibility(View.VISIBLE);
-            getCarZone().setText("You are parked at Floor " + floor +" "+ zone);
+            getCarZone().setText("You are parked at Floor " + floor + " " + zone);
         } else {
             getCarZone().setText("");
             getCarZone().setVisibility(View.GONE);
@@ -3560,7 +3666,7 @@ public class LocateMyLotActivity extends BaseActivity {
             String zone = dataSave[3];
             if (zone.isEmpty() || zone.equals("null"))
                 zone = dataSave[4];
-            getLiftZone().setText("You have exited at Lift Lobby " + zone);
+            getLiftZone().setText("You have exited at " + zone);
         } else {
             getLiftZone().setText("");
             getLiftZone().setVisibility(View.GONE);
@@ -3570,7 +3676,7 @@ public class LocateMyLotActivity extends BaseActivity {
     private void setTextLiftLobby(String zone) {
         if (zone != null && !zone.isEmpty()) {
             getLiftZone().setVisibility(View.VISIBLE);
-            getLiftZone().setText("You have exited at Lift Lobby " + zone);
+            getLiftZone().setText("You have exited at " + zone);
         } else {
             getLiftZone().setText("");
             getLiftZone().setVisibility(View.GONE);
@@ -3862,9 +3968,9 @@ public class LocateMyLotActivity extends BaseActivity {
                     }
                 }
 
-                if(advArr.length()>0){
+                if (advArr.length() > 0) {
                     new DownloadImageAdv(advArr).execute();
-                }else{
+                } else {
                     finishFirstUpdate();
                 }
 
@@ -3971,14 +4077,16 @@ public class LocateMyLotActivity extends BaseActivity {
 
     class DownloadImageAdv extends AsyncTask<Void, Void, Boolean> {
 
-        private  JSONArray jsonArray;
-        private  List<ADVObject> advDeletes;
-        public DownloadImageAdv(JSONArray jsonArray){
+        private JSONArray jsonArray;
+        private List<ADVObject> advDeletes;
+
+        public DownloadImageAdv(JSONArray jsonArray) {
             advDeletes = CLADV.getAllADVDelete();
-                this.jsonArray = jsonArray;
+            this.jsonArray = jsonArray;
 
 
         }
+
         @Override
         protected void onPreExecute() {
 
@@ -3987,7 +4095,7 @@ public class LocateMyLotActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            if(result) {
+            if (result) {
 
             }
             finishFirstUpdate();
@@ -3996,18 +4104,18 @@ public class LocateMyLotActivity extends BaseActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            if(jsonArray.length()>0) {
+            if (jsonArray.length() > 0) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     try {
                         ADVObject advObject = new ADVObject(jsonArray.getJSONObject(i));
                         boolean isExist = false;
-                        for(ADVObject advDelete:advDeletes){
-                            if(advDelete.getId().equals(advObject.getId())){
+                        for (ADVObject advDelete : advDeletes) {
+                            if (advDelete.getId().equals(advObject.getId())) {
                                 isExist = true;
                                 break;
                             }
                         }
-                        if(!isExist) {
+                        if (!isExist) {
                             if (BitmapUtil.saveImage(advObject.getImageFullLink())) {
                                 CLADV.addItem(advObject);
                             }
@@ -4016,16 +4124,45 @@ public class LocateMyLotActivity extends BaseActivity {
                     }
                 }
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
     }
 
     private void finishFirstUpdate() {
-        if(mDialog!=null && mDialog.isShowing()){
-            UserUtil.setUpdateFirst(LocateMyLotActivity.this,true);
+        if (mDialog != null && mDialog.isShowing()) {
+            UserUtil.setUpdateFirst(LocateMyLotActivity.this, true);
             mDialog.dismiss();
+        }
+    }
+
+    class GetBitmap extends AsyncTask<Void, Void, Bitmap> {
+        private ImageView imageView;
+        private ProgressBar progressBar;
+        private int imageWidth, imageHeight;
+
+        public GetBitmap(ImageView imageView, ProgressBar progressBar, int imageWidth, int imageHeight) {
+            this.imageView = imageView;
+            this.progressBar = progressBar;
+            this.imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
+
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... params) {
+            return BitmapUtil.viewToBitmap(rlContent, imageWidth, imageHeight);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            BITMAP_SHARE_SCREEN = bitmap;
+            imageView.setImageBitmap(bitmap);
+            progressBar.setVisibility(View.GONE);
+            super.onPostExecute(bitmap);
         }
     }
 }

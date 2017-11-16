@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">LocateMyLot</string>
+    <string name="label_share_receive">Share Receive</string>
+
     <string name="copyright">Rates are accurate as of July 2016 and subject to changes without prior notice\nCosts shown are only a guide and an estimate.\nNeublick Pte Ltd accepts no responsibility and/or liability for any cost or loss incurred.</string>
     <string name="share_vehicle">Enter recipient\'s phone number to share your vehicle\'s location</string>
     <string name="action_settings">Settings</string>
@@ -14,6 +16,7 @@
     <string name="text_empty_json">Connect server fail</string>
     <string name="anonymous_user">Anonymous</string>
     <string name="text_share_location">shared vehicle\'s location with you.</string>
+    <string name="text_share_photo">shared photo with you.</string>
     <string name="edit_text_null_value">This field is required</string>
     <string name="error_no_connection">Please turn on Internet connection!</string>
     <string name="edit_text_email_invalid">This email address is invalid</string>
@@ -38,5 +41,9 @@
     <string name="verification_phone">Enter a verification code</string>
     <string name="verification_phone_description">A text message with a verification code was just send to</string>
     <string name="verification_phone_hint">Enter the 6-digit code</string>
+
+
+    <string name="title_screen_share">Screen share</string>
+    <string name="title_car_photo_share">Photo share</string>
 
 </resources>

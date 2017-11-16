@@ -20,8 +20,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import neublick.locatemylot.R;
+import neublick.locatemylot.activity.DetailImageActivity;
+import neublick.locatemylot.activity.LocateMyLotActivity;
 import neublick.locatemylot.app.Global;
 import neublick.locatemylot.app.LocateMyLotApp;
+import neublick.locatemylot.database.CLShareReceive;
 import neublick.locatemylot.dialog.DialogGetSharedLocation;
 import neublick.locatemylot.util.ShareLocationUtil;
 import neublick.locatemylot.util.UserUtil;
@@ -29,8 +32,9 @@ import neublick.locatemylot.util.UserUtil;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
-    private final int PENDING_INTENT_ID =15;
-    public static final int NOTIFICATION_ID =35;
+    private final int PENDING_INTENT_ID = 15;
+    public static final int NOTIFICATION_ID = 35;
+
     /**
      * Called when message is received.
      *
@@ -54,39 +58,74 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
-        if(remoteMessage.getFrom().contains("LocateMyLot_topic")){//Co update ko?
+        if (remoteMessage.getFrom().contains("LocateMyLot_topic")) {//Co update ko?
 
-        }else {//Share location
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-            String result = remoteMessage.getData().get("message").toString();
-            if (!result.isEmpty()) {
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    if (jsonObject != null) {
-                        if (!jsonObject.getString("carpark_id").isEmpty()) {
+        } else {//Share location
+            if (remoteMessage.getData().size() > 0) {
+                Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+                String result = remoteMessage.getData().get("message").toString();
+
+//                result = "{\"type\":\"2\",\"user_from\":\"178\", \"user_to\":\"178\", \"user_from_name\":\"Thép Tô Kim\", \"x\":\"\", \"y\":\"\", \"floor\":\"\", \"zone\":\"\", \"carpark_id\":\"\", \"check_in_time\":\"\",\"image_url\":\"http://neublick.com/demo/carlocation/cms/upload_files/screen_share20171107143015.jpg\"}";
+                /***
+                 * Neu data cu va thong tin nhan duoc khac nhau (co the bi goi 2 lan)
+                 * Luu lai thong tin trong bang du lieu va lastData nhan dc
+                 * Kiem tra
+                 * Type  = share location (thuc hien show dialog confirm)
+                 * Type = nguoc lai show detail Image share
+                 * Luu y: NEW_TASK de tranh bi leak activity
+                 */
+                if (!result.isEmpty()) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        if (jsonObject != null) {
+
+                            String lastData = ShareLocationUtil.getLastShareLocation(getBaseContext());
+                            if(lastData.equals(result)){
+                                return;
+                            }
+                            int type = jsonObject.getInt("type");
+                            CLShareReceive.addItem(result, type);
                             ShareLocationUtil.setLastShareLocation(getBaseContext(), result);
-                            if (jsonObject.getString("user_to").equals(UserUtil.getUserId(getBaseContext()))) {
-                                if (LocateMyLotApp.locateMyLotActivityVisible) {
-                                    Global.isGetSharedLocationDialogShown = true;
-                                    Intent intent = new Intent(getBaseContext(), DialogGetSharedLocation.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    intent.putExtra(Global.SHARE_DATA_EXTRA, result);
-                                    getBaseContext().startActivity(intent);
+                            if (LocateMyLotApp.locateMyLotActivityVisible) {
 
-//                                } else {
-                                    String from_user = jsonObject.getString("user_from_name");
-                                    showNotification(getBaseContext(), result, "Location sharing", from_user + " " + getBaseContext().getString(R.string.text_share_location));
+                                String fromUserName = jsonObject.getString("user_from_name");
+
+                                switch (type) {
+                                    case Global.TYPE_SHARE_LOCATION: {
+                                        if (!jsonObject.getString("carpark_id").isEmpty()) {
+                                            if (jsonObject.getString("user_to").equals(UserUtil.getUserId(getBaseContext()))) {
+                                                Global.isGetSharedLocationDialogShown = true;
+                                                Intent intent = new Intent(getBaseContext(), DialogGetSharedLocation.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                intent.putExtra(Global.SHARE_DATA_EXTRA, result);
+                                                getBaseContext().startActivity(intent);
+
+                                                showNotification(getBaseContext(), result, "Location sharing", fromUserName + " " + getBaseContext().getString(R.string.text_share_location));
+                                            }
+                                        }
+                                    }
+                                    break;
+                                    default:
+                                        String imageUrl = jsonObject.getString("image_url");
+                                        Intent intent = new Intent(getBaseContext(), DetailImageActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        intent.putExtra("IMAGE_URL", imageUrl);
+                                        intent.putExtra("FROM", fromUserName);
+                                        intent.putExtra("IS_NEW", true);
+                                        getBaseContext().startActivity(intent);
+
+                                        showNotification(getBaseContext(), result, "Photo sharing", fromUserName + " " + getBaseContext().getString(R.string.text_share_photo));
+                                        break;
                                 }
                             }
                         }
+
+                    } catch (JSONException e) {
                     }
-
-                } catch (JSONException e) {
                 }
-
             }
-        }
 
             // Check if message contains a notification payload.
             if (remoteMessage.getNotification() != null) {
@@ -97,7 +136,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // message, here is where that should be initiated. See sendNotification method below.
         }
     }
-        // [END receive_message]
+    // [END receive_message]
 
 
     private void showNotification(Context context, String data, String title, String text) {

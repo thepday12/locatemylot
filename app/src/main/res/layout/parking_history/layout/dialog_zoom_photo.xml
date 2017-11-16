@@ -4,39 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="#ee000000"
+    android:background="#000000"
     >
 
-
-    <LinearLayout
-        android:id="@+id/llButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-
-        <Button
-            android:id="@+id/btRemovePhoto"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/button_blue_bg"
-            android:text="Remove photo"
-            android:textAllCaps="false"
-            android:textColor="@color/white"/>
-
-        <Button
-
-            android:id="@+id/btCancel"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_gray_bg"
-            android:text="Close"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            />
-    </LinearLayout>
 
     <ImageView
         android:id="@+id/ivImageZoom"
@@ -44,7 +14,47 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/llButton"
         android:layout_marginBottom="16dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="24dp"
+        android:background="@null"
         android:scaleType="fitCenter"/>
+
+    <ImageView
+        android:id="@+id/ivBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="16dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_arrow_back_white_24dp"/>
+    <LinearLayout
+        android:id="@+id/llButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:padding="4dp"
+            android:id="@+id/ivShare"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_share_normal"
+            android:tint="@color/white"
+            android:scaleType="fitCenter"
+            />
+
+        <ImageView
+            android:layout_marginLeft="8dp"
+            android:padding="8dp"
+            android:id="@+id/ivRemovePhoto"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_delete_normal"
+            android:tint="@color/white"
+            android:scaleType="fitCenter"
+            />
+
+    </LinearLayout>
 
 </RelativeLayout>

@@ -24,7 +24,7 @@ public class LocateMyLotApp extends Application implements Application.ActivityL
     @Override
     public void onCreate() {
         super.onCreate();
-        Database.initialize(this);
+        Database.initialize(this.getApplicationContext());
         registerActivityLifecycleCallbacks(this);
 //Thep update 2016/08/05
 //		if (Utils.isInternetConnected(this)) {

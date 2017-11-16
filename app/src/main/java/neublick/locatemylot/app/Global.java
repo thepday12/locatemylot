@@ -58,6 +58,15 @@ public class Global {
     public static final String EXTRA_POSITION_FRAGMENT ="EXTRA_POSITION_FRAGMENT";
     public static final String TAG_HELP_FRAGMENT ="HELP_FRAGMENT_TAG";
 
+
+    public static final int TYPE_SHARE_LOCATION =0;
+    public static final int TYPE_SHARE_SCREEN =1;
+    public static final int TYPE_SHARE_CAR_PHOTO =2;
+
+
+    public static final int MAX_WIDTH_IMAGE =540;
+    public static final int MAX_HEIGHT_IMAGE =960;
+
     public static int currentCarparkID=1;
     public static int lastLiftLobby=-1;
     public static float calibAngle=0;

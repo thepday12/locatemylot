@@ -28,7 +28,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,17 +59,20 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import neublick.locatemylot.R;
+import neublick.locatemylot.adapter.DetailChargeAdapter;
+import neublick.locatemylot.adapter.DetailSurchargeAdapter;
 import neublick.locatemylot.adapter.PaperCarParkTypeAdapter;
 import neublick.locatemylot.app.Config;
 import neublick.locatemylot.app.Global;
-import neublick.locatemylot.database.CLADV;
+import neublick.locatemylot.database.CLCarpark;
+import neublick.locatemylot.database.CLShareReceive;
 import neublick.locatemylot.dialog.DialogFeedback;
 import neublick.locatemylot.dialog.DialogInformation;
-import neublick.locatemylot.dialog.DialogPromotionList;
 import neublick.locatemylot.dialog.DialogSetting;
 import neublick.locatemylot.dialog.DialogShareLocation;
 import neublick.locatemylot.dialog.DialogSignInSignUp;
 import neublick.locatemylot.model.CarParkType;
+import neublick.locatemylot.model.Carpark;
 import neublick.locatemylot.ui.SquareImageButton;
 import neublick.locatemylot.ui.ToggleSquareImageButton;
 import neublick.locatemylot.util.BitmapUtil;
@@ -84,10 +89,10 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
     ImageButton mDrawerButton;
     NavigationView mNavigation;
     RelativeLayout mContentMain, rlUpdate;
-//    ImageButton btEdit;
+    //    ImageButton btEdit;
     CircleImageView ivAvatar;
     EditText etDisplayName;
-    private Dialog dialogNotice;
+    private Dialog dialogNotice, dialogChooseShare;
     private GoogleApiClient mGoogleApiClient;
     public static String CURRENT_MAP = "";
     private Dialog dialogEnterPhone;
@@ -123,6 +128,10 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
         dialogChangePassword = new Dialog(BaseActivity.this);
         dialogChangePassword.setCanceledOnTouchOutside(true);
         dialogChangePassword.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        dialogChooseShare = new Dialog(BaseActivity.this);
+        dialogChooseShare.setCanceledOnTouchOutside(false);
+        dialogChooseShare.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         vpCarParkType.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -252,6 +261,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         UserUtil.signOut(BaseActivity.this);
+                                        CLShareReceive.deleteAllItem();
 //                                        CLADV.deleteAllADV();
                                         if (Global.activityMain != null)
                                             Global.activityMain.updateSignInMenu();
@@ -294,13 +304,19 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                             if (phone.isEmpty() && !UserUtil.getUserId(BaseActivity.this).isEmpty()) {
                                 showDialogEnterPhone(false);
                             } else {
-                                showDialogShareLocation();
+                                showDialogChooseShare();
                             }
                         } else {
                             Utils.showMessage(dialogNotice, "Please check in first to use this function", "Notice", BaseActivity.this, false);
                         }
                     }
                     break;
+                    case R.id.action_share_receive:{
+                        closeDrawer();
+                        Intent intent = new Intent(BaseActivity.this,ShareReceiveActivity.class);
+                        startActivity(intent);
+                    }
+                        break;
                     case R.id.action_promotion: {
                         closeDrawer();
 //                        version cu
@@ -344,8 +360,8 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                         closeDrawer();
 //                        getFuncTime().modifyState();
                         ToggleSquareImageButton funcTime = (ToggleSquareImageButton) findViewById(R.id.func_time);
-                        if(funcTime!=null){
-                            if(funcTime.statePressed) {
+                        if (funcTime != null) {
+                            if (funcTime.statePressed) {
                                 funcTime.modifyState();
                                 vpCarParkType.setVisibility(View.GONE);
                                 llCarParkType.setVisibility(View.GONE);
@@ -409,9 +425,8 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
 //        } else {
 //            Picasso.with(BaseActivity.this).load(avatar).error(R.drawable.default_avatar).into(ivAvatar);
 //        }
-        Utils.loadAvatar(BaseActivity.this,ivAvatar,avatar);
+        Utils.loadAvatar(BaseActivity.this, ivAvatar, avatar);
     }
-
 
 
     public void updateStatusCarParkType(int position) {
@@ -545,11 +560,56 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-    private void showDialogShareLocation() {
-        closeDrawer();
+    private void showDialogShareLocation(int type) {
         Intent intent = new Intent(BaseActivity.this, DialogShareLocation.class);
+        intent.putExtra("TYPE",type);
         startActivity(intent);
     }
+
+
+    protected void showDialogShareScreen() {
+
+    }
+
+    public void showDialogChooseShare() {
+        closeDrawer();
+        showDialogShareLocation(Global.TYPE_SHARE_LOCATION);
+        /*
+        //Hien thi share screen
+        if (!dialogChooseShare.isShowing()) {
+            dialogChooseShare.setContentView(R.layout.dialog_choose_share);
+            Button btShareLocation = (Button) dialogChooseShare.findViewById(R.id.btShareLocation);
+            Button btShareScreen = (Button) dialogChooseShare.findViewById(R.id.btShareScreen);
+            ImageView ivClose = (ImageView) dialogChooseShare.findViewById(R.id.ivClose);
+
+
+            btShareLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDialogShareLocation(Global.TYPE_SHARE_LOCATION);
+                    dialogChooseShare.dismiss();
+                }
+            });
+            btShareScreen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDialogShareScreen();
+                    dialogChooseShare.dismiss();
+                }
+            });
+            ivClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogChooseShare.dismiss();
+                }
+            });
+
+
+            dialogChooseShare.show();
+        }
+        */
+    }
+
     private void showDialogChangePassword() {
 
         if (!dialogChangePassword.isShowing()) {
@@ -590,15 +650,16 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    private void hiddenKeyboard(){
+    private void hiddenKeyboard() {
 //        View view = this.getCurrentFocus();
 //        if (view != null) {
-            View view = new View(BaseActivity.this);
+        View view = new View(BaseActivity.this);
 //        }
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 //        }
     }
+
     private void changePassword() {
         hiddenKeyboard();
         String oldPassword = etOldPassword.getText().toString();
@@ -628,6 +689,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
     }
+
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
@@ -699,7 +761,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                         UserUtil.setUserPhone(BaseActivity.this, mPhone);
                         mDialogEnterPhone.dismiss();
                         if (!mIsFirstTime)
-                            showDialogShareLocation();
+                            showDialogChooseShare();
                     } else {
                         Toast.makeText(BaseActivity.this, jsonObject.getString("error_description"), Toast.LENGTH_SHORT).show();
                     }
@@ -798,7 +860,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                             UserUtil.setIUNumberTMP(BaseActivity.this, "");
                         }
                         UserUtil.setUserFullNameNew(BaseActivity.this, "");
-                        UserUtil.setAvatar(BaseActivity.this,jsonObject.getString("avatar"));
+                        UserUtil.setAvatar(BaseActivity.this, jsonObject.getString("avatar"));
                     } else {
                     }
                 } catch (JSONException e) {
@@ -808,6 +870,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         }
     }
+
     class UpdateAvatar extends AsyncTask<Void, Void, String> {
         private String mUserId;
         private int reqWidth, reqHeight, MAX_IMAGE_SIZE;
@@ -838,23 +901,23 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
         public String doInBackground(Void... args) {
             String avatar = "";
             try {
-                    if (selectedImage != null) {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inJustDecodeBounds = false;
-                        options.inPreferredConfig = Bitmap.Config.RGB_565;
-                        options.inDither = true;
-                        BitmapFactory.decodeFile(BitmapUtil.convertUri2FileUri(selectedImage.toString()), options);
-                        options.inSampleSize = BitmapUtil.calculateInSampleSize(options, reqWidth, reqHeight);
-                        options.inJustDecodeBounds = false;
-                        Bitmap bm = null;
+                if (selectedImage != null) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = false;
+                    options.inPreferredConfig = Bitmap.Config.RGB_565;
+                    options.inDither = true;
+                    BitmapFactory.decodeFile(BitmapUtil.convertUri2FileUri(selectedImage.toString()), options);
+                    options.inSampleSize = BitmapUtil.calculateInSampleSize(options, reqWidth, reqHeight);
+                    options.inJustDecodeBounds = false;
+                    Bitmap bm = null;
 
-                        bm = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, options);
-                        bm = BitmapUtil.scaleDown(bm, MAX_IMAGE_SIZE, true);
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bm.compress(Bitmap.CompressFormat.JPEG, 50, baos); //bm is the bitmap object
-                        byte[] byteArrayImage = baos.toByteArray();
-                        avatar = "data:image/jpeg;base64," + neublick.locatemylot.util.Base64.encodeBytes(byteArrayImage, Base64.DEFAULT);
-                    }
+                    bm = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, options);
+                    bm = BitmapUtil.scaleDown(bm, MAX_IMAGE_SIZE, true);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bm.compress(Bitmap.CompressFormat.JPEG, 50, baos); //bm is the bitmap object
+                    byte[] byteArrayImage = baos.toByteArray();
+                    avatar = "data:image/jpeg;base64," + neublick.locatemylot.util.Base64.encodeBytes(byteArrayImage, Base64.DEFAULT);
+                }
             } catch (Exception e) {
             }
             String link = Config.CMS_URL + "/act.php";
@@ -877,7 +940,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
                     JSONObject jsonObject = new JSONObject(result);
                     if (jsonObject.getBoolean("state")) {
                         String avatar = jsonObject.getString("avatar");
-                        UserUtil.setAvatar(BaseActivity.this,avatar);
+                        UserUtil.setAvatar(BaseActivity.this, avatar);
                         Picasso.with(BaseActivity.this).invalidate(avatar);
                         Picasso.with(BaseActivity.this).load(avatar).into(ivAvatar, new Callback() {
                             @Override
@@ -887,7 +950,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
 
                             @Override
                             public void onError() {
-                                Picasso.with(BaseActivity.this).load( selectedImage.toString()).into(ivAvatar);
+                                Picasso.with(BaseActivity.this).load(selectedImage.toString()).into(ivAvatar);
                             }
                         });
 
@@ -924,7 +987,8 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.C
         protected String doInBackground(Void... params) {
             String link = Config.CMS_URL + "/act.php";
             HashMap hashMap = new HashMap();
-            http://neublick.com/demo/carlocation/act.php?act=changepass&e=talentcat@gmail.com&o=123456&n=1212121
+            http:
+//neublick.com/demo/carlocation/act.php?act=changepass&e=talentcat@gmail.com&o=123456&n=1212121
             hashMap.put("act", "changepass");
             hashMap.put("e", UserUtil.getUserEmail(BaseActivity.this));
             hashMap.put("o", mOldPassword);

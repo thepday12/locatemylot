@@ -12,10 +12,11 @@ public class Database extends SQLiteOpenHelper {
     private static Database INSTANCE;
     private static SQLiteDatabase sqlite;
     private static String DB_NAME = "new_db_x_y";
-    private static int DB_VERSION = 11;
+    private static int DB_VERSION = 12;
     public static final String TABLE_BEACON = "CL_BEACONS";
     public static final String TABLE_PATH = "CL_PATH";
     public static final String TABLE_PARKING_HISTORY = "CL_PARKING_HISTORY";
+    public static final String TABLE_SHARE_RECEIVE = "TABLE_SHARE_RECEIVE";
     public static final String TABLE_PARKING_RATES = "PARKING_RATE";
     public static final String TABLE_PARKING_SURCHARGE = "PARKING_SURCHARGE";
     public static final String TABLE_HOLIDAY = "HOLIDAY";
@@ -157,6 +158,15 @@ public class Database extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_SHOW_ADV + "(ID INTEGER PRIMARY KEY, TIME_SHOW REAL DEFAULT 0)");
 
+
+        /***
+         * Version 12
+         * Tao bang luu tru anh da share
+         */
+        String query = "CREATE TABLE IF NOT EXISTS " + TABLE_SHARE_RECEIVE
+                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, DATA TEXT DEFAULT '',TYPE INTEGER, TIME_RECEIVE INTEGER);";
+        db.execSQL(query);
+
     }
 
     @Override
@@ -167,6 +177,7 @@ public class Database extends SQLiteOpenHelper {
         updateVersion8(db, oldVersion);
         updateVersion9(db, oldVersion);
         updateVersion11(db, oldVersion);
+        updateVersion12(db, oldVersion);
     }
 
     private void updateVersion5(SQLiteDatabase db, int oldVersion) {
@@ -242,6 +253,19 @@ public class Database extends SQLiteOpenHelper {
                 String query1 = "ALTER TABLE " + TABLE_PARKING_HISTORY + " ADD COLUMN " +
                         "CAR INTEGER DEFAULT 0;";
                 db.execSQL(query1);
+
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    private void updateVersion12(SQLiteDatabase db, int oldVersion) {
+        if (oldVersion < 12) {
+            try {
+                String query = "CREATE TABLE IF NOT EXISTS " + TABLE_SHARE_RECEIVE
+                        + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, DATA TEXT DEFAULT '',TYPE INTEGER, TIME_RECEIVE INTEGER);";
+                db.execSQL(query);
 
             } catch (Exception e) {
 

@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 import neublick.locatemylot.R;
+import neublick.locatemylot.activity.LocateMyLotActivity;
 import neublick.locatemylot.app.Config;
 import neublick.locatemylot.app.Global;
 import neublick.locatemylot.database.CLHintShareLocation;
@@ -46,7 +47,8 @@ public class DialogShareLocation extends Activity {
     private AutoCompleteTextView etShareId;
     private String contactID;
     private String phone="";
-
+    private int mType;
+    private Intent mIntent;
     @Override
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -55,6 +57,10 @@ public class DialogShareLocation extends Activity {
         int screenWidth = (int) (metrics.widthPixels * 0.85);
 
         setContentView(R.layout.dialog_share_location);
+
+        mIntent = getIntent();
+        mType = mIntent.getIntExtra("TYPE",Global.TYPE_SHARE_LOCATION);
+
         dialogNotice = new Dialog(DialogShareLocation.this);
         dialogNotice.setCanceledOnTouchOutside(true);
         dialogNotice.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -86,28 +92,57 @@ public class DialogShareLocation extends Activity {
         share.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                String phoneGetShare=phone;
+                if(phoneGetShare.isEmpty()) {
+                    phoneGetShare = etShareId.getText().toString();
+                }
+                phoneGetShare.replace(" ", "").trim();
 
-                if (!mParkingSession.isCheckIn() || (mParkingSession.isNormalCheckIn() && !mParkingSession.isCarCheckLocation())) {
-                    Utils.showMessage(dialogNotice, "Please check in first to use this function", "Information", DialogShareLocation.this, true);
+                /***
+                 * Neu phoneGetShare khac rong va khac so dien thoai kiem tra tiep
+                 * Voi type = TYPE_SHARE_LOCATION thi user can phai check in truoc do
+                 * Voi
+                 */
+                if (!phoneGetShare.isEmpty()) {
+                    if (phoneGetShare.equals(UserUtil.getUserId(DialogShareLocation.this)) || phoneGetShare.equals(UserUtil.getUserName(DialogShareLocation.this)) || UserUtil.formatPhone(phoneGetShare).equals(UserUtil.getUserPhone(DialogShareLocation.this))) {
+                        Toast.makeText(DialogShareLocation.this, "You can't share location  with yourself", Toast.LENGTH_SHORT).show();
+                    } else {
+                        switch (mType) {
+                            case Global.TYPE_SHARE_LOCATION:
+                                if (!mParkingSession.isCheckIn() || (mParkingSession.isNormalCheckIn() && !mParkingSession.isCarCheckLocation())) {
+                                    Utils.showMessage(dialogNotice, "Please check in first to use this function", "Information", DialogShareLocation.this, true);
+                                } else {
+                                    new ShareLocationTask(phoneGetShare).execute();
+                                }
+                                break;
+                            case Global.TYPE_SHARE_SCREEN:
+                                Bitmap bitmap = LocateMyLotActivity.BITMAP_SHARE_SCREEN;
 
-                } else {
+                                if(bitmap!=null) {
+                                    new ShareScreen(phoneGetShare).execute();
+                                }else {
+                                    Toast.makeText(DialogShareLocation.this, "Photo invalid", Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+                            case Global.TYPE_SHARE_CAR_PHOTO:
+                                Uri imageUri = null;
+                                try {
+                                    imageUri = Uri.parse(mIntent.getStringExtra("IMAGE_URI"));
+                                }catch (Exception e){
 
-                    // neu user da check in thi cho phep no dung chuc nang nay =))))
-                    // share thong tin checkin cai xe cua no =))
-                    String userID=phone;
-                    if(userID.isEmpty()) {
-                        userID = etShareId.getText().toString();
-                    }
-                    userID.replace(" ", "").trim();
-                    if (!userID.isEmpty()) {
-                        Log.e("RESPONSE_SERVER", UserUtil.formatPhone(userID) + "_" + UserUtil.getUserPhone(DialogShareLocation.this));
-                        if (userID.equals(UserUtil.getUserId(DialogShareLocation.this)) || userID.equals(UserUtil.getUserName(DialogShareLocation.this)) || UserUtil.formatPhone(userID).equals(UserUtil.getUserPhone(DialogShareLocation.this))) {
-                            Toast.makeText(DialogShareLocation.this, "You can't share location  with yourself", Toast.LENGTH_SHORT).show();
-                        } else {
-                            new ShareLocationTask(userID).execute();
+                                }
+                                if(imageUri!=null){
+                                    new ShareCarPhoto(phoneGetShare,imageUri).execute();
+                                }else {
+                                    Toast.makeText(DialogShareLocation.this, "Photo invalid", Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+
                         }
                     }
                 }
+
+
             }
         });
     }
@@ -219,10 +254,10 @@ public class DialogShareLocation extends Activity {
     // dau ra luon luon la string :))
     class ShareLocationTask extends AsyncTask<Void, Void, String> {
         private ProgressDialog mDialog;
-        private String mUserId;
+        private String phoneGetShare;
 
-        public ShareLocationTask(String userid) {
-            mUserId = userid;
+        public ShareLocationTask(String phoneGetShare) {
+            this.phoneGetShare = phoneGetShare;
         }
 
         @Override
@@ -273,7 +308,7 @@ public class DialogShareLocation extends Activity {
             HashMap hashMap = new HashMap();
             hashMap.put("act", "sharelocation");
             hashMap.put("from", usr);
-            hashMap.put("to", mUserId);
+            hashMap.put("to", phoneGetShare);
             hashMap.put("carpark_id", String.valueOf(carparkId));
             hashMap.put("x", String.valueOf(x));
             hashMap.put("y", String.valueOf(y));
@@ -293,7 +328,7 @@ public class DialogShareLocation extends Activity {
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     if (jsonObject.getBoolean("state")) {
-                        CLHintShareLocation.addItem(mUserId);
+                        CLHintShareLocation.addItem(phoneGetShare);
                         Utils.showMessage(dialogNotice, "Share location successfully", "", DialogShareLocation.this, true);
                     } else {
                         Utils.showMessage(dialogNotice, jsonObject.getString("error_description"), "Notice", DialogShareLocation.this, false);
@@ -304,6 +339,104 @@ public class DialogShareLocation extends Activity {
 
 
             }
+        }
+    }
+
+    public class ShareScreen extends AsyncTask<Void, Void, String> {
+        private ProgressDialog mDialog;
+        private String phoneGetShare;
+
+        public ShareScreen(String phoneGetShare) {
+            this.phoneGetShare = phoneGetShare;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mDialog = ProgressDialog.show(DialogShareLocation.this, null,
+                    "Loading...", true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String userId =  UserUtil.getUserId(DialogShareLocation.this);
+            HashMap hashMap = new HashMap();
+            hashMap.put("act", "sharescreen");
+            hashMap.put("to", phoneGetShare);
+            hashMap.put("from",userId);
+            return Utils.shareScreenBitmap(hashMap,LocateMyLotActivity.BITMAP_SHARE_SCREEN,userId);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            LocateMyLotActivity.BITMAP_SHARE_SCREEN = null;
+            mDialog.dismiss();
+            if (result == null || result.isEmpty()) {
+                Utils.showMessage(dialogNotice, "Cannot share location", "Notice", DialogShareLocation.this, false);
+                return;
+            } else {
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (jsonObject.getBoolean("state")) {
+                        CLHintShareLocation.addItem(phoneGetShare);
+                        Utils.showMessage(dialogNotice, "Share location successfully", "", DialogShareLocation.this, true);
+                    } else {
+                        Utils.showMessage(dialogNotice, jsonObject.getString("error_description"), "Notice", DialogShareLocation.this, false);
+                    }
+                } catch (JSONException e) {
+                    Utils.showMessage(dialogNotice, "Can not share location", "Notice", DialogShareLocation.this, false);
+                }
+            }
+            super.onPostExecute(result);
+        }
+    }
+    public class ShareCarPhoto extends AsyncTask<Void, Void, String> {
+        private ProgressDialog mDialog;
+        private String phoneGetShare;
+        private Uri imageUri;
+
+        public ShareCarPhoto(String phoneGetShare,Uri imageUri) {
+            this.phoneGetShare = phoneGetShare;
+            this.imageUri = imageUri;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mDialog = ProgressDialog.show(DialogShareLocation.this, null,
+                    "Loading...", true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            HashMap hashMap = new HashMap();
+            hashMap.put("act", "sharePhotoCar");
+            hashMap.put("to", phoneGetShare);
+            hashMap.put("from", UserUtil.getUserId(DialogShareLocation.this));
+            return Utils.shareCarPhoto(DialogShareLocation.this,hashMap,imageUri);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            LocateMyLotActivity.BITMAP_SHARE_SCREEN = null;
+            mDialog.dismiss();
+            if (result == null || result.isEmpty()) {
+                Utils.showMessage(dialogNotice, "Cannot share location", "Notice", DialogShareLocation.this, false);
+                return;
+            } else {
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (jsonObject.getBoolean("state")) {
+                        CLHintShareLocation.addItem(phoneGetShare);
+                        Utils.showMessage(dialogNotice, "Share location successfully", "", DialogShareLocation.this, true);
+                    } else {
+                        Utils.showMessage(dialogNotice, jsonObject.getString("error_description"), "Notice", DialogShareLocation.this, false);
+                    }
+                } catch (JSONException e) {
+                    Utils.showMessage(dialogNotice, "Can not share location", "Notice", DialogShareLocation.this, false);
+                }
+            }
+            super.onPostExecute(result);
         }
     }
 }
